@@ -7,7 +7,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
-import net.minecraft.world.GameRules;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -69,5 +70,22 @@ public class RocketEntity extends Entity {
             discard();
         }
         return true;
+    }
+
+    /*
+    Ride Rocket
+    */
+    @Override
+    public ActionResult interact(PlayerEntity player, Hand hand) {
+        if (player.shouldCancelInteraction()) {
+            return ActionResult.PASS;
+        }
+        if (!this.world.isClient) {
+            return player.startRiding(this) ? ActionResult.CONSUME : ActionResult.PASS;
+        }
+        return ActionResult.SUCCESS;
+    }
+    public double getMountedHeightOffset() {
+        return 1.0;
     }
 }
