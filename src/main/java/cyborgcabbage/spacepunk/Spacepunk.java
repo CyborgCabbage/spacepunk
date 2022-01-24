@@ -2,10 +2,12 @@ package cyborgcabbage.spacepunk;
 
 import cyborgcabbage.spacepunk.block.RocketNoseBlock;
 import cyborgcabbage.spacepunk.entity.RocketEntity;
+import cyborgcabbage.spacepunk.inventory.BoxScreenHandler;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
@@ -14,6 +16,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -30,6 +33,16 @@ public class Spacepunk implements ModInitializer {
 	);
 
 	public static final Block ROCKET_NOSE_BLOCK = new RocketNoseBlock(FabricBlockSettings.of(Material.METAL, MapColor.ORANGE).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER));
+
+
+	public static final ScreenHandlerType<BoxScreenHandler> BOX_SCREEN_HANDLER;
+
+	static {
+		//We use registerSimple here because our Entity is not an ExtendedScreenHandlerFactory
+		//but a NamedScreenHandlerFactory.
+		//In a later Tutorial you will see what ExtendedScreenHandlerFactory can do!
+		BOX_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(new Identifier(MODID, "rocket"), BoxScreenHandler::new);
+	}
 
 	@Override
 	public void onInitialize() {
