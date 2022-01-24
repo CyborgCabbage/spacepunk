@@ -19,6 +19,8 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
@@ -86,15 +88,6 @@ public class RocketEntity extends Entity implements NamedScreenHandlerFactory, I
     /*
     Rocket Menu
     */
-    @Override
-    public ActionResult interact(PlayerEntity player, Hand hand) {
-        player.openHandledScreen(this);
-        if (!player.world.isClient) {
-            this.emitGameEvent(GameEvent.CONTAINER_OPEN, player);
-            return ActionResult.CONSUME;
-        }
-        return ActionResult.SUCCESS;
-    }
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
@@ -112,5 +105,27 @@ public class RocketEntity extends Entity implements NamedScreenHandlerFactory, I
     @Override
     public DefaultedList<ItemStack> getItems() {
         return items;
+    }
+
+    /*
+    Ride Rocket
+    */
+    @Override
+    public ActionResult interact(PlayerEntity player, Hand hand) {
+        if (player.shouldCancelInteraction()) {
+            player.openHandledScreen(this);
+            if (!player.world.isClient) {
+                this.emitGameEvent(GameEvent.CONTAINER_OPEN, player);
+                return ActionResult.CONSUME;
+            }
+            return ActionResult.SUCCESS;
+        }
+        if (!this.world.isClient) {
+            return player.startRiding(this) ? ActionResult.CONSUME : ActionResult.PASS;
+        }
+        return ActionResult.SUCCESS;
+    }
+    public double getMountedHeightOffset() {
+        return 1.0;
     }
 }
