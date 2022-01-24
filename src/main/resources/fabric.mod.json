@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "spacepunk",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "Spacepunk",
+  "description": "A mod that makes space simple!",
   "authors": [
-    "Me!"
+    "CyborgCabbage"
   ],
   "contact": {
     "homepage": "https://fabricmc.net/",
@@ -14,16 +14,19 @@
   },
 
   "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
+  "icon": "assets/spacepunk/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.fabricmc.example.ExampleMod"
+      "cyborgcabbage.spacepunk.Spacepunk"
+    ],
+    "client": [
+      "cyborgcabbage.spacepunk.client.SpacepunkClient"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "spacepunk.mixins.json"
   ],
 
   "depends": {

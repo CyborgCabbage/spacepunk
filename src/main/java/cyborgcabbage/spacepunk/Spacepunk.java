@@ -1,0 +1,39 @@
+package cyborgcabbage.spacepunk;
+
+import cyborgcabbage.spacepunk.block.RocketNoseBlock;
+import cyborgcabbage.spacepunk.entity.RocketEntity;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.minecraft.block.Block;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.Material;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class Spacepunk implements ModInitializer {
+	public static final String MODID = "spacepunk";
+	public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
+	public static final EntityType<RocketEntity> ROCKET_ENTITY_TYPE = Registry.register(
+			Registry.ENTITY_TYPE,
+			new Identifier(MODID, "rocket"),
+			FabricEntityTypeBuilder.create(SpawnGroup.MISC, RocketEntity::new).dimensions(EntityDimensions.fixed(1.0f, 3.0f)).build()
+	);
+
+	public static final Block ROCKET_NOSE_BLOCK = new RocketNoseBlock(FabricBlockSettings.of(Material.METAL, MapColor.ORANGE).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER));
+
+	@Override
+	public void onInitialize() {
+		Registry.register(Registry.BLOCK, new Identifier(MODID, "rocket_nose"), ROCKET_NOSE_BLOCK);
+		Registry.register(Registry.ITEM, new Identifier(MODID, "rocket_nose"), new BlockItem(ROCKET_NOSE_BLOCK, new FabricItemSettings().group(ItemGroup.MISC)));
+	}
+}
