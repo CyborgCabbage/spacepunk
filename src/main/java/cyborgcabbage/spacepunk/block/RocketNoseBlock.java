@@ -32,21 +32,25 @@ public class RocketNoseBlock extends Block {
         if(world.getBlockState(d1).isOf(Blocks.COPPER_BLOCK)){
             if(world.getBlockState(d2).isOf(Blocks.COPPER_BLOCK)){
                 if(world.getBlockState(d3).isOf(Blocks.BLAST_FURNACE)){
-                    world.setBlockState(d0, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
-                    world.setBlockState(d1, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
-                    world.setBlockState(d2, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
-                    world.setBlockState(d3, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
-                    world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, d0, Block.getRawIdFromState(world.getBlockState(d0)));
-                    world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, d1, Block.getRawIdFromState(world.getBlockState(d0)));
-                    world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, d2, Block.getRawIdFromState(world.getBlockState(d0)));
-                    world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, d3, Block.getRawIdFromState(world.getBlockState(d0)));
-                    world.updateNeighbors(d0, Blocks.AIR);
-                    world.updateNeighbors(d1, Blocks.AIR);
-                    world.updateNeighbors(d2, Blocks.AIR);
-                    world.updateNeighbors(d3, Blocks.AIR);
                     RocketEntity rocketEntity = Spacepunk.ROCKET_ENTITY_TYPE.create(world);
-                    rocketEntity.refreshPositionAndAngles(d3.getX() + 0.5, d3.getY(), d3.getZ() + 0.5, 0.0f, 0.0f);
-                    world.spawnEntity(rocketEntity);
+                    if(rocketEntity != null) {
+                        world.setBlockState(d0, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+                        world.setBlockState(d1, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+                        world.setBlockState(d2, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+                        world.setBlockState(d3, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+                        world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, d0, Block.getRawIdFromState(world.getBlockState(d0)));
+                        world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, d1, Block.getRawIdFromState(world.getBlockState(d1)));
+                        world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, d2, Block.getRawIdFromState(world.getBlockState(d2)));
+                        world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, d3, Block.getRawIdFromState(world.getBlockState(d3)));
+                        world.updateNeighbors(d0, Blocks.AIR);
+                        world.updateNeighbors(d1, Blocks.AIR);
+                        world.updateNeighbors(d2, Blocks.AIR);
+                        world.updateNeighbors(d3, Blocks.AIR);
+                        rocketEntity.refreshPositionAndAngles(d3.getX() + 0.5, d3.getY(), d3.getZ() + 0.5, 0.0f, 0.0f);
+                        world.spawnEntity(rocketEntity);
+                    }else{
+                        Spacepunk.LOGGER.error("RocketEntity spawning failed at "+d3+", RocketEntity was null");
+                    }
                 }
             }
         }
