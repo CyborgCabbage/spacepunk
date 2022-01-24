@@ -48,6 +48,7 @@ public class RocketNoseBlock extends Block {
                         world.updateNeighbors(d3, Blocks.AIR);
                         rocketEntity.refreshPositionAndAngles(d3.getX() + 0.5, d3.getY(), d3.getZ() + 0.5, 0.0f, 0.0f);
                         world.spawnEntity(rocketEntity);
+                        world.syncWorldEvent(WorldEvents.ANVIL_USED, d1, 0);
                     }else{
                         Spacepunk.LOGGER.error("RocketEntity spawning failed at "+d3+", RocketEntity was null");
                     }
