@@ -4,6 +4,7 @@ import cyborgcabbage.spacepunk.inventory.BoxScreenHandler;
 import cyborgcabbage.spacepunk.inventory.ImplementedInventory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -128,5 +129,16 @@ public class RocketEntity extends Entity implements NamedScreenHandlerFactory, I
     */
     public double getMountedHeightOffset() {
         return 1.0;
+    }
+
+    /*
+    Movement
+    */
+    @Override
+    public void baseTick() {
+        double gravity = -0.08;
+        addVelocity(0.0, gravity, 0.0);
+        move(MovementType.SELF,getVelocity());
+        super.baseTick();
     }
 }

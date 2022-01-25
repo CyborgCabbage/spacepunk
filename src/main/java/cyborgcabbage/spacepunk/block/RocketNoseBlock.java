@@ -6,6 +6,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -48,7 +50,7 @@ public class RocketNoseBlock extends Block {
                         world.updateNeighbors(d3, Blocks.AIR);
                         rocketEntity.refreshPositionAndAngles(d3.getX() + 0.5, d3.getY(), d3.getZ() + 0.5, 0.0f, 0.0f);
                         world.spawnEntity(rocketEntity);
-                        world.syncWorldEvent(WorldEvents.ANVIL_USED, d1, 0);
+                        if (!world.isClient) world.playSound(null, d2, SoundEvents.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1f, 1);
                     }else{
                         Spacepunk.LOGGER.error("RocketEntity spawning failed at "+d3+", RocketEntity was null");
                     }
