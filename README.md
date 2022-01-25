@@ -3,7 +3,7 @@ Spacepunk is a Minecraft space exploration mod. This mod is being developed for 
 
 ### Goals
 #### Minimalism
-There are a lot of people that enjoy working their way through a complicated tech-tree, assembling their rocket piece by piece, and holding space to slow down. But not everyone is like that, some people just want to build a cool base on an alien world. This is why my mod will try to avoid complex machinery try to properly integrate into the vanilla tech-tree. Sort of a Vanilla+ approach to space mods.
+There are a lot of people that enjoy working their way through a complicated tech-tree, assembling their rocket piece by piece, and holding space to slow down. But not everyone is like that, some people just want to build a cool base on an alien world. 
 #### Fantasy
 In 1800s to early 1900s, it was believed that there were Carboniferous jungles and swamps below the venusian clouds. This is way cooler than the truth and is therefore what my version of venus will be based on. In fact, I'll probably not even include most of the planets in the real solar system because faithful adaptations of them wouldn't be interesting places to go. (pretty much every planet will have some form of life)
 #### Integration
