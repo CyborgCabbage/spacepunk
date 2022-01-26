@@ -12,6 +12,7 @@ import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -46,7 +47,7 @@ public class Spacepunk implements ModInitializer {
 		//In a later Tutorial you will see what ExtendedScreenHandlerFactory can do!
 		BOX_SCREEN_HANDLER = ScreenHandlerRegistry.registerExtended(new Identifier(MODID, "rocket"), RocketScreenHandler::new);
 	}
-
+	
 	@Override
 	public void onInitialize() {
 		Registry.register(Registry.BLOCK, new Identifier(MODID, "rocket_nose"), ROCKET_NOSE_BLOCK);
@@ -57,11 +58,14 @@ public class Spacepunk implements ModInitializer {
 			int actionId = buf.readInt();
 			server.execute(() -> {
 				// Everything in this lambda is run on the render thread
-				RocketEntity rocketEntity = (RocketEntity)player.world.getEntityById(rocketEntityId);
-				LOGGER.info("Action Entity is "+rocketEntity.getEntityName());
-				switch (actionId) {
-					case RocketEntity.ACTION_DISASSEMBLE -> rocketEntity.discard();
-					case RocketEntity.ACTION_LAUNCH -> rocketEntity.launch();
+				Entity entity = player.world.getEntityById(rocketEntityId);
+				if(entity instanceof RocketEntity rocketEntity) {
+					switch (actionId) {
+						case RocketEntity.ACTION_DISASSEMBLE -> rocketEntity.disassemble(true);
+						case RocketEntity.ACTION_LAUNCH -> rocketEntity.launch();
+					}
+				}else{
+					LOGGER.error("Rocket Action Packet: Could not find relavent RocketEntity");
 				}
 			});
 		});

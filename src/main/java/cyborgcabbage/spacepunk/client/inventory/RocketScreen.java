@@ -52,12 +52,18 @@ public class RocketScreen extends HandledScreen<RocketScreenHandler> {
             buf.writeInt(handler.getRocketEntityId());
             buf.writeInt(RocketEntity.ACTION_LAUNCH);
             ClientPlayNetworking.send(Spacepunk.ROCKET_ACTION_PACKET_ID, buf);
+            //Exit Menu
+            this.client.setScreen(null);
+            this.client.mouse.lockCursor();
         }));
         this.addDrawableChild(new ButtonWidget(x+(backgroundWidth-buttonWidth)/2, y+19+25 , buttonWidth, 20, new LiteralText("Disassemble"), button -> {
             PacketByteBuf buf = PacketByteBufs.create();
             buf.writeInt(handler.getRocketEntityId());
             buf.writeInt(RocketEntity.ACTION_DISASSEMBLE);
             ClientPlayNetworking.send(Spacepunk.ROCKET_ACTION_PACKET_ID, buf);
+            //Exit Menu
+            this.client.setScreen(null);
+            this.client.mouse.lockCursor();
         }));
     }
 
