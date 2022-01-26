@@ -1,7 +1,8 @@
 package cyborgcabbage.spacepunk.entity;
 
-import cyborgcabbage.spacepunk.inventory.BoxScreenHandler;
+import cyborgcabbage.spacepunk.inventory.RocketScreenHandler;
 import cyborgcabbage.spacepunk.inventory.ImplementedInventory;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
@@ -12,9 +13,10 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
-import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -24,7 +26,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
-public class RocketEntity extends Entity implements NamedScreenHandlerFactory, ImplementedInventory {
+public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory, ImplementedInventory {
+    public static final int ACTION_DISASSEMBLE = 0;
+    public static final int ACTION_LAUNCH = 1;
+
+    private boolean engineOn = false;
 
     public RocketEntity(EntityType<?> type, World world) {
         super(type, world);
@@ -84,7 +90,7 @@ public class RocketEntity extends Entity implements NamedScreenHandlerFactory, I
         return true;
     }
     /*
-    Rocket Interaction
+    Rocket Interaction: Riding/Menu
     */
     @Override
     public ActionResult interact(PlayerEntity player, Hand hand) {
@@ -108,7 +114,7 @@ public class RocketEntity extends Entity implements NamedScreenHandlerFactory, I
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new BoxScreenHandler(syncId, inv, this);
+        return new RocketScreenHandler(syncId, inv, this);
     }
     @Override
     public Text getDisplayName() {
@@ -137,8 +143,20 @@ public class RocketEntity extends Entity implements NamedScreenHandlerFactory, I
     @Override
     public void baseTick() {
         double gravity = -0.08;
+        if(engineOn) gravity = 0.01;
         addVelocity(0.0, gravity, 0.0);
         move(MovementType.SELF,getVelocity());
         super.baseTick();
+    }
+    /*
+    Launch
+    */
+    public void launch(){
+        engineOn = true;
+    }
+
+    @Override
+    public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
+        buf.writeInt(getId());
     }
 }

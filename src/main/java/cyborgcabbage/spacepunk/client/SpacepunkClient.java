@@ -1,7 +1,7 @@
 package cyborgcabbage.spacepunk.client;
 
 import cyborgcabbage.spacepunk.Spacepunk;
-import cyborgcabbage.spacepunk.client.inventory.BoxScreen;
+import cyborgcabbage.spacepunk.client.inventory.RocketScreen;
 import cyborgcabbage.spacepunk.client.render.entity.RocketEntityRenderer;
 import cyborgcabbage.spacepunk.client.render.entity.model.RocketEntityModel;
 import net.fabricmc.api.ClientModInitializer;
@@ -20,6 +20,6 @@ public class SpacepunkClient implements ClientModInitializer {
     public void onInitializeClient() {
         EntityRendererRegistry.register(Spacepunk.ROCKET_ENTITY_TYPE, RocketEntityRenderer::new);
         EntityModelLayerRegistry.registerModelLayer(MODEL_CUBE_LAYER, RocketEntityModel::getTexturedModelData);
-        ScreenRegistry.register(Spacepunk.BOX_SCREEN_HANDLER, BoxScreen::new);
+        ScreenRegistry.register(Spacepunk.BOX_SCREEN_HANDLER, RocketScreen::new);
     }
 }

@@ -6,22 +6,25 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 
-public class BoxScreenHandler extends ScreenHandler {
+public class RocketScreenHandler extends ScreenHandler {
     private final Inventory inventory;
+    private int rocketEntityId;
 
     //This constructor gets called on the client when the server wants it to open the screenHandler,
     //The client will call the other constructor with an empty Inventory and the screenHandler will automatically
     //sync this empty inventory with the inventory on the server.
-    public BoxScreenHandler(int syncId, PlayerInventory playerInventory) {
+    public RocketScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
         this(syncId, playerInventory, new SimpleInventory(9));
+        rocketEntityId = buf.readInt();
     }
 
     //This constructor gets called from the BlockEntity on the server without calling the other constructor first, the server knows the inventory of the container
     //and can therefore directly provide it as an argument. This inventory will then be synced to the client.
-    public BoxScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
+    public RocketScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
         super(Spacepunk.BOX_SCREEN_HANDLER, syncId);
         checkSize(inventory, 9);
         this.inventory = inventory;
@@ -33,22 +36,23 @@ public class BoxScreenHandler extends ScreenHandler {
         int m;
         int l;
         //Our inventory
-        for (m = 0; m < 3; ++m) {
+        /*for (m = 0; m < 3; ++m) {
             for (l = 0; l < 3; ++l) {
                 addSlot(new Slot(inventory, l + m * 3, 62 + l * 18, 17 + m * 18));
             }
-        }
+        }*/
         //The player inventory
         for (m = 0; m < 3; ++m) {
             for (l = 0; l < 9; ++l) {
                 addSlot(new Slot(playerInventory, l + m * 9 + 9, 8 + l * 18, 84 + m * 18));
             }
         }
-        //The player Hotbar
+        //The player hotbar
         for (m = 0; m < 9; ++m) {
             addSlot(new Slot(playerInventory, m, 8 + m * 18, 142));
         }
 
+        rocketEntityId = 0;
     }
 
     @Override
@@ -80,6 +84,10 @@ public class BoxScreenHandler extends ScreenHandler {
         }
 
         return newStack;
+    }
+
+    public int getRocketEntityId(){
+        return rocketEntityId;
     }
 }
 
