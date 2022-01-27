@@ -1,5 +1,5 @@
 # Spacepunk
-Spacepunk is a Minecraft space exploration mod. This mod is being developed for Fabric and a Forge port is not coming anytime soon, if at all. Compatability with other space exploration mods currently isn't being considered.
+Spacepunk is a Minecraft space exploration mod. This mod is being developed for Fabric and a Forge port is not coming anytime soon, maybe when the mod is finished. Compatability with other space exploration mods currently isn't being considered.
 
 ### Goals
 #### Minimalism
@@ -11,12 +11,13 @@ I intend this mod to work well when it is the only mod installed. By that I mean
 
 ### Roadmap
 These are just some ideas for features, put in a rough order:
-1. Moon 
-2. Different Gravity
-3. No atmosphere
-4. Venus - Jungles and Swamps
-5. Mars - Desert-like, with villages and canals
-6. Satellite/orbit
-7. Europa - An ice layer with a thriving underwater ecosystem.
-8. Vulkan - An extremely firey planet, when you are out in the sun you get a heat-stroke status effect that does a numebr of bad things.
-9. Viridis - Extremely tall trees, low-gravity, breathable atmosphere, moss everywhere
+1. Moon.
+2. Different Gravity.
+3. No atmosphere.
+4. Venus - Jungles and Swamps; very foggy.
+5. Mars - Desert-like, with villages and canals.
+6. Europa - An ice layer with a thriving underwater ecosystem.
+7. Vulcan - An extremely firey planet, when you are out in the sun you get a heat-stroke status effect that does a numebr of bad things.
+8. Viridis - Extremely tall trees, low-gravity, breathable atmosphere, moss everywhere.
+9. Betara - Beta 1.7.3 terrain with the option for modern caves and worldheight available in config.
+10. Alphara - In a twin orbit with Betara, similar but for alpha terrain.
