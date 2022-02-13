@@ -35,25 +35,25 @@ public class SurfaceOreFeature extends OreFeature {
         StructureWorldAccess structureWorldAccess = context.getWorld();
         OreFeatureConfig oreFeatureConfig = context.getConfig();
         structureWorldAccess.setBlockState(blockPos, oreFeatureConfig.targets.get(0).state, 3);
-        float f = random.nextFloat() * (float)Math.PI;
-        float g = (float)oreFeatureConfig.size / 8.0f;
-        int i = MathHelper.ceil(((float)oreFeatureConfig.size / 16.0f * 2.0f + 1.0f) / 2.0f);
-        double d = (double)blockPos.getX() + Math.sin(f) * (double)g;
-        double e = (double)blockPos.getX() - Math.sin(f) * (double)g;
-        double h = (double)blockPos.getZ() + Math.cos(f) * (double)g;
-        double j = (double)blockPos.getZ() - Math.cos(f) * (double)g;
-        int k = 2;
-        double l = blockPos.getY() + random.nextInt(3) - 2;
-        double m = blockPos.getY() + random.nextInt(3) - 2;
-        int n = blockPos.getX() - MathHelper.ceil(g) - i;
-        int o = blockPos.getY() - 2 - i;
-        int p = blockPos.getZ() - MathHelper.ceil(g) - i;
-        int q = 2 * (MathHelper.ceil(g) + i);
-        int r = 2 * (2 + i);
+        float angle = random.nextFloat() * (float)Math.PI;
+        float xzScale = (float)oreFeatureConfig.size / 8.0f;
+        int magnitude = MathHelper.ceil(((float)oreFeatureConfig.size / 16.0f * 2.0f + 1.0f) / 2.0f);
+        double xEnd = (double)blockPos.getX() + Math.sin(angle) * (double)xzScale;
+        double xStart = (double)blockPos.getX() - Math.sin(angle) * (double)xzScale;
+        double zEnd = (double)blockPos.getZ() + Math.cos(angle) * (double)xzScale;
+        double zStart = (double)blockPos.getZ() - Math.cos(angle) * (double)xzScale;
+        int yScale = 2;
+        double yRand1 = blockPos.getY() + random.nextInt(3) - yScale;
+        double yRand2 = blockPos.getY() + random.nextInt(3) - yScale;
+        int n = blockPos.getX() - MathHelper.ceil(xzScale) - magnitude;
+        int o = blockPos.getY() - yScale - magnitude;
+        int p = blockPos.getZ() - MathHelper.ceil(xzScale) - magnitude;
+        int q = 2 * (MathHelper.ceil(xzScale) + magnitude);
+        int r = 2 * (2 + magnitude);
         for (int s = n; s <= n + q; ++s) {
             for (int t = p; t <= p + q; ++t) {
-                //if (o > structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, s, t)) continue;
-                return this.generateVeinPart(structureWorldAccess, random, oreFeatureConfig, d, e, h, j, l, m, n, o, p, q, r);
+                if (o > structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, s, t)) continue;
+                return this.generateVeinPart(structureWorldAccess, random, oreFeatureConfig, xEnd, xStart, zEnd, zStart, yRand1, yRand2, n, o, p, q, r);
             }
         }
         return false;
