@@ -1,0 +1,27 @@
+{
+  "config": {
+    "targets": [
+      {
+        "target": {
+          "block": "minecraft:air",
+          "predicate_type": "minecraft:block_match"
+        },
+        "state": {
+          "Name": "spacepunk:lunar_rock"
+        }
+      },
+      {
+        "target": {
+          "block": "spacepunk:lunar_soil",
+          "predicate_type": "minecraft:block_match"
+        },
+        "state": {
+          "Name": "spacepunk:lunar_rock"
+        }
+      }
+    ],
+    "size": 20,
+    "discard_chance_on_air_exposure": 0.0
+  },
+  "type": "spacepunk:surface_ore"
+}

@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class SpacepunkClient implements ClientModInitializer {
-    public static final EntityModelLayer MODEL_CUBE_LAYER = new EntityModelLayer(new Identifier(Spacepunk.MODID, "rocket"), "main");
+    public static final EntityModelLayer MODEL_CUBE_LAYER = new EntityModelLayer(new Identifier(Spacepunk.MOD_ID, "rocket"), "main");
     @Override
     public void onInitializeClient() {
         EntityRendererRegistry.register(Spacepunk.ROCKET_ENTITY_TYPE, RocketEntityRenderer::new);

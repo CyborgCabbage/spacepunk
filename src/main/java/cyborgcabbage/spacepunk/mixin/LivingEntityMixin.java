@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class LivingEntityMixin {
     @Inject(method="getPreferredEquipmentSlot",at=@At("HEAD"),cancellable = true)
     private static void inject(ItemStack stack, CallbackInfoReturnable<EquipmentSlot> cir){
-        if(stack.isOf(Spacepunk.ROCKET_NOSE_BLOCK.asItem())){
+        if(stack.isOf(Spacepunk.ROCKET_NOSE.asItem())){
             cir.setReturnValue(EquipmentSlot.HEAD);
         }
     }

@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 
 public class RocketScreen extends HandledScreen<RocketScreenHandler> {
     //A path to the gui texture. In this example we use the texture from the dispenser
-    private static final Identifier TEXTURE = new Identifier(Spacepunk.MODID, "textures/gui/rocket.png");
+    private static final Identifier TEXTURE = new Identifier(Spacepunk.MOD_ID, "textures/gui/rocket.png");
 
     public RocketScreen(RocketScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);

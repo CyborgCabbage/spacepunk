@@ -184,7 +184,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     */
     public void disassemble(boolean drop){
         if(drop){
-            world.spawnEntity(new ItemEntity(world,getX(),getY()+3.5,getZ(),new ItemStack(Spacepunk.ROCKET_NOSE_BLOCK),0,0,0));
+            world.spawnEntity(new ItemEntity(world,getX(),getY()+3.5,getZ(),new ItemStack(Spacepunk.ROCKET_NOSE),0,0,0));
             world.spawnEntity(new ItemEntity(world,getX(),getY()+2.5,getZ(),new ItemStack(Blocks.COPPER_BLOCK),0,0,0));
             world.spawnEntity(new ItemEntity(world,getX(),getY()+1.5,getZ(),new ItemStack(Blocks.COPPER_BLOCK),0,0,0));
             world.spawnEntity(new ItemEntity(world,getX(),getY()+0.5,getZ(),new ItemStack(Blocks.BLAST_FURNACE),0,0,0));

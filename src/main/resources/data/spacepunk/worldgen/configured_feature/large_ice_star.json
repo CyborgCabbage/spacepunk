@@ -1,0 +1,18 @@
+{
+  "type": "spacepunk:fractal_star",
+  "config": {
+    "block": {
+      "state": {
+        "Name": "minecraft:blue_ice"
+      },
+      "type": "minecraft:simple_state_provider"
+    },
+    "height": {
+      "type": "minecraft:uniform",
+      "value": {
+        "min_inclusive": 8,
+        "max_inclusive": 16
+      }
+    }
+  }
+}

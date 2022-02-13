@@ -1,4 +1,6 @@
 {
   "entity.spacepunk.rocket": "Rocket",
-  "block.spacepunk.rocket_nose": "Rocket Nose Cone"
+  "block.spacepunk.rocket_nose": "Rocket Nose Cone",
+  "block.spacepunk.lunar_soil": "Lunar Soil",
+  "block.spacepunk.lunar_rock": "Lunar Rock"
 }

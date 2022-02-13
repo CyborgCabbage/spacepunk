@@ -24,7 +24,7 @@ public class RocketEntityRenderer extends EntityRenderer<RocketEntity> {
 
     @Override
     public Identifier getTexture(RocketEntity entity) {
-        return new Identifier(Spacepunk.MODID, "textures/entity/rocket.png");
+        return new Identifier(Spacepunk.MOD_ID, "textures/entity/rocket.png");
     }
 
     @Override
