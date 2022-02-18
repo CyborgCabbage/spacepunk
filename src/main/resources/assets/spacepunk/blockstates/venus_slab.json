@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "spacepunk:block/venus_slab"
+    },
+    "type=double": {
+      "model": "spacepunk:block/venus_planks"
+    },
+    "type=top": {
+      "model": "spacepunk:block/venus_slab_top"
+    }
+  }
+}

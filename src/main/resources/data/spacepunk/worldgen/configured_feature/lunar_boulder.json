@@ -1,0 +1,34 @@
+{
+  "type": "spacepunk:boulder",
+  "config": {
+    "rule": {
+      "block": "minecraft:air",
+      "predicate_type": "minecraft:block_match"
+    },
+    "size": {
+      "type": "minecraft:uniform",
+      "value": {
+        "min_inclusive": 1,
+        "max_inclusive": 2
+      }
+    },
+    "block": {
+      "entries": [
+        {
+          "data": {
+            "Name": "minecraft:iron_ore"
+          },
+          "weight": 1
+        },
+        {
+          "data": {
+            "Name": "minecraft:stone"
+          },
+          "weight": 10
+        }
+      ],
+      "type": "minecraft:weighted_state_provider"
+    },
+    "planes": 0
+  }
+}

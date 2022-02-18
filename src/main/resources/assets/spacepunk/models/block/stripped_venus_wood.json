@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "spacepunk:block/stripped_venus_log",
+    "side": "spacepunk:block/stripped_venus_log"
+  }
+}

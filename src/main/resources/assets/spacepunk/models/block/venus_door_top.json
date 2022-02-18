@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_top",
+  "textures": {
+    "top": "spacepunk:block/venus_door_top",
+    "bottom": "spacepunk:block/venus_door_bottom"
+  }
+}

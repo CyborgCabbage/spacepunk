@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "spacepunk:venus_log",
+    "spacepunk:venus_wood",
+    "spacepunk:stripped_venus_log",
+    "spacepunk:stripped_venus_wood"
+  ]
+}

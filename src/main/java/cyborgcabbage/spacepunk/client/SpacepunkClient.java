@@ -20,6 +20,6 @@ public class SpacepunkClient implements ClientModInitializer {
     public void onInitializeClient() {
         EntityRendererRegistry.register(Spacepunk.ROCKET_ENTITY_TYPE, RocketEntityRenderer::new);
         EntityModelLayerRegistry.registerModelLayer(MODEL_CUBE_LAYER, RocketEntityModel::getTexturedModelData);
-        ScreenRegistry.register(Spacepunk.BOX_SCREEN_HANDLER, RocketScreen::new);
+        ScreenRegistry.register(Spacepunk.ROCKET_SCREEN_HANDLER, RocketScreen::new);
     }
 }

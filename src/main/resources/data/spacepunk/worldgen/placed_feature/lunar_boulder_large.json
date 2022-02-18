@@ -1,9 +1,9 @@
 {
-  "feature": "spacepunk:meteor",
+  "feature": "spacepunk:lunar_boulder_large",
   "placement": [
     {
-      "count": 1,
-      "type": "minecraft:count"
+      "chance": 6,
+      "type": "minecraft:rarity_filter"
     },
     {
       "type": "minecraft:in_square"
