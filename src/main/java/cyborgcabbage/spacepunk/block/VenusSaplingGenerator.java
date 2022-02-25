@@ -13,9 +13,9 @@ import java.util.Random;
 public class VenusSaplingGenerator extends SaplingGenerator {
     @Override
     protected ConfiguredFeature<?, ?> getTreeFeature(Random random, boolean bees) {
-        RegistryKey<ConfiguredFeature<?, ?>> key = RegistryKey.of(Registry.CONFIGURED_FEATURE_KEY,new Identifier(Spacepunk.MOD_ID,"venus_tree"));
+        /*RegistryKey<ConfiguredFeature<?, ?>> key = RegistryKey.of(Registry.CONFIGURED_FEATURE_KEY,new Identifier(Spacepunk.MOD_ID,"venus_tree"));
         DefaultedRegistry
-        Spacepunk.LOGGER.info(key.toString());
+        Spacepunk.LOGGER.info(key.toString());*/
         return TreeConfiguredFeatures.OAK;
     }
 }

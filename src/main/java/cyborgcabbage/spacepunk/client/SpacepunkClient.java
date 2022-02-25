@@ -3,6 +3,7 @@ package cyborgcabbage.spacepunk.client;
 import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.client.inventory.RocketScreen;
 import cyborgcabbage.spacepunk.client.render.entity.RocketEntityRenderer;
+import cyborgcabbage.spacepunk.client.render.entity.SulfurTntEntityRenderer;
 import cyborgcabbage.spacepunk.client.render.entity.model.RocketEntityModel;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
@@ -21,6 +22,7 @@ public class SpacepunkClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         EntityRendererRegistry.register(Spacepunk.ROCKET_ENTITY_TYPE, RocketEntityRenderer::new);
+        EntityRendererRegistry.register(Spacepunk.SULFUR_TNT_ENTITY_TYPE, SulfurTntEntityRenderer::new);
         EntityModelLayerRegistry.registerModelLayer(MODEL_CUBE_LAYER, RocketEntityModel::getTexturedModelData);
         ScreenRegistry.register(Spacepunk.ROCKET_SCREEN_HANDLER, RocketScreen::new);
         BlockRenderLayerMap.INSTANCE.putBlock(Spacepunk.VENUS_DOOR, RenderLayer.getCutout());

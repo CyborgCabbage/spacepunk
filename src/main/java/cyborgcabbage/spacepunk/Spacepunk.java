@@ -2,8 +2,10 @@ package cyborgcabbage.spacepunk;
 
 import cyborgcabbage.spacepunk.block.*;
 import cyborgcabbage.spacepunk.entity.RocketEntity;
+import cyborgcabbage.spacepunk.entity.SulfurTntEntity;
 import cyborgcabbage.spacepunk.feature.*;
 import cyborgcabbage.spacepunk.inventory.RocketScreenHandler;
+import cyborgcabbage.spacepunk.item.ExtraTallGrassBlockItem;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -36,11 +38,15 @@ public class Spacepunk implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	public static final EntityType<RocketEntity> ROCKET_ENTITY_TYPE = Registry.register(
-			Registry.ENTITY_TYPE,
-			new Identifier(MOD_ID, "rocket"),
-			FabricEntityTypeBuilder.create(SpawnGroup.MISC, RocketEntity::new).dimensions(EntityDimensions.fixed(1.0f, 3.0f)).build()
+		Registry.ENTITY_TYPE,
+		new Identifier(MOD_ID, "rocket"),
+		FabricEntityTypeBuilder.create(SpawnGroup.MISC, RocketEntity::new).dimensions(EntityDimensions.fixed(1.0f, 3.0f)).build()
 	);
-
+	public static final EntityType<SulfurTntEntity> SULFUR_TNT_ENTITY_TYPE = Registry.register(
+		Registry.ENTITY_TYPE,
+		new Identifier(MOD_ID, "sulfur_tnt"),
+		FabricEntityTypeBuilder.create(SpawnGroup.MISC, (EntityType.EntityFactory<SulfurTntEntity>)SulfurTntEntity::new).fireImmune().dimensions(EntityDimensions.fixed(0.98f, 0.98f)).trackRangeChunks(10).trackedUpdateRate(10).build()
+	);
 
 	public static final Block ROCKET_NOSE = new RocketNoseBlock(FabricBlockSettings.of(Material.METAL, MapColor.ORANGE).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER));
 	public static final ItemGroup SPACEPUNK_ITEM_GROUP = FabricItemGroupBuilder.build(
@@ -63,13 +69,18 @@ public class Spacepunk implements ModInitializer {
 	public static final Block VENUS_FENCE = new FenceBlock(FabricBlockSettings.of(Material.WOOD, VENUS_PLANKS.getDefaultMapColor()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD));
 	public static final Block STRIPPED_VENUS_LOG = new PillarBlock(FabricBlockSettings.of(Material.WOOD, MapColor.PALE_YELLOW).strength(2.0f).sounds(BlockSoundGroup.WOOD));
 	public static final Block STRIPPED_VENUS_WOOD = new PillarBlock(FabricBlockSettings.of(Material.WOOD, MapColor.PALE_YELLOW).strength(2.0f).sounds(BlockSoundGroup.WOOD));
+	public static final Block SULFUR_TNT = new SulfurTntBlock(FabricBlockSettings.of(Material.TNT).breakInstantly().sounds(BlockSoundGroup.GRASS));
+	public static final Block SULFUR = new Block(FabricBlockSettings.of(Material.AGGREGATE, MapColor.YELLOW).strength(0.5f).sounds(BlockSoundGroup.SAND));
+	public static final Block EXTRA_TALL_GRASS = new ExtraTallGrassBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS));
 
 	//public static final Block VENUS_SIGN = new SignBlock(FabricBlockSettings.of(Material.WOOD, MapColor.PALE_YELLOW).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), SignType.ACACIA); //TODO: figure out what SignType is
 	//public static final Block VENUS_WALL_SIGN = new WallSignBlock(FabricBlockSettings.of(Material.WOOD, MapColor.PALE_YELLOW).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD).dropsLike(VENUS_SIGN), SignType.ACACIA);
 	public static final Block VENUS_DOOR = new MyDoorBlock(FabricBlockSettings.of(Material.WOOD, VENUS_PLANKS.getDefaultMapColor()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque());
 	public static final Block VENUS_SAPLING = new MySaplingBlock(new VenusSaplingGenerator(), FabricBlockSettings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.GRASS));
+
 	//public static final Item VENUS_SIGN_ITEM = new SignItem(new FabricItemSettings().maxCount(16).group(ItemGroup.MISC), VENUS_SIGN, VENUS_WALL_SIGN);
 	public static final Item VENUS_DOOR_ITEM = new TallBlockItem(VENUS_DOOR, new FabricItemSettings().group(SPACEPUNK_ITEM_GROUP));
+	public static final Item EXTRA_TALL_GRASS_ITEM = new ExtraTallGrassBlockItem(EXTRA_TALL_GRASS, new Item.Settings().group(SPACEPUNK_ITEM_GROUP));
 
 	//public static final BoatEntity.Type VENUS_BOAT_TYPE = new BoatEntity.Type(VENUS_PLANKS,"venus");
 
@@ -81,7 +92,7 @@ public class Spacepunk implements ModInitializer {
 	static {
 		ROCKET_SCREEN_HANDLER = ScreenHandlerRegistry.registerExtended(new Identifier(MOD_ID, "rocket"), RocketScreenHandler::new);
 	}
-	
+
 	@Override
 	public void onInitialize() {
 		//Tech
@@ -106,12 +117,17 @@ public class Spacepunk implements ModInitializer {
 
 		registerBlockAndItem("venus_sapling", VENUS_SAPLING);
 
+		registerBlockAndItem("sulfur_tnt", SULFUR_TNT);
+		registerBlockAndItem("sulfur", SULFUR);
+
 		//Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "venus_sign"), VENUS_SIGN);
 		//Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "venus_wall_sign"), VENUS_WALL_SIGN);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "venus_door"), VENUS_DOOR);
+		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "extra_tall_grass"), EXTRA_TALL_GRASS);
 
 		//Registry.register(Registry.ITEM, new Identifier(MOD_ID, "venus_sign"), VENUS_SIGN_ITEM);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "venus_door"), VENUS_DOOR_ITEM);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "extra_tall_grass"), EXTRA_TALL_GRASS_ITEM);
 
 		Registry.register(Registry.FEATURE, new Identifier(MOD_ID, "stone_spiral"), new StoneSpiralFeature(DefaultFeatureConfig.CODEC));
 		Registry.register(Registry.FEATURE, new Identifier(MOD_ID, "fractal_star"), new FractalStarFeature(FractalStarFeatureConfig.CODEC));
