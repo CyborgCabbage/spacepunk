@@ -21,7 +21,7 @@ public class SulfurTntEntity extends Entity {
 
     public SulfurTntEntity(EntityType<SulfurTntEntity> type, World world) {
         super(type, world);
-        this.inanimate = true;
+        this.intersectionChecked = true;
     }
 
     public SulfurTntEntity(World world, double x, double y, double z, @Nullable LivingEntity igniter) {
