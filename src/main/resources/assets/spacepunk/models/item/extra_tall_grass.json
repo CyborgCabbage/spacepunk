@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "spacepunk:block/extra_tall_grass0"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "up=true": {
+      "model": "spacepunk:block/extra_tall_grass_top"
+    },
+    "up=false": {
+      "model": "spacepunk:block/extra_tall_grass_middle"
+    }
+  }
+}

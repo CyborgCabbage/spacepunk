@@ -2,6 +2,7 @@ package cyborgcabbage.spacepunk;
 
 import cyborgcabbage.spacepunk.block.*;
 import cyborgcabbage.spacepunk.entity.RocketEntity;
+import cyborgcabbage.spacepunk.entity.SulfurCreeperEntity;
 import cyborgcabbage.spacepunk.entity.SulfurTntEntity;
 import cyborgcabbage.spacepunk.feature.*;
 import cyborgcabbage.spacepunk.inventory.RocketScreenHandler;
@@ -11,23 +12,20 @@ import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.block.*;
-import net.minecraft.block.sapling.SpruceSaplingGenerator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.*;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SignType;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
 import org.slf4j.Logger;
@@ -47,11 +45,19 @@ public class Spacepunk implements ModInitializer {
 		new Identifier(MOD_ID, "sulfur_tnt"),
 		FabricEntityTypeBuilder.create(SpawnGroup.MISC, (EntityType.EntityFactory<SulfurTntEntity>)SulfurTntEntity::new).fireImmune().dimensions(EntityDimensions.fixed(0.98f, 0.98f)).trackRangeChunks(10).trackedUpdateRate(10).build()
 	);
+	public static final EntityType<SulfurCreeperEntity> SULFUR_CREEPER_ENTITY_TYPE = Registry.register(
+			Registry.ENTITY_TYPE,
+			new Identifier(MOD_ID, "sulfur_creeper"),
+			FabricEntityTypeBuilder.createLiving()
+					.spawnGroup(SpawnGroup.MONSTER)
+					.entityFactory(SulfurCreeperEntity::new)
+					.dimensions(EntityDimensions.fixed(0.6f, 1.7f))
+					.trackRangeChunks(8)
+					.build()
+	);
 
 	public static final Block ROCKET_NOSE = new RocketNoseBlock(FabricBlockSettings.of(Material.METAL, MapColor.ORANGE).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER));
-	public static final ItemGroup SPACEPUNK_ITEM_GROUP = FabricItemGroupBuilder.build(
-			new Identifier(MOD_ID, "spacepunk"),
-			() -> new ItemStack(ROCKET_NOSE));
+	public static final ItemGroup SPACEPUNK_ITEM_GROUP = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "spacepunk"), () -> new ItemStack(ROCKET_NOSE));
 	//Moon
 	public static final Block LUNAR_SOIL = new Block(FabricBlockSettings.of(Material.SOIL, MapColor.LIGHT_GRAY).strength(0.5f).sounds(BlockSoundGroup.GRAVEL));
 	public static final Block LUNAR_ROCK = new Block(FabricBlockSettings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(1.5f, 6.0f));
@@ -95,6 +101,7 @@ public class Spacepunk implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		FabricDefaultAttributeRegistry.register(SULFUR_CREEPER_ENTITY_TYPE, SulfurCreeperEntity.createSulfurCreeperAttributes());
 		//Tech
 		registerBlockAndItem("rocket_nose", ROCKET_NOSE);
 		//Moon

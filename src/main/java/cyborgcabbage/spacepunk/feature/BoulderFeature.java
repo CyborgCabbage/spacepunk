@@ -1,7 +1,6 @@
 package cyborgcabbage.spacepunk.feature;
 
 import com.mojang.serialization.Codec;
-import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.util.TangentPlane;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;

@@ -1,11 +1,7 @@
 package cyborgcabbage.spacepunk.block;
 
-import cyborgcabbage.spacepunk.Spacepunk;
 import net.minecraft.block.sapling.SaplingGenerator;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.*;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.TreeConfiguredFeatures;
 
 import java.util.Random;

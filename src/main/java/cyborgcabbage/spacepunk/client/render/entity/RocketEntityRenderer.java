@@ -19,7 +19,7 @@ public class RocketEntityRenderer extends EntityRenderer<RocketEntity> {
 
     public RocketEntityRenderer(EntityRendererFactory.Context ctx) {
         super(ctx);
-        this.model = new RocketEntityModel(ctx.getPart(SpacepunkClient.MODEL_CUBE_LAYER));
+        this.model = new RocketEntityModel(ctx.getPart(SpacepunkClient.MODEL_ROCKET_LAYER));
     }
 
     @Override
