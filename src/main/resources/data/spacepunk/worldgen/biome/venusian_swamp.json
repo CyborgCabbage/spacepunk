@@ -6,12 +6,12 @@
       "block_search_extent": 8,
       "offset": 2.0
     },
-    "grass_color_modifier": "swamp",
     "sky_color": 16049520,
     "fog_color": 15261600,
     "foliage_color": 6975545,
-    "water_color": 6388580,
-    "water_fog_color": 2302743
+    "water_color": 4143986,
+    "water_fog_color": 1312051,
+    "grass_color": 10500608
   },
   "carvers": {
     "air": [
@@ -81,7 +81,6 @@
       "minecraft:red_mushroom_swamp",
       "minecraft:brown_mushroom_normal",
       "minecraft:red_mushroom_normal",
-      "minecraft:patch_sugar_cane_swamp",
       "minecraft:patch_pumpkin",
       "minecraft:seagrass_swamp"
     ],
