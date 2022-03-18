@@ -209,8 +209,9 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     */
     public void launch(PlayerEntity player){
         if(!world.isClient){
-            if(dataTracker.get(FUEL) >= FUEL_CAPACITY) {
+            if( dataTracker.get(FUEL) >= FUEL_CAPACITY) {
                 player.sendMessage(new TranslatableText("entity.spacepunk.rocket.launch"), true);
+                dataTracker.set(FUEL, 0);
                 dataTracker.set(ENGINE_ON, true);
             }else{
                 player.sendMessage(new TranslatableText("entity.spacepunk.rocket.fuel"), true);
@@ -221,8 +222,8 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     /*
     Disassemble
     */
-    public void disassemble(boolean drop){
-        if(drop){
+    public void disassemble(boolean dropItems){
+        if(dropItems){
             world.spawnEntity(new ItemEntity(world,getX(),getY()+3.5,getZ(),new ItemStack(Spacepunk.ROCKET_NOSE),0,0,0));
             world.spawnEntity(new ItemEntity(world,getX(),getY()+2.5,getZ(),new ItemStack(Blocks.COPPER_BLOCK),0,0,0));
             world.spawnEntity(new ItemEntity(world,getX(),getY()+1.5,getZ(),new ItemStack(Blocks.COPPER_BLOCK),0,0,0));

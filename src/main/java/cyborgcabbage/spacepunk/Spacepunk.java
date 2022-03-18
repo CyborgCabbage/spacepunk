@@ -63,7 +63,7 @@ public class Spacepunk implements ModInitializer {
 	public static final Block LUNAR_ROCK = new Block(FabricBlockSettings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(1.5f, 6.0f));
 	//Venus
 	public static final Block VENUS_WOOD = new PillarBlock(FabricBlockSettings.of(Material.WOOD, MapColor.DIRT_BROWN).strength(2.0f).sounds(BlockSoundGroup.WOOD));
-	public static final Block VENUS_LEAVES = new LeavesBlock(FabricBlockSettings.of(Material.LEAVES).strength(0.2f).ticksRandomly().sounds(BlockSoundGroup.GRASS).nonOpaque().allowsSpawning((a,b,c,d)->false).suffocates((a,b,c)->false).blockVision((a,b,c)->false));;
+	public static final Block VENUS_LEAVES = new LeavesBlock(FabricBlockSettings.of(Material.LEAVES).strength(0.2f).ticksRandomly().sounds(BlockSoundGroup.GRASS).nonOpaque().allowsSpawning((a,b,c,d)->false).suffocates((a,b,c)->false).blockVision((a,b,c)->false));
 	public static final Block VENUS_PLANKS = new Block(FabricBlockSettings.of(Material.WOOD, MapColor.PALE_YELLOW).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD));
 	public static final Block VENUS_SLAB = new SlabBlock(FabricBlockSettings.of(Material.WOOD, MapColor.ORANGE).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD));
 	public static final Block VENUS_STAIRS = new MyStairsBlock(VENUS_PLANKS.getDefaultState(), FabricBlockSettings.copy(VENUS_PLANKS));
@@ -147,15 +147,17 @@ public class Spacepunk implements ModInitializer {
 			server.execute(() -> {
 				// Everything in this lambda is run on the render thread
 				Entity entity = player.world.getEntityById(rocketEntityId);
-				if(entity instanceof RocketEntity rocketEntity) {
-					switch (actionId) {
-						case RocketEntity.ACTION_DISASSEMBLE -> rocketEntity.disassemble(true);
-						case RocketEntity.ACTION_LAUNCH -> rocketEntity.launch(player);
+				if(player.distanceTo(entity) < 10.f) {
+					if (entity instanceof RocketEntity rocketEntity) {
+						switch (actionId) {
+							case RocketEntity.ACTION_DISASSEMBLE -> rocketEntity.disassemble(true);
+							case RocketEntity.ACTION_LAUNCH -> rocketEntity.launch(player);
 
-						default -> LOGGER.error("Rocket Action Packet: Unexpected value " + actionId);
+							default -> LOGGER.error("Rocket Action Packet: Unexpected value " + actionId);
+						}
+					} else {
+						LOGGER.error("Rocket Action Packet: Could not find relevant RocketEntity");
 					}
-				}else{
-					LOGGER.error("Rocket Action Packet: Could not find relevant RocketEntity");
 				}
 			});
 		});
