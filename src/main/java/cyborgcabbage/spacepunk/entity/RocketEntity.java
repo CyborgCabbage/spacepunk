@@ -128,7 +128,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
         }else if(heldStack.isOf(Items.BUCKET) && fuelLevel > 0){
             if (!world.isClient) {
                 player.setStackInHand(hand, ItemUsage.exchangeStack(heldStack, player, new ItemStack(Items.LAVA_BUCKET)));
-                player.incrementStat(Stats.USED.getOrCreateStat(Items.LAVA_BUCKET));
+                player.incrementStat(Stats.USED.getOrCreateStat(Items.BUCKET));
                 world.playSound(null, getBlockPos(), SoundEvents.ITEM_BUCKET_FILL_LAVA, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 dataTracker.set(FUEL,fuelLevel-1);
             }

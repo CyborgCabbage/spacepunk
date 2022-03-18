@@ -33,8 +33,6 @@ public class RocketScreenHandler extends ScreenHandler {
 
         //This will place the slot in the correct locations for a 3x3 Grid. The slots exist on both server and client!
         //This will not render the background of the slots however, this is the Screens job
-        int m;
-        int l;
         //Our inventory
         /*for (m = 0; m < 3; ++m) {
             for (l = 0; l < 3; ++l) {
@@ -42,13 +40,13 @@ public class RocketScreenHandler extends ScreenHandler {
             }
         }*/
         //The player inventory
-        for (m = 0; m < 3; ++m) {
-            for (l = 0; l < 9; ++l) {
+        for (int m = 0; m < 3; ++m) {
+            for (int l = 0; l < 9; ++l) {
                 addSlot(new Slot(playerInventory, l + m * 9 + 9, 8 + l * 18, 84 + m * 18));
             }
         }
         //The player hotbar
-        for (m = 0; m < 9; ++m) {
+        for (int m = 0; m < 9; ++m) {
             addSlot(new Slot(playerInventory, m, 8 + m * 18, 142));
         }
 
