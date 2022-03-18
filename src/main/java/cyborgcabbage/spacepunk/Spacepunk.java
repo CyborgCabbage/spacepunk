@@ -150,7 +150,7 @@ public class Spacepunk implements ModInitializer {
 				if(entity instanceof RocketEntity rocketEntity) {
 					switch (actionId) {
 						case RocketEntity.ACTION_DISASSEMBLE -> rocketEntity.disassemble(true);
-						case RocketEntity.ACTION_LAUNCH -> rocketEntity.launch();
+						case RocketEntity.ACTION_LAUNCH -> rocketEntity.launch(player);
 
 						default -> LOGGER.error("Rocket Action Packet: Unexpected value " + actionId);
 					}

@@ -1,5 +1,7 @@
 {
   "entity.spacepunk.rocket": "Rocket",
+  "entity.spacepunk.rocket.launch": "Blast off!",
+  "entity.spacepunk.rocket.fuel": "Not enough fuel.",
 
   "block.spacepunk.rocket_nose": "Rocket Nose Cone",
 

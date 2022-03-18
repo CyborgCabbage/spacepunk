@@ -13,7 +13,10 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -21,6 +24,10 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -36,8 +43,10 @@ import java.util.Objects;
 public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory, ImplementedInventory {
     public static final int ACTION_DISASSEMBLE = 0;
     public static final int ACTION_LAUNCH = 1;
+    private static final int FUEL_CAPACITY = 3;
 
-    private static final TrackedData<Boolean> ENGINE_ON = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> ENGINE_ON = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Integer> FUEL = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
     public RocketEntity(EntityType<?> type, World world) {
         super(type, world);
@@ -46,18 +55,21 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     @Override
     protected void initDataTracker() {
         this.dataTracker.startTracking(ENGINE_ON, false);
+        this.dataTracker.startTracking(FUEL, 0);
     }
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
         Inventories.readNbt(nbt, items);
         this.dataTracker.set(ENGINE_ON, nbt.getBoolean("EngineOn"));
+        this.dataTracker.set(FUEL, nbt.getInt("Fuel"));
     }
 
     @Override
     protected void writeCustomDataToNbt(NbtCompound nbt) {
         Inventories.writeNbt(nbt, items);
         nbt.putBoolean("EngineOn", this.dataTracker.get(ENGINE_ON));
+        nbt.putInt("FUel", this.dataTracker.get(FUEL));
     }
 
     @Override
@@ -103,6 +115,26 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     */
     @Override
     public ActionResult interact(PlayerEntity player, Hand hand) {
+        ItemStack heldStack = player.getStackInHand(hand);
+        int fuelLevel = dataTracker.get(FUEL);
+        if(heldStack.isOf(Items.LAVA_BUCKET) && fuelLevel < FUEL_CAPACITY){
+            if (!world.isClient) {
+                player.setStackInHand(hand, ItemUsage.exchangeStack(heldStack, player, new ItemStack(Items.BUCKET)));
+                player.incrementStat(Stats.USED.getOrCreateStat(Items.LAVA_BUCKET));
+                world.playSound(null, getBlockPos(), SoundEvents.ITEM_BUCKET_EMPTY_LAVA, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                dataTracker.set(FUEL,fuelLevel+1);
+            }
+            return ActionResult.success(world.isClient);
+        }else if(heldStack.isOf(Items.BUCKET) && fuelLevel > 0){
+            if (!world.isClient) {
+                player.setStackInHand(hand, ItemUsage.exchangeStack(heldStack, player, new ItemStack(Items.LAVA_BUCKET)));
+                player.incrementStat(Stats.USED.getOrCreateStat(Items.LAVA_BUCKET));
+                world.playSound(null, getBlockPos(), SoundEvents.ITEM_BUCKET_FILL_LAVA, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                dataTracker.set(FUEL,fuelLevel-1);
+            }
+            return ActionResult.success(world.isClient);
+        }
+
         if (player.shouldCancelInteraction() || Objects.equals(getFirstPassenger(), player)) {
             return menuInteraction(player, hand);
         }
@@ -175,8 +207,15 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     /*
     Launch
     */
-    public void launch(){
-        dataTracker.set(ENGINE_ON, true);
+    public void launch(PlayerEntity player){
+        if(!world.isClient){
+            if(dataTracker.get(FUEL) >= FUEL_CAPACITY) {
+                player.sendMessage(new TranslatableText("entity.spacepunk.rocket.launch"), true);
+                dataTracker.set(ENGINE_ON, true);
+            }else{
+                player.sendMessage(new TranslatableText("entity.spacepunk.rocket.fuel"), true);
+            }
+        }
     }
 
     /*
