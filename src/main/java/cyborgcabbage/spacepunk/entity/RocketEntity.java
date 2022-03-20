@@ -24,6 +24,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -51,21 +52,24 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory, ImplementedInventory {
-
     public static final int STATE_IDLE = 0;
     public static final int STATE_GOING_UP = 1;
     public static final int STATE_WAITING = 2;
 
     public static final int ACTION_DISASSEMBLE = 0;
     public static final int ACTION_LAUNCH = 1;
+    public static final int ACTION_CHANGE_TARGET = 2;
 
-    private static final int FUEL_CAPACITY = 3;
+    private static final int FUEL_CAPACITY = 10;
+
     private static final int TELEPORT_HEIGHT = 0;
 
     private static final TrackedData<Integer> TRAVEL_STATE = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> FUEL = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
     private UUID passengerUuid;
+
+    private int targetDimensionIndex = 0;
 
     public RocketEntity(EntityType<?> type, World world) {
         super(type, world);
@@ -84,6 +88,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
         dataTracker.set(FUEL, nbt.getInt("Fuel"));
         if(nbt.contains("Passenger"))
             passengerUuid = nbt.getUuid("Passenger");
+        targetDimensionIndex = nbt.getInt("TargetDimensionIndex");
     }
 
     @Override
@@ -93,6 +98,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
         nbt.putInt("Fuel", dataTracker.get(FUEL));
         if(passengerUuid != null)
             nbt.putUuid("Passenger", passengerUuid);
+        nbt.putInt("TargetDimensionIndex", targetDimensionIndex);
     }
 
     @Override
@@ -152,7 +158,9 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
         }
 
         if (player.shouldCancelInteraction() || Objects.equals(getFirstPassenger(), player)) {
-            return menuInteraction(player, hand);
+            if(dataTracker.get(TRAVEL_STATE) != STATE_GOING_UP) {
+                return menuInteraction(player, hand);
+            }
         }
         return ridingInteraction(player, hand);
     }
@@ -169,7 +177,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new RocketScreenHandler(syncId, inv, this);
+        return new RocketScreenHandler(syncId, inv, this, propertyDelegate);
     }
     @Override
     public Text getDisplayName() {
@@ -208,24 +216,20 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
         if(!world.isClient()){
             //Teleport
             if(getY() > world.getTopY() + TELEPORT_HEIGHT && dataTracker.get(TRAVEL_STATE) == STATE_GOING_UP){
-                RegistryKey<World> targetDimensionKey;
-                if(world.getRegistryKey().equals(Spacepunk.MOON)){
-                    targetDimensionKey = World.OVERWORLD;
-                }else{
-                    targetDimensionKey = Spacepunk.MOON;
-                }
+                RegistryKey<World> targetDimensionKey = Spacepunk.TARGET_DIMENSION_LIST.get(targetDimensionIndex);
                 savePassenger();
                 dataTracker.set(TRAVEL_STATE, STATE_WAITING);
                 ServerWorld destination = world.getServer().getWorld(targetDimensionKey);
-                for(Entity passenger: getPassengerList())
-                    FabricDimensions.teleport(passenger, destination, new TeleportTarget(passenger.getPos(), Vec3d.ZERO, passenger.getYaw(), passenger.getPitch()));
-                FabricDimensions.teleport(this, destination, new TeleportTarget(getPos(), Vec3d.ZERO, getYaw(), getPitch()));
+                Vec3d pos = new Vec3d(getPos().x, destination.getTopY() + TELEPORT_HEIGHT, getPos().z);
+                for(Entity passenger: getPassengerList()) {
+                    FabricDimensions.teleport(passenger, destination, new TeleportTarget(pos, Vec3d.ZERO, passenger.getYaw(), passenger.getPitch()));
+                }
+                FabricDimensions.teleport(this, destination, new TeleportTarget(pos, Vec3d.ZERO, getYaw(), getPitch()));
             }
             //Land
             if(dataTracker.get(TRAVEL_STATE) == STATE_WAITING){
                 //Pickup passenger after teleport
                 if(passengerUuid != null){
-                    //Search for passenger
                     PlayerEntity player = world.getPlayerByUuid(passengerUuid);
                     if(player != null){
                         player.startRiding(this);
@@ -261,14 +265,22 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     }
 
     public void launch(PlayerEntity player){
-        if(!world.isClient){
-            if( dataTracker.get(FUEL) >= FUEL_CAPACITY) {
-                player.sendMessage(new TranslatableText("entity.spacepunk.rocket.launch"), true);
-                dataTracker.set(FUEL, 0);
-                dataTracker.set(TRAVEL_STATE, STATE_GOING_UP);
-            }else{
+        if(!world.isClient) {
+            if (dataTracker.get(FUEL) < FUEL_CAPACITY){
                 player.sendMessage(new TranslatableText("entity.spacepunk.rocket.fuel"), true);
+                return;
             }
+            if(!Spacepunk.TARGET_DIMENSION_LIST.contains(world.getRegistryKey())){
+                player.sendMessage(new TranslatableText("entity.spacepunk.rocket.wrong_dimension"), true);
+                return;
+            }
+            if(Spacepunk.TARGET_DIMENSION_LIST.get(targetDimensionIndex).equals(world.getRegistryKey())){
+                player.sendMessage(new TranslatableText("entity.spacepunk.rocket.in_dimension"), true);
+                return;
+            }
+            player.sendMessage(new TranslatableText("entity.spacepunk.rocket.launch"), true);
+            dataTracker.set(FUEL, 0);
+            dataTracker.set(TRAVEL_STATE, STATE_GOING_UP);
         }
     }
 
@@ -282,9 +294,32 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
         discard();
     }
 
+    public void changeTarget(){
+        targetDimensionIndex++;
+        targetDimensionIndex %= Spacepunk.TARGET_DIMENSION_LIST.size();
+    }
+
 
     @Override
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
         buf.writeInt(getId());
     }
+
+    private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
+        @Override
+        public int get(int index) {
+            return targetDimensionIndex;
+        }
+
+        @Override
+        public void set(int index, int value) {
+            targetDimensionIndex = value;
+        }
+
+        //this is supposed to return the amount of integers you have in your delegate, in our example only one
+        @Override
+        public int size() {
+            return 1;
+        }
+    };
 }

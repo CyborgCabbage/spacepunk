@@ -161,7 +161,7 @@ public class Spacepunk implements ModInitializer {
 						switch (actionId) {
 							case RocketEntity.ACTION_DISASSEMBLE -> rocketEntity.disassemble(true);
 							case RocketEntity.ACTION_LAUNCH -> rocketEntity.launch(player);
-
+							case RocketEntity.ACTION_CHANGE_TARGET -> rocketEntity.changeTarget();
 							default -> LOGGER.error("Rocket Action Packet: Unexpected value " + actionId);
 						}
 					} else {
