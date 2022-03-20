@@ -22,7 +22,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.*;
 import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
@@ -34,12 +33,16 @@ import net.minecraft.world.gen.feature.OreFeatureConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+
 public class Spacepunk implements ModInitializer {
 	public static final String MOD_ID = "spacepunk";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	public static final RegistryKey<World> VENUS = RegistryKey.of(Registry.WORLD_KEY, new Identifier(MOD_ID, "venus"));
+	public static ArrayList<RegistryKey<World>> TARGET_DIMENSION_LIST = new ArrayList<>();
+
 	public static final RegistryKey<World> MOON = RegistryKey.of(Registry.WORLD_KEY, new Identifier(MOD_ID, "moon"));
+	public static final RegistryKey<World> VENUS = RegistryKey.of(Registry.WORLD_KEY, new Identifier(MOD_ID, "venus"));
 
 	public static final EntityType<RocketEntity> ROCKET_ENTITY_TYPE = Registry.register(
 		Registry.ENTITY_TYPE,
@@ -167,7 +170,9 @@ public class Spacepunk implements ModInitializer {
 				}
 			});
 		});
-
+		TARGET_DIMENSION_LIST.add(World.OVERWORLD);
+		TARGET_DIMENSION_LIST.add(MOON);
+		TARGET_DIMENSION_LIST.add(VENUS);
 	}
 	private void registerBlockAndItem(String name, Block block){
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, name), block);
