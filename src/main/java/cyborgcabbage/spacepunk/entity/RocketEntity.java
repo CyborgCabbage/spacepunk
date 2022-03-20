@@ -3,6 +3,7 @@ package cyborgcabbage.spacepunk.entity;
 import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.inventory.ImplementedInventory;
 import cyborgcabbage.spacepunk.inventory.RocketScreenHandler;
+import net.fabricmc.fabric.api.dimension.v1.FabricDimensions;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
@@ -18,12 +19,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -34,19 +37,35 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import org.apache.logging.log4j.core.jmx.Server;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory, ImplementedInventory {
+
+    public static final int STATE_IDLE = 0;
+    public static final int STATE_GOING_UP = 1;
+    public static final int STATE_WAITING = 2;
+
     public static final int ACTION_DISASSEMBLE = 0;
     public static final int ACTION_LAUNCH = 1;
-    private static final int FUEL_CAPACITY = 3;
 
-    private static final TrackedData<Boolean> ENGINE_ON = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final int FUEL_CAPACITY = 3;
+    private static final int TELEPORT_HEIGHT = 0;
+
+    private static final TrackedData<Integer> TRAVEL_STATE = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> FUEL = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.INTEGER);
+
+    private UUID passengerUuid;
 
     public RocketEntity(EntityType<?> type, World world) {
         super(type, world);
@@ -54,22 +73,26 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
 
     @Override
     protected void initDataTracker() {
-        this.dataTracker.startTracking(ENGINE_ON, false);
+        this.dataTracker.startTracking(TRAVEL_STATE, 0);
         this.dataTracker.startTracking(FUEL, 0);
     }
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
         Inventories.readNbt(nbt, items);
-        this.dataTracker.set(ENGINE_ON, nbt.getBoolean("EngineOn"));
-        this.dataTracker.set(FUEL, nbt.getInt("Fuel"));
+        dataTracker.set(TRAVEL_STATE, nbt.getInt("TravelState"));
+        dataTracker.set(FUEL, nbt.getInt("Fuel"));
+        if(nbt.contains("Passenger"))
+            passengerUuid = nbt.getUuid("Passenger");
     }
 
     @Override
     protected void writeCustomDataToNbt(NbtCompound nbt) {
         Inventories.writeNbt(nbt, items);
-        nbt.putBoolean("EngineOn", this.dataTracker.get(ENGINE_ON));
-        nbt.putInt("FUel", this.dataTracker.get(FUEL));
+        nbt.putInt("TravelState", dataTracker.get(TRAVEL_STATE));
+        nbt.putInt("Fuel", dataTracker.get(FUEL));
+        if(passengerUuid != null)
+            nbt.putUuid("Passenger", passengerUuid);
     }
 
     @Override
@@ -77,25 +100,20 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
         return new EntitySpawnS2CPacket(this);
     }
 
-    /*
-    Makes it so that it has a solid collision box, just like a boat or shulker.
-    */
+
+    //Makes it so that it has a solid collision box, just like a boat or shulker.
     @Override
     public boolean isCollidable() {
         return true;
     }
 
-    /*
-    Allows the entity to be collided with (like when the player clicks on it or tries to place a block that overlaps it).
-    */
+    // Allows the entity to be collided with (like when the player clicks on it or tries to place a block that overlaps it).
     @Override
     public boolean collides() {
         return !isRemoved();
     }
     
-    /*
-    Allow the rocket to be destroyed by hitting in creative mode.
-    */
+    // Allow the rocket to be destroyed by hitting in creative mode.
     @Override
     public boolean damage(DamageSource source, float amount) {
         if (isInvulnerableTo(source)) {
@@ -110,9 +128,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
         }
         return true;
     }
-    /*
-    Rocket Interaction
-    */
+    // Rocket Interaction
     @Override
     public ActionResult interact(PlayerEntity player, Hand hand) {
         ItemStack heldStack = player.getStackInHand(hand);
@@ -141,9 +157,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
         return ridingInteraction(player, hand);
     }
 
-    /*
-    Rocket Menu
-    */
+    // Rocket Menu
     private ActionResult menuInteraction(PlayerEntity player, Hand hand){
         player.openHandledScreen(this);
         if (!player.world.isClient) {
@@ -162,9 +176,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
         return new TranslatableText(getType().getTranslationKey());
     }
 
-    /*
-    Inventory
-    */
+    // Inventory
     private final DefaultedList<ItemStack> items = DefaultedList.ofSize(9, ItemStack.EMPTY);
 
     @Override
@@ -172,9 +184,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
         return items;
     }
 
-    /*
-    Ride Rocket
-    */
+    // Ride Rocket
     private ActionResult ridingInteraction(PlayerEntity player, Hand hand){
         if (!this.world.isClient) {
             return player.startRiding(this) ? ActionResult.CONSUME : ActionResult.PASS;
@@ -185,43 +195,83 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
         return 1.0;
     }
 
-    /*
-    Tick
-    */
     @Override
     public void baseTick() {
-        //Setup
-        boolean engineOn = dataTracker.get(ENGINE_ON);
         //Movement
-        double gravity = -0.08;
-        if(engineOn) gravity = 0.01;
-        addVelocity(0.0, gravity, 0.0);
-        move(MovementType.SELF,getVelocity());
+        moveRocket();
         //Particles
-        if(world.isClient() && engineOn){
+        if(world.isClient() && dataTracker.get(TRAVEL_STATE) == STATE_GOING_UP){
             Vec3d vel = getVelocity();
             world.addParticle(ParticleTypes.SMOKE, getX(), getY(), getZ(), vel.x, vel.y-1.0, vel.z);
         }
         super.baseTick();
+        if(!world.isClient()){
+            //Teleport
+            if(getY() > world.getTopY() + TELEPORT_HEIGHT && dataTracker.get(TRAVEL_STATE) == STATE_GOING_UP){
+                RegistryKey<World> targetDimensionKey;
+                if(world.getRegistryKey().equals(Spacepunk.MOON)){
+                    targetDimensionKey = World.OVERWORLD;
+                }else{
+                    targetDimensionKey = Spacepunk.MOON;
+                }
+                savePassenger();
+                dataTracker.set(TRAVEL_STATE, STATE_WAITING);
+                ServerWorld destination = world.getServer().getWorld(targetDimensionKey);
+                for(Entity passenger: getPassengerList())
+                    FabricDimensions.teleport(passenger, destination, new TeleportTarget(passenger.getPos(), Vec3d.ZERO, passenger.getYaw(), passenger.getPitch()));
+                FabricDimensions.teleport(this, destination, new TeleportTarget(getPos(), Vec3d.ZERO, getYaw(), getPitch()));
+            }
+            //Land
+            if(dataTracker.get(TRAVEL_STATE) == STATE_WAITING){
+                //Pickup passenger after teleport
+                if(passengerUuid != null){
+                    //Search for passenger
+                    PlayerEntity player = world.getPlayerByUuid(passengerUuid);
+                    if(player != null){
+                        player.startRiding(this);
+                        passengerUuid = null;
+                    }
+                }else{
+                    dataTracker.set(TRAVEL_STATE, STATE_IDLE);
+                }
+            }
+        }
     }
-    /*
-    Launch
-    */
+
+    private void savePassenger(){
+        Entity passenger = getFirstPassenger();
+        if(passenger instanceof PlayerEntity player)
+            passengerUuid = player.getUuid();
+    }
+
+    private void moveRocket() {
+        switch (dataTracker.get(TRAVEL_STATE)) {
+            case STATE_IDLE -> {
+                addVelocity(0.0, -0.08, 0.0);
+                move(MovementType.SELF, getVelocity());
+            }
+            case STATE_GOING_UP -> {
+                addVelocity(0.0, 0.01, 0.0);
+                move(MovementType.SELF, getVelocity());
+            }
+            case STATE_WAITING -> {
+                setVelocity(0.0, 0.0, 0.0);
+            }
+        }
+    }
+
     public void launch(PlayerEntity player){
         if(!world.isClient){
             if( dataTracker.get(FUEL) >= FUEL_CAPACITY) {
                 player.sendMessage(new TranslatableText("entity.spacepunk.rocket.launch"), true);
                 dataTracker.set(FUEL, 0);
-                dataTracker.set(ENGINE_ON, true);
+                dataTracker.set(TRAVEL_STATE, STATE_GOING_UP);
             }else{
                 player.sendMessage(new TranslatableText("entity.spacepunk.rocket.fuel"), true);
             }
         }
     }
 
-    /*
-    Disassemble
-    */
     public void disassemble(boolean dropItems){
         if(dropItems){
             world.spawnEntity(new ItemEntity(world,getX(),getY()+3.5,getZ(),new ItemStack(Spacepunk.ROCKET_NOSE),0,0,0));
