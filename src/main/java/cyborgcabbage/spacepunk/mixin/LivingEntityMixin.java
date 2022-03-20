@@ -1,7 +1,7 @@
 package cyborgcabbage.spacepunk.mixin;
 
 import cyborgcabbage.spacepunk.Spacepunk;
-import cyborgcabbage.spacepunk.util.GravityMap;
+import cyborgcabbage.spacepunk.util.PlanetProperties;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -26,7 +26,7 @@ public class LivingEntityMixin {
         LivingEntity that = (LivingEntity)(Object)this;
         World world = that.world;
         if(world != null) {
-            return x * GravityMap.getGravity(world.getRegistryKey().getValue());
+            return x * PlanetProperties.getGravity(world.getRegistryKey().getValue());
         }
         return x;
     }
