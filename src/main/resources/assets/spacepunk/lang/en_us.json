@@ -32,5 +32,7 @@
   "block.spacepunk.sulfur_tnt": "Sulfuric TNT",
   "block.spacepunk.sulfur": "Venusian Sulfur",
   "block.spacepunk.extra_tall_grass": "Extra Tall Grass",
-  "itemGroup.spacepunk.spacepunk": "Spacepunk"
+  "itemGroup.spacepunk.spacepunk": "Spacepunk",
+
+  "death.attack.vacuum": "%1$s suffocated in the vacuum of space"
 }
