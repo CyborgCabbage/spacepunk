@@ -3,6 +3,7 @@ package cyborgcabbage.spacepunk.entity;
 import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.inventory.ImplementedInventory;
 import cyborgcabbage.spacepunk.inventory.RocketScreenHandler;
+import cyborgcabbage.spacepunk.util.PlanetProperties;
 import net.fabricmc.fabric.api.dimension.v1.FabricDimensions;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.Blocks;
@@ -238,6 +239,11 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
         }
     }
 
+    @Override
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
+        return false;
+    }
+
     private void savePassenger(){
         Entity passenger = getFirstPassenger();
         if(passenger instanceof PlayerEntity player)
@@ -245,9 +251,11 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     }
 
     private void moveRocket() {
+        setVelocity(0.0, getVelocity().y, 0.0);
+        double gravity = -0.08 * PlanetProperties.getGravity(world.getRegistryKey().getValue());
         switch (dataTracker.get(TRAVEL_STATE)) {
             case STATE_IDLE -> {
-                addVelocity(0.0, -0.08, 0.0);
+                addVelocity(0.0, gravity, 0.0);
                 move(MovementType.SELF, getVelocity());
             }
             case STATE_GOING_UP -> {
