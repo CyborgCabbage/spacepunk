@@ -14,7 +14,7 @@ import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
 public class SulfurTntEntity extends Entity {
-    private static final TrackedData<Integer> FUSE = DataTracker.registerData(TntEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> FUSE = DataTracker.registerData(SulfurTntEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final int DEFAULT_FUSE = 80;
     @Nullable
     private LivingEntity causingEntity;
@@ -25,7 +25,7 @@ public class SulfurTntEntity extends Entity {
     }
 
     public SulfurTntEntity(World world, double x, double y, double z, @Nullable LivingEntity igniter) {
-        this(Spacepunk.SULFUR_TNT_ENTITY_TYPE, world);
+        this(Spacepunk.SULFUR_TNT_ENTITY, world);
         this.setPosition(x, y, z);
         double d = world.random.nextDouble() * 6.2831854820251465;
         this.setVelocity(-Math.sin(d) * 0.02, 0.2f, -Math.cos(d) * 0.02);

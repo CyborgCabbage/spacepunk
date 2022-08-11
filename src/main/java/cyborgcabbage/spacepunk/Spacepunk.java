@@ -12,7 +12,6 @@ import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.block.*;
@@ -35,26 +34,9 @@ public class Spacepunk implements ModInitializer {
 	public static final String MOD_ID = "spacepunk";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	public static final EntityType<RocketEntity> ROCKET_ENTITY_TYPE = Registry.register(
-		Registry.ENTITY_TYPE,
-		new Identifier(MOD_ID, "rocket"),
-		FabricEntityTypeBuilder.create(SpawnGroup.MISC, RocketEntity::new).dimensions(EntityDimensions.fixed(1.0f, 3.0f)).build()
-	);
-	public static final EntityType<SulfurTntEntity> SULFUR_TNT_ENTITY_TYPE = Registry.register(
-		Registry.ENTITY_TYPE,
-		new Identifier(MOD_ID, "sulfur_tnt"),
-		FabricEntityTypeBuilder.create(SpawnGroup.MISC, (EntityType.EntityFactory<SulfurTntEntity>)SulfurTntEntity::new).fireImmune().dimensions(EntityDimensions.fixed(0.98f, 0.98f)).trackRangeChunks(10).trackedUpdateRate(10).build()
-	);
-	public static final EntityType<SulfurCreeperEntity> SULFUR_CREEPER_ENTITY_TYPE = Registry.register(
-			Registry.ENTITY_TYPE,
-			new Identifier(MOD_ID, "sulfur_creeper"),
-			FabricEntityTypeBuilder.createLiving()
-					.spawnGroup(SpawnGroup.MONSTER)
-					.entityFactory(SulfurCreeperEntity::new)
-					.dimensions(EntityDimensions.fixed(0.6f, 1.7f))
-					.trackRangeChunks(8)
-					.build()
-	);
+	public static EntityType<RocketEntity> ROCKET_ENTITY;
+	public static EntityType<SulfurTntEntity> SULFUR_TNT_ENTITY;
+	public static EntityType<SulfurCreeperEntity> SULFUR_CREEPER_ENTITY;
 
 	public static final Block ROCKET_NOSE = new RocketNoseBlock(FabricBlockSettings.of(Material.METAL, MapColor.ORANGE).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER));
 	public static final ItemGroup SPACEPUNK_ITEM_GROUP = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "spacepunk"), () -> new ItemStack(ROCKET_NOSE));
@@ -66,11 +48,11 @@ public class Spacepunk implements ModInitializer {
 	public static final Block VENUS_LEAVES = new LeavesBlock(FabricBlockSettings.of(Material.LEAVES).strength(0.2f).ticksRandomly().sounds(BlockSoundGroup.GRASS).nonOpaque().allowsSpawning((a,b,c,d)->false).suffocates((a,b,c)->false).blockVision((a,b,c)->false));;
 	public static final Block VENUS_PLANKS = new Block(FabricBlockSettings.of(Material.WOOD, MapColor.PALE_YELLOW).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD));
 	public static final Block VENUS_SLAB = new SlabBlock(FabricBlockSettings.of(Material.WOOD, MapColor.ORANGE).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD));
-	public static final Block VENUS_STAIRS = new MyStairsBlock(VENUS_PLANKS.getDefaultState(), FabricBlockSettings.copy(VENUS_PLANKS));
+	public static final Block VENUS_STAIRS = new StairsBlock(VENUS_PLANKS.getDefaultState(), FabricBlockSettings.copy(VENUS_PLANKS));
 	public static final Block VENUS_LOG = new PillarBlock(FabricBlockSettings.of(Material.WOOD, state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? MapColor.PALE_YELLOW : MapColor.SPRUCE_BROWN).strength(2.0f).sounds(BlockSoundGroup.WOOD));
-	public static final Block VENUS_PRESSURE_PLATE = new MyPressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, FabricBlockSettings.of(Material.WOOD, VENUS_PLANKS.getDefaultMapColor()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD));
-	public static final Block VENUS_TRAPDOOR = new MyTrapdoorBlock(FabricBlockSettings.of(Material.WOOD, MapColor.PALE_YELLOW).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning((a, b, c, d)->false));
-	public static final Block VENUS_BUTTON = new MyWoodenButtonBlock(FabricBlockSettings.of(Material.DECORATION).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD));
+	public static final Block VENUS_PRESSURE_PLATE = new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, FabricBlockSettings.of(Material.WOOD, VENUS_PLANKS.getDefaultMapColor()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD));
+	public static final Block VENUS_TRAPDOOR = new TrapdoorBlock(FabricBlockSettings.of(Material.WOOD, MapColor.PALE_YELLOW).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning((a, b, c, d)->false));
+	public static final Block VENUS_BUTTON = new WoodenButtonBlock(FabricBlockSettings.of(Material.DECORATION).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD));
 	public static final Block VENUS_FENCE_GATE = new FenceGateBlock(FabricBlockSettings.of(Material.WOOD, VENUS_PLANKS.getDefaultMapColor()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD));
 	public static final Block VENUS_FENCE = new FenceBlock(FabricBlockSettings.of(Material.WOOD, VENUS_PLANKS.getDefaultMapColor()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD));
 	public static final Block STRIPPED_VENUS_LOG = new PillarBlock(FabricBlockSettings.of(Material.WOOD, MapColor.PALE_YELLOW).strength(2.0f).sounds(BlockSoundGroup.WOOD));
@@ -81,8 +63,8 @@ public class Spacepunk implements ModInitializer {
 
 	//public static final Block VENUS_SIGN = new SignBlock(FabricBlockSettings.of(Material.WOOD, MapColor.PALE_YELLOW).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), SignType.ACACIA); //TODO: figure out what SignType is
 	//public static final Block VENUS_WALL_SIGN = new WallSignBlock(FabricBlockSettings.of(Material.WOOD, MapColor.PALE_YELLOW).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD).dropsLike(VENUS_SIGN), SignType.ACACIA);
-	public static final Block VENUS_DOOR = new MyDoorBlock(FabricBlockSettings.of(Material.WOOD, VENUS_PLANKS.getDefaultMapColor()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque());
-	public static final Block VENUS_SAPLING = new MySaplingBlock(new VenusSaplingGenerator(), FabricBlockSettings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.GRASS));
+	public static final Block VENUS_DOOR = new DoorBlock(FabricBlockSettings.of(Material.WOOD, VENUS_PLANKS.getDefaultMapColor()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque());
+	public static final Block VENUS_SAPLING = new SaplingBlock(new VenusSaplingGenerator(), FabricBlockSettings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.GRASS));
 
 	//public static final Item VENUS_SIGN_ITEM = new SignItem(new FabricItemSettings().maxCount(16).group(ItemGroup.MISC), VENUS_SIGN, VENUS_WALL_SIGN);
 	public static final Item VENUS_DOOR_ITEM = new TallBlockItem(VENUS_DOOR, new FabricItemSettings().group(SPACEPUNK_ITEM_GROUP));
@@ -101,7 +83,36 @@ public class Spacepunk implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		FabricDefaultAttributeRegistry.register(SULFUR_CREEPER_ENTITY_TYPE, SulfurCreeperEntity.createSulfurCreeperAttributes());
+		ROCKET_ENTITY = Registry.register(
+				Registry.ENTITY_TYPE,
+				new Identifier(MOD_ID, "rocket"),
+				FabricEntityTypeBuilder.create()
+						.entityFactory(RocketEntity::new)
+						.dimensions(EntityDimensions.fixed(1.0f, 3.0f))
+						.build()
+		);
+		SULFUR_TNT_ENTITY = Registry.register(
+				Registry.ENTITY_TYPE,
+				new Identifier(MOD_ID, "sulfur_tnt"),
+				FabricEntityTypeBuilder.create()
+						.entityFactory((EntityType.EntityFactory<SulfurTntEntity>)SulfurTntEntity::new)
+						.fireImmune()
+						.dimensions(EntityDimensions.fixed(0.98f, 0.98f))
+						.trackRangeChunks(10)
+						.trackedUpdateRate(10)
+						.build()
+		);
+		SULFUR_CREEPER_ENTITY = Registry.register(
+				Registry.ENTITY_TYPE,
+				new Identifier(MOD_ID, "sulfur_creeper"),
+				FabricEntityTypeBuilder.createLiving()
+						.spawnGroup(SpawnGroup.MONSTER)
+						.entityFactory(SulfurCreeperEntity::new)
+						.defaultAttributes(SulfurCreeperEntity::createSulfurCreeperAttributes)
+						.dimensions(EntityDimensions.fixed(0.6f, 1.7f))
+						.trackRangeChunks(8)
+						.build()
+		);
 		//Tech
 		registerBlockAndItem("rocket_nose", ROCKET_NOSE);
 		//Moon

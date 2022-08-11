@@ -221,7 +221,7 @@ public class SulfurCreeperEntity extends HostileEntity {
             //this.discard();
             //this.spawnEffectsCloud();
             this.dataTracker.set(IGNITED, false);
-            this.damage(DamageSource.GENERIC, 4.0f);
+            this.damage(DamageSource.GENERIC, 7.0f);
         }
         this.currentFuseTime = 0;
     }

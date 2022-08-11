@@ -35,7 +35,7 @@ public class RocketNoseBlock extends Block implements Wearable {
         if(world.getBlockState(d1).isOf(Blocks.COPPER_BLOCK)){
             if(world.getBlockState(d2).isOf(Blocks.COPPER_BLOCK)){
                 if(world.getBlockState(d3).isOf(Blocks.BLAST_FURNACE)){
-                    RocketEntity rocketEntity = Spacepunk.ROCKET_ENTITY_TYPE.create(world);
+                    RocketEntity rocketEntity = Spacepunk.ROCKET_ENTITY.create(world);
                     if(rocketEntity != null) {
                         world.setBlockState(d0, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
                         world.setBlockState(d1, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);

@@ -26,9 +26,9 @@ public class SpacepunkClient implements ClientModInitializer {
     public static final EntityModelLayer MODEL_SULFUR_CREEPER_LAYER = new EntityModelLayer(new Identifier(Spacepunk.MOD_ID, "sulfur_creeper"), "main");
     @Override
     public void onInitializeClient() {
-        EntityRendererRegistry.register(Spacepunk.ROCKET_ENTITY_TYPE, RocketEntityRenderer::new);
-        EntityRendererRegistry.register(Spacepunk.SULFUR_TNT_ENTITY_TYPE, SulfurTntEntityRenderer::new);
-        EntityRendererRegistry.register(Spacepunk.SULFUR_CREEPER_ENTITY_TYPE, SulfurCreeperEntityRenderer::new);
+        EntityRendererRegistry.register(Spacepunk.ROCKET_ENTITY, RocketEntityRenderer::new);
+        EntityRendererRegistry.register(Spacepunk.SULFUR_TNT_ENTITY, SulfurTntEntityRenderer::new);
+        EntityRendererRegistry.register(Spacepunk.SULFUR_CREEPER_ENTITY, SulfurCreeperEntityRenderer::new);
         EntityModelLayerRegistry.registerModelLayer(MODEL_ROCKET_LAYER, RocketEntityModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(MODEL_SULFUR_CREEPER_LAYER, SulfurCreeperEntityModel::getTexturedModelData);
         ScreenRegistry.register(Spacepunk.ROCKET_SCREEN_HANDLER, RocketScreen::new);

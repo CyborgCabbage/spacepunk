@@ -1,6 +1,8 @@
 package cyborgcabbage.spacepunk.feature;
 
 import com.mojang.serialization.Codec;
+import cyborgcabbage.spacepunk.Spacepunk;
+import cyborgcabbage.spacepunk.util.SpaceRandom;
 import cyborgcabbage.spacepunk.util.TangentPlane;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -28,13 +30,13 @@ public class BoulderFeature extends Feature<BoulderFeatureConfig> {
         for(int i = 0; i < planeCount; i++){
             planeList.add(new TangentPlane(random, size));
         }
-
+        Spacepunk.LOGGER.info(""+SpaceRandom.d(random, 1.0, 2.0));
         for(int i = -size; i <= size; i++){
             for(int j = -size; j <= size; j++) {
                 for (int k = -size; k <= size; k++) {
-                    double x = i+random.nextFloat()-0.5f;
-                    double y = j+random.nextFloat()-0.5f;
-                    double z = k+random.nextFloat()-0.5f;
+                    double x = i+SpaceRandom.f(random,-0.5f,0.5f);
+                    double y = j+SpaceRandom.f(random,-0.5f,0.5f);
+                    double z = k+SpaceRandom.f(random,-0.5f,0.5f);
                     if(x*x+y*y+z*z < size*size+1) {
                         boolean success = true;
                         for(TangentPlane plane: planeList){
