@@ -22,7 +22,6 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
@@ -92,7 +91,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
         if (world.isClient || isRemoved()) {
             return true;
         }
-        emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
+        emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
         if (source.getAttacker() instanceof PlayerEntity player) {
             if(player.getAbilities().creativeMode && !player.equals(getFirstPassenger())) disassemble(false);
         }
@@ -127,7 +126,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     }
     @Override
     public Text getDisplayName() {
-        return new TranslatableText(getType().getTranslationKey());
+        return Text.translatable(getType().getTranslationKey());
     }
 
     /*

@@ -3,13 +3,12 @@ package cyborgcabbage.spacepunk.feature;
 import com.mojang.serialization.Codec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.OreFeature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
 import net.minecraft.world.gen.feature.util.FeatureContext;
-
-import java.util.Random;
 
 public class SurfaceOreFeature extends OreFeature {
     public SurfaceOreFeature(Codec<OreFeatureConfig> codec) {

@@ -3,6 +3,7 @@ package cyborgcabbage.spacepunk.client.render.entity;
 import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.entity.SulfurTntEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.TntMinecartEntityRenderer;
@@ -13,9 +14,12 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
 
 public class SulfurTntEntityRenderer extends EntityRenderer<SulfurTntEntity> {
+    private final BlockRenderManager blockRenderManager;
+
     public SulfurTntEntityRenderer(EntityRendererFactory.Context context) {
         super(context);
         this.shadowRadius = 0.5f;
+        this.blockRenderManager = context.getBlockRenderManager();
     }
 
     @Override
@@ -34,7 +38,7 @@ public class SulfurTntEntityRenderer extends EntityRenderer<SulfurTntEntity> {
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90.0f));
         matrixStack.translate(-0.5, -0.5, 0.5);
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0f));
-        TntMinecartEntityRenderer.renderFlashingBlock(Spacepunk.SULFUR_TNT.getDefaultState(), matrixStack, vertexConsumerProvider, i, j / 5 % 2 == 0);
+        TntMinecartEntityRenderer.renderFlashingBlock(this.blockRenderManager, Spacepunk.SULFUR_TNT.getDefaultState(), matrixStack, vertexConsumerProvider, i, j / 5 % 2 == 0);
         matrixStack.pop();
         super.render(entity, f, g, matrixStack, vertexConsumerProvider, i);
     }

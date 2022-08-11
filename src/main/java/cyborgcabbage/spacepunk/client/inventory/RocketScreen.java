@@ -12,7 +12,6 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -47,7 +46,7 @@ public class RocketScreen extends HandledScreen<RocketScreenHandler> {
         // Center the title
         titleX = (backgroundWidth - textRenderer.getWidth(title)) / 2;
         int buttonWidth = 70;
-        this.addDrawableChild(new ButtonWidget(x+(backgroundWidth-buttonWidth)/2, y+19 , buttonWidth, 20, new LiteralText("Launch"), button -> {
+        this.addDrawableChild(new ButtonWidget(x+(backgroundWidth-buttonWidth)/2, y+19 , buttonWidth, 20, Text.literal("Launch"), button -> {
             PacketByteBuf buf = PacketByteBufs.create();
             buf.writeInt(handler.getRocketEntityId());
             buf.writeInt(RocketEntity.ACTION_LAUNCH);
@@ -56,7 +55,7 @@ public class RocketScreen extends HandledScreen<RocketScreenHandler> {
             this.client.setScreen(null);
             this.client.mouse.lockCursor();
         }));
-        this.addDrawableChild(new ButtonWidget(x+(backgroundWidth-buttonWidth)/2, y+19+25 , buttonWidth, 20, new LiteralText("Disassemble"), button -> {
+        this.addDrawableChild(new ButtonWidget(x+(backgroundWidth-buttonWidth)/2, y+19+25 , buttonWidth, 20, Text.literal("Disassemble"), button -> {
             PacketByteBuf buf = PacketByteBufs.create();
             buf.writeInt(handler.getRocketEntityId());
             buf.writeInt(RocketEntity.ACTION_DISASSEMBLE);

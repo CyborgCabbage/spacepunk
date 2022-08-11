@@ -46,7 +46,7 @@ public class FractalStarFeature extends Feature<FractalStarFeatureConfig> {
         //Create child spikes/branches
         int maxBranchLength = (length-2)*2/3;
         if(maxBranchLength > 0) {
-            int branchLength = Math.max(1, context.getRandom().nextInt(maxBranchLength-1,maxBranchLength+1));
+            int branchLength = Math.max(1, context.getRandom().nextBetween(maxBranchLength-1,maxBranchLength+1));
             boolean result = createBranch(blockSet, branchLength, Direction.NORTH, origin.offset(dir, length), context, depth - 1);
             result |= createBranch(blockSet, branchLength, Direction.SOUTH, origin.offset(dir, length), context, depth - 1);
             result |= createBranch(blockSet, branchLength, Direction.EAST, origin.offset(dir, length), context, depth - 1);
@@ -76,7 +76,7 @@ public class FractalStarFeature extends Feature<FractalStarFeatureConfig> {
         }
         int maxBranchLength = (length-2)*2/3;
         if(maxBranchLength > 0) {
-            int branchLength = Math.max(1, context.getRandom().nextInt(maxBranchLength-1,maxBranchLength+1));
+            int branchLength = Math.max(1, context.getRandom().nextBetween(maxBranchLength-1,maxBranchLength+1));
             boolean result;
             result = checkBranchObstructed(branchLength, Direction.NORTH, origin.offset(dir, length), context, depth - 1);
             result |= checkBranchObstructed(branchLength, Direction.SOUTH, origin.offset(dir, length), context, depth - 1);

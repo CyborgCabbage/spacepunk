@@ -24,7 +24,7 @@ public class ExtraTallGrassBlock extends PlantBlock {
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, net.minecraft.util.math.random.Random random) {
         if (!state.canPlaceAt(world, pos)) {
             world.breakBlock(pos, true);
         }
@@ -47,11 +47,6 @@ public class ExtraTallGrassBlock extends PlantBlock {
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(UP);
-    }
-
-    @Override
-    public AbstractBlock.OffsetType getOffsetType() {
-        return AbstractBlock.OffsetType.XZ;
     }
 
     @Override
