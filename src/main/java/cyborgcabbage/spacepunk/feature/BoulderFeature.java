@@ -30,7 +30,6 @@ public class BoulderFeature extends Feature<BoulderFeatureConfig> {
         for(int i = 0; i < planeCount; i++){
             planeList.add(new TangentPlane(random, size));
         }
-        Spacepunk.LOGGER.info(""+SpaceRandom.d(random, 1.0, 2.0));
         for(int i = -size; i <= size; i++){
             for(int j = -size; j <= size; j++) {
                 for (int k = -size; k <= size; k++) {
