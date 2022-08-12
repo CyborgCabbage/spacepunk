@@ -1,5 +1,13 @@
 {
   "entity.spacepunk.rocket": "Rocket",
+  "entity.spacepunk.rocket.launch": "Blast off!",
+  "entity.spacepunk.rocket.fuel": "Not enough fuel!",
+  "entity.spacepunk.rocket.wrong_dimension": "Cannot launch from this dimension!",
+  "entity.spacepunk.rocket.in_dimension": "Already at destination!",
+
+  "dimension.minecraft:overworld": "Earth",
+  "dimension.spacepunk:moon": "The Moon",
+  "dimension.spacepunk:venus": "Venus",
 
   "block.spacepunk.rocket_nose": "Rocket Nose Cone",
 
@@ -24,5 +32,7 @@
   "block.spacepunk.sulfur_tnt": "Sulfuric TNT",
   "block.spacepunk.sulfur": "Venusian Sulfur",
   "block.spacepunk.extra_tall_grass": "Extra Tall Grass",
-  "itemGroup.spacepunk.spacepunk": "Spacepunk"
+  "itemGroup.spacepunk.spacepunk": "Spacepunk",
+
+  "death.attack.vacuum": "%1$s suffocated in the vacuum of space"
 }

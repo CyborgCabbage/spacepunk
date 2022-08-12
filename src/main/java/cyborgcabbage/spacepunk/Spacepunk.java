@@ -25,14 +25,23 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+
 public class Spacepunk implements ModInitializer {
 	public static final String MOD_ID = "spacepunk";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+
+	public static ArrayList<RegistryKey<World>> TARGET_DIMENSION_LIST = new ArrayList<>();
+
+	public static final RegistryKey<World> MOON = RegistryKey.of(Registry.WORLD_KEY, new Identifier(MOD_ID, "moon"));
+	public static final RegistryKey<World> VENUS = RegistryKey.of(Registry.WORLD_KEY, new Identifier(MOD_ID, "venus"));
 
 	public static EntityType<RocketEntity> ROCKET_ENTITY;
 	public static EntityType<SulfurTntEntity> SULFUR_TNT_ENTITY;
@@ -45,7 +54,7 @@ public class Spacepunk implements ModInitializer {
 	public static final Block LUNAR_ROCK = new Block(FabricBlockSettings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(1.5f, 6.0f));
 	//Venus
 	public static final Block VENUS_WOOD = new PillarBlock(FabricBlockSettings.of(Material.WOOD, MapColor.DIRT_BROWN).strength(2.0f).sounds(BlockSoundGroup.WOOD));
-	public static final Block VENUS_LEAVES = new LeavesBlock(FabricBlockSettings.of(Material.LEAVES).strength(0.2f).ticksRandomly().sounds(BlockSoundGroup.GRASS).nonOpaque().allowsSpawning((a,b,c,d)->false).suffocates((a,b,c)->false).blockVision((a,b,c)->false));;
+	public static final Block VENUS_LEAVES = new LeavesBlock(FabricBlockSettings.of(Material.LEAVES).strength(0.2f).ticksRandomly().sounds(BlockSoundGroup.GRASS).nonOpaque().allowsSpawning((a,b,c,d)->false).suffocates((a,b,c)->false).blockVision((a,b,c)->false));
 	public static final Block VENUS_PLANKS = new Block(FabricBlockSettings.of(Material.WOOD, MapColor.PALE_YELLOW).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD));
 	public static final Block VENUS_SLAB = new SlabBlock(FabricBlockSettings.of(Material.WOOD, MapColor.ORANGE).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD));
 	public static final Block VENUS_STAIRS = new StairsBlock(VENUS_PLANKS.getDefaultState(), FabricBlockSettings.copy(VENUS_PLANKS));
@@ -158,18 +167,23 @@ public class Spacepunk implements ModInitializer {
 			server.execute(() -> {
 				// Everything in this lambda is run on the render thread
 				Entity entity = player.world.getEntityById(rocketEntityId);
-				if(entity instanceof RocketEntity rocketEntity) {
-					switch (actionId) {
-						case RocketEntity.ACTION_DISASSEMBLE -> rocketEntity.disassemble(true);
-						case RocketEntity.ACTION_LAUNCH -> rocketEntity.launch();
-
-						default -> LOGGER.error("Rocket Action Packet: Unexpected value " + actionId);
+				if(player.distanceTo(entity) < 10.f) {
+					if (entity instanceof RocketEntity rocketEntity) {
+						switch (actionId) {
+							case RocketEntity.ACTION_DISASSEMBLE -> rocketEntity.disassemble(true);
+							case RocketEntity.ACTION_LAUNCH -> rocketEntity.launch(player);
+							case RocketEntity.ACTION_CHANGE_TARGET -> rocketEntity.changeTarget();
+							default -> LOGGER.error("Rocket Action Packet: Unexpected value " + actionId);
+						}
+					} else {
+						LOGGER.error("Rocket Action Packet: Could not find relevant RocketEntity");
 					}
-				}else{
-					LOGGER.error("Rocket Action Packet: Could not find relevant RocketEntity");
 				}
 			});
 		});
+		TARGET_DIMENSION_LIST.add(World.OVERWORLD);
+		TARGET_DIMENSION_LIST.add(MOON);
+		TARGET_DIMENSION_LIST.add(VENUS);
 	}
 	private void registerBlockAndItem(String name, Block block){
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, name), block);

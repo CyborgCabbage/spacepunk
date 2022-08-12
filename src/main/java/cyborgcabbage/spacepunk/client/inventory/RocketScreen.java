@@ -13,15 +13,19 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 public class RocketScreen extends HandledScreen<RocketScreenHandler> {
     //A path to the gui texture. In this example we use the texture from the dispenser
     private static final Identifier TEXTURE = new Identifier(Spacepunk.MOD_ID, "textures/gui/rocket.png");
-
+    RocketScreenHandler screenHandler;
     public RocketScreen(RocketScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
+        screenHandler = handler;
     }
+
+    private ButtonWidget buttonChangeTarget;
 
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
@@ -35,6 +39,8 @@ public class RocketScreen extends HandledScreen<RocketScreenHandler> {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        if(buttonChangeTarget != null)
+            buttonChangeTarget.setMessage(new TranslatableText("dimension."+Spacepunk.TARGET_DIMENSION_LIST.get(screenHandler.getTargetDimensionIndex()).getValue()));
         renderBackground(matrices);
         super.render(matrices, mouseX, mouseY, delta);
         drawMouseoverTooltip(matrices, mouseX, mouseY);
@@ -64,14 +70,14 @@ public class RocketScreen extends HandledScreen<RocketScreenHandler> {
             this.client.setScreen(null);
             this.client.mouse.lockCursor();
         }));
+        buttonChangeTarget = new ButtonWidget(x+(backgroundWidth-buttonWidth)/2, y+19+50 , buttonWidth, 20, new LiteralText(""), button -> {
+            PacketByteBuf buf = PacketByteBufs.create();
+            buf.writeInt(handler.getRocketEntityId());
+            buf.writeInt(RocketEntity.ACTION_CHANGE_TARGET);
+            ClientPlayNetworking.send(Spacepunk.ROCKET_ACTION_PACKET_ID, buf);
+        });
+        this.addDrawableChild(buttonChangeTarget);
     }
-
-    /*@Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        super.mouseClicked(mouseX, mouseY, button);
-        Spacepunk.LOGGER.info(this.x+", "+this.y+" - "+button);
-        return true;
-    }*/
 }
 
 
