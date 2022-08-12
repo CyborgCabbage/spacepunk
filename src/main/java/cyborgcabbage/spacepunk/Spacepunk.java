@@ -1,9 +1,9 @@
 package cyborgcabbage.spacepunk;
 
 import cyborgcabbage.spacepunk.block.*;
-import cyborgcabbage.spacepunk.entity.RocketEntity;
 import cyborgcabbage.spacepunk.entity.SulfurCreeperEntity;
 import cyborgcabbage.spacepunk.entity.SulfurTntEntity;
+import cyborgcabbage.spacepunk.entity.RocketEntity;
 import cyborgcabbage.spacepunk.feature.*;
 import cyborgcabbage.spacepunk.inventory.RocketScreenHandler;
 import cyborgcabbage.spacepunk.item.ExtraTallGrassBlockItem;
