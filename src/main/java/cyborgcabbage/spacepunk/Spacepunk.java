@@ -13,8 +13,10 @@ import cyborgcabbage.spacepunk.feature.BoulderFeatureConfig;
 import cyborgcabbage.spacepunk.feature.FractalStarFeature;
 import cyborgcabbage.spacepunk.feature.FractalStarFeatureConfig;
 import cyborgcabbage.spacepunk.inventory.RocketScreenHandler;
+import cyborgcabbage.spacepunk.item.BottledAirItem;
 import cyborgcabbage.spacepunk.item.ExtraTallGrassBlockItem;
 import cyborgcabbage.spacepunk.util.MyDamageSource;
+import cyborgcabbage.spacepunk.util.PlanetProperties;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -22,10 +24,7 @@ import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.block.*;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.*;
 import net.minecraft.sound.BlockSoundGroup;
@@ -87,7 +86,7 @@ public class Spacepunk implements ModInitializer {
 	public static final Item EXTRA_TALL_GRASS_ITEM = new ExtraTallGrassBlockItem(EXTRA_TALL_GRASS, new Item.Settings().group(MY_ITEM_GROUP));
 
 	public static final Item SPACESUIT_HELMET = new ArmorItem(CustomArmorMaterial.SPACESUIT, EquipmentSlot.HEAD, new FabricItemSettings().group(MY_ITEM_GROUP));
-	public static final Item BOTTLED_AIR = new Item(new FabricItemSettings().group(MY_ITEM_GROUP));
+	public static final Item BOTTLED_AIR = new BottledAirItem(new FabricItemSettings().maxDamage(180).group(MY_ITEM_GROUP));
 
 	//public static final BoatEntity.Type VENUS_BOAT_TYPE = new BoatEntity.Type(VENUS_PLANKS,"venus");
 
@@ -178,5 +177,12 @@ public class Spacepunk implements ModInitializer {
 
 	public static Identifier id(String s){
 		return new Identifier(MOD_ID, s);
+	}
+
+	public static boolean inVacuum(Entity entity){
+		if (entity.world == null) return false;
+		if (PlanetProperties.hasAtmosphere(entity.world.getRegistryKey().getValue())) return false;
+		if (entity.getVehicle() instanceof RocketEntity) return false;
+		return true;
 	}
 }

@@ -9,6 +9,9 @@
   "dimension.spacepunk:moon": "The Moon",
   "dimension.spacepunk:venus": "Venus",
 
+  "item.spacepunk.copper_spacesuit_helmet" : "Spacesuit Helmet",
+  "item.spacepunk.bottled_air" : "Bottled Air",
+
   "block.spacepunk.rocket_nose": "Rocket Nose Cone",
 
   "block.spacepunk.lunar_soil": "Lunar Soil",
