@@ -2,7 +2,6 @@ package cyborgcabbage.spacepunk.feature;
 
 import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.Heightmap;
@@ -10,7 +9,6 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
 import java.util.HashSet;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FractalStarFeature extends Feature<FractalStarFeatureConfig> {
     public FractalStarFeature(Codec<FractalStarFeatureConfig> configCodec) {
@@ -56,38 +54,6 @@ public class FractalStarFeature extends Feature<FractalStarFeatureConfig> {
             return result;
         }
         return false;
-    }
-
-    private boolean checkBranchObstructed(int length, Direction dir, BlockPos origin, FeatureContext<FractalStarFeatureConfig> context, int depth){
-        if(depth < 0) return false;
-        FractalStarFeatureConfig config = context.getConfig();
-        BlockPos o = origin.offset(dir,2);
-        BlockPos e = origin.offset(dir,length);
-        BlockBox blockBox = new BlockBox(o.getX(),o.getY(),o.getZ(),e.getX(),e.getY(),e.getZ());
-        blockBox.expand(1);
-        AtomicBoolean obstructed = new AtomicBoolean(false);
-        blockBox.forEachVertex((blockPos) -> {
-            if(!context.getWorld().getBlockState(blockPos).isAir()){
-                obstructed.set(true);
-            }
-        });
-        if(obstructed.get()){
-            return true;
-        }
-        int maxBranchLength = (length-2)*2/3;
-        if(maxBranchLength > 0) {
-            int branchLength = Math.max(1, context.getRandom().nextBetween(maxBranchLength-1,maxBranchLength+1));
-            boolean result;
-            result = checkBranchObstructed(branchLength, Direction.NORTH, origin.offset(dir, length), context, depth - 1);
-            result |= checkBranchObstructed(branchLength, Direction.SOUTH, origin.offset(dir, length), context, depth - 1);
-            result |= checkBranchObstructed(branchLength, Direction.EAST, origin.offset(dir, length), context, depth - 1);
-            result |= checkBranchObstructed(branchLength, Direction.WEST, origin.offset(dir, length), context, depth - 1);
-            result |= checkBranchObstructed(branchLength, Direction.UP, origin.offset(dir, length), context, depth - 1);
-            result |= checkBranchObstructed(branchLength, Direction.DOWN, origin.offset(dir, length), context, depth - 1);
-            return result;
-        }else{
-            return false;
-        }
     }
 
     private boolean spikeObstructed(int length, Direction dir, BlockPos origin, FeatureContext<FractalStarFeatureConfig> context){

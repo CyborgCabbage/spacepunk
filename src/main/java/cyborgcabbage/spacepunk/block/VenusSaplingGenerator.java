@@ -6,8 +6,6 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.TreeConfiguredFeatures;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Random;
-
 public class VenusSaplingGenerator extends SaplingGenerator {
     @Nullable
     @Override

@@ -2,11 +2,9 @@ package cyborgcabbage.spacepunk.mixin;
 
 import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.entity.RocketEntity;
-import cyborgcabbage.spacepunk.util.MyDamageSource;
 import cyborgcabbage.spacepunk.util.PlanetProperties;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

@@ -1,11 +1,17 @@
 package cyborgcabbage.spacepunk;
 
 import cyborgcabbage.spacepunk.armor.CustomArmorMaterial;
-import cyborgcabbage.spacepunk.block.*;
+import cyborgcabbage.spacepunk.block.ExtraTallGrassBlock;
+import cyborgcabbage.spacepunk.block.RocketNoseBlock;
+import cyborgcabbage.spacepunk.block.SulfurTntBlock;
+import cyborgcabbage.spacepunk.block.VenusSaplingGenerator;
+import cyborgcabbage.spacepunk.entity.RocketEntity;
 import cyborgcabbage.spacepunk.entity.SulfurCreeperEntity;
 import cyborgcabbage.spacepunk.entity.SulfurTntEntity;
-import cyborgcabbage.spacepunk.entity.RocketEntity;
-import cyborgcabbage.spacepunk.feature.*;
+import cyborgcabbage.spacepunk.feature.BoulderFeature;
+import cyborgcabbage.spacepunk.feature.BoulderFeatureConfig;
+import cyborgcabbage.spacepunk.feature.FractalStarFeature;
+import cyborgcabbage.spacepunk.feature.FractalStarFeatureConfig;
 import cyborgcabbage.spacepunk.inventory.RocketScreenHandler;
 import cyborgcabbage.spacepunk.item.ExtraTallGrassBlockItem;
 import cyborgcabbage.spacepunk.util.MyDamageSource;
@@ -28,8 +34,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.feature.OreFeatureConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,15 +47,15 @@ public class Spacepunk implements ModInitializer {
 
 	public static ArrayList<RegistryKey<World>> TARGET_DIMENSION_LIST = new ArrayList<>();
 
-	public static final RegistryKey<World> MOON = RegistryKey.of(Registry.WORLD_KEY, new Identifier(MOD_ID, "moon"));
-	public static final RegistryKey<World> VENUS = RegistryKey.of(Registry.WORLD_KEY, new Identifier(MOD_ID, "venus"));
+	public static final RegistryKey<World> MOON = RegistryKey.of(Registry.WORLD_KEY, id("moon"));
+	public static final RegistryKey<World> VENUS = RegistryKey.of(Registry.WORLD_KEY, id("venus"));
 
 	public static EntityType<RocketEntity> ROCKET_ENTITY;
 	public static EntityType<SulfurTntEntity> SULFUR_TNT_ENTITY;
 	public static EntityType<SulfurCreeperEntity> SULFUR_CREEPER_ENTITY;
 
 	public static final Block ROCKET_NOSE = new RocketNoseBlock(FabricBlockSettings.of(Material.METAL, MapColor.ORANGE).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER));
-	public static final ItemGroup MY_ITEM_GROUP = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "spacepunk"), () -> new ItemStack(ROCKET_NOSE));
+	public static final ItemGroup MY_ITEM_GROUP = FabricItemGroupBuilder.build(id("spacepunk"), () -> new ItemStack(ROCKET_NOSE));
 	//Moon
 	public static final Block LUNAR_SOIL = new Block(FabricBlockSettings.of(Material.SOIL, MapColor.LIGHT_GRAY).strength(0.5f).sounds(BlockSoundGroup.GRAVEL));
 	public static final Block LUNAR_ROCK = new Block(FabricBlockSettings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(1.5f, 6.0f));
@@ -82,8 +86,7 @@ public class Spacepunk implements ModInitializer {
 	public static final Item VENUS_DOOR_ITEM = new TallBlockItem(VENUS_DOOR, new FabricItemSettings().group(MY_ITEM_GROUP));
 	public static final Item EXTRA_TALL_GRASS_ITEM = new ExtraTallGrassBlockItem(EXTRA_TALL_GRASS, new Item.Settings().group(MY_ITEM_GROUP));
 
-	public static final ArmorItem SPACESUIT_HELMET = new ArmorItem(CustomArmorMaterial.SPACESUIT, EquipmentSlot.HEAD, new Item.Settings().group(MY_ITEM_GROUP));
-
+	public static final Item SPACESUIT_HELMET = new ArmorItem(CustomArmorMaterial.SPACESUIT, EquipmentSlot.HEAD, new FabricItemSettings().group(MY_ITEM_GROUP));
 	public static final Item BOTTLED_AIR = new Item(new FabricItemSettings().group(MY_ITEM_GROUP));
 
 	//public static final BoatEntity.Type VENUS_BOAT_TYPE = new BoatEntity.Type(VENUS_PLANKS,"venus");
@@ -94,10 +97,10 @@ public class Spacepunk implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		Registry.register(Registry.SCREEN_HANDLER, new Identifier(MOD_ID, "rocket"), ROCKET_SCREEN_HANDLER);
+		Registry.register(Registry.SCREEN_HANDLER, id("rocket"), ROCKET_SCREEN_HANDLER);
 		ROCKET_ENTITY = Registry.register(
 				Registry.ENTITY_TYPE,
-				new Identifier(MOD_ID, "rocket"),
+				id("rocket"),
 				FabricEntityTypeBuilder.create()
 						.entityFactory(RocketEntity::new)
 						.dimensions(EntityDimensions.fixed(1.0f, 3.0f))
@@ -105,7 +108,7 @@ public class Spacepunk implements ModInitializer {
 		);
 		SULFUR_TNT_ENTITY = Registry.register(
 				Registry.ENTITY_TYPE,
-				new Identifier(MOD_ID, "sulfur_tnt"),
+				id("sulfur_tnt"),
 				FabricEntityTypeBuilder.create()
 						.entityFactory((EntityType.EntityFactory<SulfurTntEntity>)SulfurTntEntity::new)
 						.fireImmune()
@@ -116,7 +119,7 @@ public class Spacepunk implements ModInitializer {
 		);
 		SULFUR_CREEPER_ENTITY = Registry.register(
 				Registry.ENTITY_TYPE,
-				new Identifier(MOD_ID, "sulfur_creeper"),
+				id("sulfur_creeper"),
 				FabricEntityTypeBuilder.createLiving()
 						.spawnGroup(SpawnGroup.MONSTER)
 						.entityFactory(SulfurCreeperEntity::new)
@@ -150,28 +153,27 @@ public class Spacepunk implements ModInitializer {
 		registerBlockAndItem("sulfur_tnt", SULFUR_TNT);
 		registerBlockAndItem("sulfur", SULFUR);
 
-		//Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "venus_sign"), VENUS_SIGN);
-		//Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "venus_wall_sign"), VENUS_WALL_SIGN);
-		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "venus_door"), VENUS_DOOR);
-		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "extra_tall_grass"), EXTRA_TALL_GRASS);
+		//Registry.register(Registry.BLOCK, id("venus_sign"), VENUS_SIGN);
+		//Registry.register(Registry.BLOCK, id("venus_wall_sign"), VENUS_WALL_SIGN);
+		Registry.register(Registry.BLOCK, id("venus_door"), VENUS_DOOR);
+		Registry.register(Registry.BLOCK, id("extra_tall_grass"), EXTRA_TALL_GRASS);
 
-		//Registry.register(Registry.ITEM, new Identifier(MOD_ID, "venus_sign"), VENUS_SIGN_ITEM);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "venus_door"), VENUS_DOOR_ITEM);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "extra_tall_grass"), EXTRA_TALL_GRASS_ITEM);
+		//Registry.register(Registry.ITEM, id("venus_sign"), VENUS_SIGN_ITEM);
+		Registry.register(Registry.ITEM, id("venus_door"), VENUS_DOOR_ITEM);
+		Registry.register(Registry.ITEM, id("extra_tall_grass"), EXTRA_TALL_GRASS_ITEM);
+		Registry.register(Registry.ITEM, id("spacesuit_helmet"), SPACESUIT_HELMET);
 		Registry.register(Registry.ITEM, id("bottled_air"), BOTTLED_AIR);
 
-		Registry.register(Registry.FEATURE, new Identifier(MOD_ID, "stone_spiral"), new StoneSpiralFeature(DefaultFeatureConfig.CODEC));
-		Registry.register(Registry.FEATURE, new Identifier(MOD_ID, "fractal_star"), new FractalStarFeature(FractalStarFeatureConfig.CODEC));
-		Registry.register(Registry.FEATURE, new Identifier(MOD_ID, "surface_ore"), new SurfaceOreFeature(OreFeatureConfig.CODEC));
-		Registry.register(Registry.FEATURE, new Identifier(MOD_ID, "boulder"), new BoulderFeature(BoulderFeatureConfig.CODEC));
+		Registry.register(Registry.FEATURE, id("fractal_star"), new FractalStarFeature(FractalStarFeatureConfig.CODEC));
+		Registry.register(Registry.FEATURE, id("boulder"), new BoulderFeature(BoulderFeatureConfig.CODEC));
 
 		TARGET_DIMENSION_LIST.add(World.OVERWORLD);
 		TARGET_DIMENSION_LIST.add(MOON);
 		TARGET_DIMENSION_LIST.add(VENUS);
 	}
 	private void registerBlockAndItem(String name, Block block){
-		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, name), block);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, name), new BlockItem(block, new FabricItemSettings().group(MY_ITEM_GROUP)));
+		Registry.register(Registry.BLOCK, id(name), block);
+		Registry.register(Registry.ITEM, id(name), new BlockItem(block, new FabricItemSettings().group(MY_ITEM_GROUP)));
 	}
 
 	public static Identifier id(String s){
