@@ -195,6 +195,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
         }
         return ActionResult.SUCCESS;
     }
+
     public double getMountedHeightOffset() {
         return 1.0;
     }
@@ -305,7 +306,6 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
 
     @Override
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-        buf.writeInt(getId());
     }
 
     private final PropertyDelegate propertyDelegate = new PropertyDelegate() {

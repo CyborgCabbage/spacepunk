@@ -43,8 +43,10 @@ public class LivingEntityMixin {
     private void suffocateWithoutAtmosphere(CallbackInfo ci){
         LivingEntity that = (LivingEntity)(Object)this;
         if(that.world != null)
-            if(!PlanetProperties.hasAtmosphere(that.world.getRegistryKey().getValue()))
-                if(!(that.getVehicle() instanceof RocketEntity))
-                    that.damage(Spacepunk.VACUUM, 1.0f);
+            if(!PlanetProperties.hasAtmosphere(that.world.getRegistryKey().getValue())) {
+                if (that.getVehicle() instanceof RocketEntity) return;
+                if (that.getEquippedStack(EquipmentSlot.HEAD).isOf(Spacepunk.SPACESUIT_HELMET)) return;
+                that.damage(Spacepunk.VACUUM, 1.0f);
+            }
     }
 }
