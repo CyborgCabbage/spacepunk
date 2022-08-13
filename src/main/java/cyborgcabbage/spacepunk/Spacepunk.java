@@ -161,7 +161,7 @@ public class Spacepunk implements ModInitializer {
 		//Registry.register(Registry.ITEM, id("venus_sign"), VENUS_SIGN_ITEM);
 		Registry.register(Registry.ITEM, id("venus_door"), VENUS_DOOR_ITEM);
 		Registry.register(Registry.ITEM, id("extra_tall_grass"), EXTRA_TALL_GRASS_ITEM);
-		Registry.register(Registry.ITEM, id("spacesuit_helmet"), SPACESUIT_HELMET);
+		Registry.register(Registry.ITEM, id("copper_spacesuit_helmet"), SPACESUIT_HELMET);
 		Registry.register(Registry.ITEM, id("bottled_air"), BOTTLED_AIR);
 
 		Registry.register(Registry.FEATURE, id("fractal_star"), new FractalStarFeature(FractalStarFeatureConfig.CODEC));
