@@ -173,7 +173,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new RocketScreenHandler(syncId, inv, this, propertyDelegate);
+        return new RocketScreenHandler(syncId, inv, this, propertyDelegate, this);
     }
     @Override
     public Text getDisplayName() {

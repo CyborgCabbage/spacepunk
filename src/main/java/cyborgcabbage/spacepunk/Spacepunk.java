@@ -7,18 +7,21 @@ import cyborgcabbage.spacepunk.entity.RocketEntity;
 import cyborgcabbage.spacepunk.feature.*;
 import cyborgcabbage.spacepunk.inventory.RocketScreenHandler;
 import cyborgcabbage.spacepunk.item.ExtraTallGrassBlockItem;
+import cyborgcabbage.spacepunk.util.MyDamageSource;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.*;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.BlockSoundGroup;
@@ -37,6 +40,8 @@ import java.util.ArrayList;
 public class Spacepunk implements ModInitializer {
 	public static final String MOD_ID = "spacepunk";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+
+	public static final DamageSource VACUUM = new MyDamageSource("vacuum").setBypassesArmor();
 
 	public static ArrayList<RegistryKey<World>> TARGET_DIMENSION_LIST = new ArrayList<>();
 
@@ -83,15 +88,11 @@ public class Spacepunk implements ModInitializer {
 
 	//public static final Item VENUS_BOAT = new BoatItem(BoatEntity.Type.SPRUCE, new FabricItemSettings().maxCount(1).group(ItemGroup.MISC));
 
-	public static final ScreenHandlerType<RocketScreenHandler> ROCKET_SCREEN_HANDLER;
-	public static final Identifier ROCKET_ACTION_PACKET_ID = new Identifier(MOD_ID, "rocket_action");
-
-	static {
-		ROCKET_SCREEN_HANDLER = ScreenHandlerRegistry.registerExtended(new Identifier(MOD_ID, "rocket"), RocketScreenHandler::new);
-	}
+	public static final ExtendedScreenHandlerType<RocketScreenHandler> ROCKET_SCREEN_HANDLER = new ExtendedScreenHandlerType<>(RocketScreenHandler::new);
 
 	@Override
 	public void onInitialize() {
+		Registry.register(Registry.SCREEN_HANDLER, new Identifier(MOD_ID, "rocket"), ROCKET_SCREEN_HANDLER);
 		ROCKET_ENTITY = Registry.register(
 				Registry.ENTITY_TYPE,
 				new Identifier(MOD_ID, "rocket"),
@@ -160,27 +161,7 @@ public class Spacepunk implements ModInitializer {
 		Registry.register(Registry.FEATURE, new Identifier(MOD_ID, "fractal_star"), new FractalStarFeature(FractalStarFeatureConfig.CODEC));
 		Registry.register(Registry.FEATURE, new Identifier(MOD_ID, "surface_ore"), new SurfaceOreFeature(OreFeatureConfig.CODEC));
 		Registry.register(Registry.FEATURE, new Identifier(MOD_ID, "boulder"), new BoulderFeature(BoulderFeatureConfig.CODEC));
-		ServerPlayNetworking.registerGlobalReceiver(ROCKET_ACTION_PACKET_ID, (server, player, handler, buf, responseSender) -> {
-			// Read packet data on the event loop
-			int rocketEntityId = buf.readInt();
-			int actionId = buf.readInt();
-			server.execute(() -> {
-				// Everything in this lambda is run on the render thread
-				Entity entity = player.world.getEntityById(rocketEntityId);
-				if(player.distanceTo(entity) < 10.f) {
-					if (entity instanceof RocketEntity rocketEntity) {
-						switch (actionId) {
-							case RocketEntity.ACTION_DISASSEMBLE -> rocketEntity.disassemble(true);
-							case RocketEntity.ACTION_LAUNCH -> rocketEntity.launch(player);
-							case RocketEntity.ACTION_CHANGE_TARGET -> rocketEntity.changeTarget();
-							default -> LOGGER.error("Rocket Action Packet: Unexpected value " + actionId);
-						}
-					} else {
-						LOGGER.error("Rocket Action Packet: Could not find relevant RocketEntity");
-					}
-				}
-			});
-		});
+
 		TARGET_DIMENSION_LIST.add(World.OVERWORLD);
 		TARGET_DIMENSION_LIST.add(MOON);
 		TARGET_DIMENSION_LIST.add(VENUS);
@@ -188,5 +169,9 @@ public class Spacepunk implements ModInitializer {
 	private void registerBlockAndItem(String name, Block block){
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, name), block);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, name), new BlockItem(block, new FabricItemSettings().group(SPACEPUNK_ITEM_GROUP)));
+	}
+
+	public static Identifier id(String s){
+		return new Identifier(MOD_ID, s);
 	}
 }

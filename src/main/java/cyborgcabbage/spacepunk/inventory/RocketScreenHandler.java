@@ -1,6 +1,7 @@
 package cyborgcabbage.spacepunk.inventory;
 
 import cyborgcabbage.spacepunk.Spacepunk;
+import cyborgcabbage.spacepunk.entity.RocketEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -14,20 +15,19 @@ import net.minecraft.screen.slot.Slot;
 
 public class RocketScreenHandler extends ScreenHandler {
     private final Inventory inventory;
-    private int rocketEntityId;
+    private final RocketEntity rocketEntity;
     PropertyDelegate propertyDelegate;
 
     //This constructor gets called on the client when the server wants it to open the screenHandler,
     //The client will call the other constructor with an empty Inventory and the screenHandler will automatically
     //sync this empty inventory with the inventory on the server.
     public RocketScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
-        this(syncId, playerInventory, new SimpleInventory(9), new ArrayPropertyDelegate(1));
-        rocketEntityId = buf.readInt();
+        this(syncId, playerInventory, new SimpleInventory(9), new ArrayPropertyDelegate(1), null);
     }
 
     //This constructor gets called from the BlockEntity on the server without calling the other constructor first, the server knows the inventory of the container
     //and can therefore directly provide it as an argument. This inventory will then be synced to the client.
-    public RocketScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
+    public RocketScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate, RocketEntity _rocketEntity) {
         super(Spacepunk.ROCKET_SCREEN_HANDLER, syncId);
         checkSize(inventory, 9);
         this.inventory = inventory;
@@ -47,15 +47,15 @@ public class RocketScreenHandler extends ScreenHandler {
         //The player inventory
         for (int m = 0; m < 3; ++m) {
             for (int l = 0; l < 9; ++l) {
-                addSlot(new Slot(playerInventory, l + m * 9 + 9, 8 + l * 18, 84 + m * 18));
+                addSlot(new Slot(playerInventory, l + m * 9 + 9, 8 + l * 18, 100 + m * 18));
             }
         }
         //The player hotbar
         for (int m = 0; m < 9; ++m) {
-            addSlot(new Slot(playerInventory, m, 8 + m * 18, 142));
+            addSlot(new Slot(playerInventory, m, 8 + m * 18, 158));
         }
 
-        rocketEntityId = 0;
+        rocketEntity = _rocketEntity;
     }
 
     public int getTargetDimensionIndex(){
@@ -93,8 +93,22 @@ public class RocketScreenHandler extends ScreenHandler {
         return newStack;
     }
 
-    public int getRocketEntityId(){
-        return rocketEntityId;
+    @Override
+    public boolean onButtonClick(PlayerEntity player, int id) {
+        if(rocketEntity != null) {
+            switch (id) {
+                case RocketEntity.ACTION_DISASSEMBLE -> rocketEntity.disassemble(true);
+                case RocketEntity.ACTION_LAUNCH -> rocketEntity.launch(player);
+                case RocketEntity.ACTION_CHANGE_TARGET -> rocketEntity.changeTarget();
+                default -> {
+                    Spacepunk.LOGGER.error("Rocket Action Packet: Unexpected value " + id);
+                    return false;
+                }
+            }
+            return true;
+        }else{
+            return false;
+        }
     }
 }
 

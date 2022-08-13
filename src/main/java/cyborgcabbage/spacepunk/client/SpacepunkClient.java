@@ -16,6 +16,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.minecraft.client.color.world.BiomeColors;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.util.Identifier;
@@ -31,7 +32,7 @@ public class SpacepunkClient implements ClientModInitializer {
         EntityRendererRegistry.register(Spacepunk.SULFUR_CREEPER_ENTITY, SulfurCreeperEntityRenderer::new);
         EntityModelLayerRegistry.registerModelLayer(MODEL_ROCKET_LAYER, RocketEntityModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(MODEL_SULFUR_CREEPER_LAYER, SulfurCreeperEntityModel::getTexturedModelData);
-        ScreenRegistry.register(Spacepunk.ROCKET_SCREEN_HANDLER, RocketScreen::new);
+        HandledScreens.register(Spacepunk.ROCKET_SCREEN_HANDLER, RocketScreen::new);
         BlockRenderLayerMap.INSTANCE.putBlock(Spacepunk.VENUS_DOOR, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(Spacepunk.VENUS_TRAPDOOR, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(Spacepunk.VENUS_SAPLING, RenderLayer.getCutout());

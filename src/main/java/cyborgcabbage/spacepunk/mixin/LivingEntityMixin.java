@@ -17,8 +17,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin {
-    private static final DamageSource VACUUM = new MyDamageSource("vacuum").setBypassesArmor();
-
     @Inject(method="getPreferredEquipmentSlot",at=@At("HEAD"),cancellable = true)
     private static void rocketNoseHat(ItemStack stack, CallbackInfoReturnable<EquipmentSlot> cir){
         if(stack.isOf(Spacepunk.ROCKET_NOSE.asItem()))
@@ -47,6 +45,6 @@ public class LivingEntityMixin {
         if(that.world != null)
             if(!PlanetProperties.hasAtmosphere(that.world.getRegistryKey().getValue()))
                 if(!(that.getVehicle() instanceof RocketEntity))
-                    that.damage(VACUUM, 1.0f);
+                    that.damage(Spacepunk.VACUUM, 1.0f);
     }
 }
