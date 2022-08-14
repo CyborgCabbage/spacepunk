@@ -8,6 +8,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.util.collection.DefaultedList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -70,10 +72,15 @@ public abstract class LivingEntityMixin {
         if (!(that instanceof PlayerEntity pe)) return newAir;
         //Restore air using bottles
         if (that.getAir() < that.getMaxAir() - 21) {
-            for (ItemStack itemStack : pe.getInventory().main) {
-                if (itemStack.isOf(Spacepunk.BOTTLED_AIR)) {
-                    itemStack.damage(1, that, le -> {});
-                    return that.getAir()+20;
+            DefaultedList<ItemStack> main = pe.getInventory().main;
+            for (int i = 0; i < main.size(); i++) {
+                ItemStack stack = main.get(i);
+                if (stack.isOf(Spacepunk.BOTTLED_AIR)) {
+                    stack.damage(1, that, a -> {});
+                    if (stack.isEmpty()) {
+                        main.set(i, new ItemStack(Items.GLASS_BOTTLE));
+                    }
+                    return that.getAir() + 20;
                 }
             }
         }

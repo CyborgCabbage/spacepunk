@@ -31,7 +31,7 @@ public class BottledAirItem extends Item {
         if (playerEntity != null) {
             playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
             if (!playerEntity.getAbilities().creativeMode) {
-                while(user.getAir() < user.getMaxAir() && !stack.isEmpty()) {
+                while(user.getAir() < (user.getMaxAir() - 21) && !stack.isEmpty()) {
                     stack.damage(1, user, le -> {});
                     user.setAir(user.getAir()+20);
                 }
