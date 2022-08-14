@@ -23,6 +23,9 @@
     ],
     "client": [
       "cyborgcabbage.spacepunk.client.SpacepunkClient"
+    ],
+    "fabric-datagen": [
+      "cyborgcabbage.spacepunk.datagen.SpacepunkDatagen"
     ]
   },
   "mixins": [

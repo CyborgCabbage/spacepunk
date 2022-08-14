@@ -33,3 +33,4 @@ bin/
 run/
 /src/main/resources/vanilla_data/
 /scrap/
+/src/main/generated/

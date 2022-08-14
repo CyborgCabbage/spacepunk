@@ -1,3 +1,5 @@
+import net.fabricmc.loom.configuration.ide.RunConfigSettings
+
 plugins {
 	id 'fabric-loom' version '0.12-SNAPSHOT'
 	id 'maven-publish'
@@ -29,6 +31,7 @@ dependencies {
 }
 
 processResources {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	inputs.property "version", project.version
 
 	filesMatching("fabric.mod.json") {
@@ -69,4 +72,50 @@ publishing {
 		// The repositories here will be used for publishing your artifact, not for
 		// retrieving dependencies.
 	}
+}
+
+sourceSets {
+	datagen {
+		compileClasspath += main.compileClasspath
+		runtimeClasspath += main.runtimeClasspath
+		compileClasspath += main.output
+		runtimeClasspath += main.output
+	}
+
+	main {
+		resources {
+			srcDirs += [
+					'src/main/generated'
+			]
+		}
+	}
+}
+
+loom {
+	runs {
+		// Add a data gen run config
+		datagen {
+			server()
+			name "Data Generation"
+			vmArg "-Dfabric-api.datagen"
+			vmArg "-Dfabric-api.datagen.output-dir=${file("src/main/generated")}"
+			vmArg "-Dfabric-api.datagen.modid=spacepunk-datagen"
+			runDir "build/datagen"
+			source sourceSets.datagen
+		}
+	}
+}
+
+runDatagen {
+	// Doesn't re-run the task when its up-to date
+	outputs.dir('src/main/generated')
+}
+
+jar {
+	from file('src/main/generated')
+
+	// A bit of a hack to allow the generated sources when they already exist
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+	dependsOn 'runDatagen'
 }

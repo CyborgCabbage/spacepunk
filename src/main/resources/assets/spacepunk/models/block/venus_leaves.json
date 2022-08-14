@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/leaves",
-  "textures": {
-    "all": "spacepunk:block/venus_leaves"
-  }
-}

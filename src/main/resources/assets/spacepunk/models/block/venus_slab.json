@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/slab",
-  "textures": {
-    "bottom": "spacepunk:block/venus_planks",
-    "top": "spacepunk:block/venus_planks",
-    "side": "spacepunk:block/venus_planks"
-  }
-}
