@@ -10,7 +10,7 @@ import net.minecraft.util.Lazy;
 
 import java.util.function.Supplier;
 
-public enum CustomArmorMaterial implements ArmorMaterial {
+public enum MyArmorMaterials implements ArmorMaterial {
     SPACESUIT("copper_spacesuit", 15, new int[]{1, 4, 5, 2}, 12, SoundEvents.ITEM_ARMOR_EQUIP_GOLD, 0.0f, 0.0f, () -> Ingredient.ofItems(Items.COPPER_INGOT));
 
     private static final int[] BASE_DURABILITY;
@@ -23,7 +23,7 @@ public enum CustomArmorMaterial implements ArmorMaterial {
     private final float knockbackResistance;
     private final Lazy<Ingredient> repairIngredientSupplier;
 
-    CustomArmorMaterial(String name, int durabilityMultiplier, int[] protectionAmounts, int enchantability, SoundEvent equipSound, float toughness, float knockbackResistance, Supplier<Ingredient> repairIngredientSupplier) {
+    MyArmorMaterials(String name, int durabilityMultiplier, int[] protectionAmounts, int enchantability, SoundEvent equipSound, float toughness, float knockbackResistance, Supplier<Ingredient> repairIngredientSupplier) {
         this.name = name;
         this.durabilityMultiplier = durabilityMultiplier;
         this.protectionAmounts = protectionAmounts;

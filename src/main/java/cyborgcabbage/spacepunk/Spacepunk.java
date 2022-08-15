@@ -1,6 +1,6 @@
 package cyborgcabbage.spacepunk;
 
-import cyborgcabbage.spacepunk.armor.CustomArmorMaterial;
+import cyborgcabbage.spacepunk.armor.MyArmorMaterials;
 import cyborgcabbage.spacepunk.block.ExtraTallGrassBlock;
 import cyborgcabbage.spacepunk.block.RocketNoseBlock;
 import cyborgcabbage.spacepunk.block.SulfurTntBlock;
@@ -85,7 +85,7 @@ public class Spacepunk implements ModInitializer {
 	public static final Item VENUS_DOOR_ITEM = new TallBlockItem(VENUS_DOOR, new FabricItemSettings().group(MY_ITEM_GROUP));
 	public static final Item EXTRA_TALL_GRASS_ITEM = new ExtraTallGrassBlockItem(EXTRA_TALL_GRASS, new Item.Settings().group(MY_ITEM_GROUP));
 
-	public static final Item SPACESUIT_HELMET = new ArmorItem(CustomArmorMaterial.SPACESUIT, EquipmentSlot.HEAD, new FabricItemSettings().group(MY_ITEM_GROUP));
+	public static final Item SPACESUIT_HELMET = new ArmorItem(MyArmorMaterials.SPACESUIT, EquipmentSlot.HEAD, new FabricItemSettings().group(MY_ITEM_GROUP));
 	public static final Item BOTTLED_AIR = new BottledAirItem(new FabricItemSettings().maxDamage(180).group(MY_ITEM_GROUP));
 
 	//public static final BoatEntity.Type VENUS_BOAT_TYPE = new BoatEntity.Type(VENUS_PLANKS,"venus");
