@@ -14,11 +14,17 @@ import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.color.block.BlockColorProvider;
 import net.minecraft.client.color.world.BiomeColors;
+import net.minecraft.client.color.world.GrassColors;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.item.BlockItem;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 @Environment(EnvType.CLIENT)
 public class SpacepunkClient implements ClientModInitializer {
@@ -39,9 +45,15 @@ public class SpacepunkClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(Spacepunk.VENUS_LEAVES, RenderLayer.getCutoutMipped());
         ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> {
             if (world == null || pos == null) {
-                return -1;
+                return GrassColors.getColor(0.5, 1.0);
             }
             return BiomeColors.getGrassColor(world, pos);
+        }, Spacepunk.EXTRA_TALL_GRASS);
+        ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
+            Block block = ((BlockItem)stack.getItem()).getBlock();
+            BlockState blockState = block.getDefaultState();
+            BlockColorProvider blockColorProvider = ColorProviderRegistry.BLOCK.get(block);
+            return blockColorProvider == null ? -1 : blockColorProvider.getColor(blockState, null, null, tintIndex);
         }, Spacepunk.EXTRA_TALL_GRASS);
     }
 }

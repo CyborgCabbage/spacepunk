@@ -1,25 +1,36 @@
 package cyborgcabbage.spacepunk.datagen;
 
 import cyborgcabbage.spacepunk.Spacepunk;
+import cyborgcabbage.spacepunk.block.SulfurTntBlock;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.enums.DoubleBlockHalf;
-import net.minecraft.block.enums.Tilt;
 import net.minecraft.data.client.*;
 import net.minecraft.data.family.BlockFamilies;
 import net.minecraft.data.family.BlockFamily;
+import net.minecraft.data.server.BlockLootTableGenerator;
+import net.minecraft.data.server.RecipeProvider;
+import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootPool;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
+import net.minecraft.loot.entry.ItemEntry;
+import net.minecraft.predicate.StatePredicate;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+
+import java.util.function.Consumer;
 
 public class SpacepunkDatagen implements DataGeneratorEntrypoint {
 
@@ -41,9 +52,70 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
         var blockTag = new BlockTagGenerator(gen);
         var itemTag = new ItemTagGenerator(gen, blockTag);
         var model = new ModelGenerator(gen);
+        var loot = new LootGenerator(gen);
+        var recipe = new RecipeGenerator(gen);
         gen.addProvider(blockTag);
         gen.addProvider(itemTag);
         gen.addProvider(model);
+        gen.addProvider(loot);
+        gen.addProvider(recipe);
+    }
+    
+    private static class RecipeGenerator extends FabricRecipeProvider {
+
+        public RecipeGenerator(FabricDataGenerator dataGenerator) {
+            super(dataGenerator);
+        }
+
+        @Override
+        protected void generateRecipes(Consumer<RecipeJsonProvider> exporter) {
+            RecipeProvider.generateFamily(exporter, VENUS);
+            RecipeProvider.offerPlanksRecipe2(exporter, Spacepunk.VENUS_PLANKS, ItemTagGenerator.VENUS_LOGS);
+            RecipeProvider.offerBarkBlockRecipe(exporter, Spacepunk.VENUS_WOOD, Spacepunk.VENUS_LOG);
+            RecipeProvider.offerBarkBlockRecipe(exporter, Spacepunk.STRIPPED_VENUS_WOOD, Spacepunk.STRIPPED_VENUS_LOG);
+        }
+    }
+    
+    private static class LootGenerator extends FabricBlockLootTableProvider {
+
+        private static final float[] SAPLING_DROP_CHANCE = new float[]{0.05f, 0.0625f, 0.083333336f, 0.1f};
+
+        protected LootGenerator(FabricDataGenerator dataGenerator) {
+            super(dataGenerator);
+        }
+
+        @Override
+        protected void generateBlockLootTables() {
+            addDrop(Spacepunk.LUNAR_SOIL);
+            addDrop(Spacepunk.LUNAR_ROCK);
+            addDrop(Spacepunk.ROCKET_NOSE);
+            addDrop(Spacepunk.VENUS_PLANKS);
+            addDrop(Spacepunk.VENUS_SAPLING);
+            addDrop(Spacepunk.VENUS_LOG);
+            addDrop(Spacepunk.VENUS_WOOD);
+            addDrop(Spacepunk.STRIPPED_VENUS_LOG);
+            addDrop(Spacepunk.STRIPPED_VENUS_WOOD);
+            addDrop(Spacepunk.VENUS_PRESSURE_PLATE);
+            addDrop(Spacepunk.VENUS_TRAPDOOR);
+            addDrop(Spacepunk.VENUS_BUTTON);
+            addDrop(Spacepunk.VENUS_STAIRS);
+            addDrop(Spacepunk.VENUS_FENCE_GATE);
+            addDrop(Spacepunk.VENUS_FENCE);
+            addDrop(Spacepunk.VENUS_SLAB, BlockLootTableGenerator::slabDrops);
+            addDrop(Spacepunk.VENUS_DOOR, BlockLootTableGenerator::addDoorDrop);
+            addDrop(Spacepunk.VENUS_LEAVES, (Block block) -> BlockLootTableGenerator.leavesDrop(block, Spacepunk.VENUS_SAPLING, SAPLING_DROP_CHANCE));
+            addDrop(Spacepunk.EXTRA_TALL_GRASS, BlockLootTableGenerator::grassDrops);
+            addDrop(Spacepunk.SULFUR);
+            addSulfurTntDrop();
+        }
+
+        private void addSulfurTntDrop() {
+            var dontDropIfUnstable = BlockStatePropertyLootCondition
+                    .builder(Spacepunk.SULFUR_TNT)
+                    .properties(StatePredicate.Builder.create().exactMatch(SulfurTntBlock.UNSTABLE, false));
+            var lootPool = LootPool.builder().with(ItemEntry.builder(Spacepunk.SULFUR_TNT).conditionally(dontDropIfUnstable));
+            addDrop(Spacepunk.SULFUR_TNT, LootTable.builder().pool(BlockLootTableGenerator.addSurvivesExplosionCondition(Spacepunk.SULFUR_TNT, lootPool)));
+        }
     }
 
     private static class ModelGenerator extends FabricModelProvider {
