@@ -1,10 +1,7 @@
 package cyborgcabbage.spacepunk;
 
 import cyborgcabbage.spacepunk.armor.MyArmorMaterials;
-import cyborgcabbage.spacepunk.block.ExtraTallGrassBlock;
-import cyborgcabbage.spacepunk.block.RocketNoseBlock;
-import cyborgcabbage.spacepunk.block.SulfurTntBlock;
-import cyborgcabbage.spacepunk.block.VenusSaplingGenerator;
+import cyborgcabbage.spacepunk.block.*;
 import cyborgcabbage.spacepunk.entity.RocketEntity;
 import cyborgcabbage.spacepunk.entity.SulfurCreeperEntity;
 import cyborgcabbage.spacepunk.entity.SulfurTntEntity;
@@ -29,6 +26,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.*;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -52,6 +50,8 @@ public class Spacepunk implements ModInitializer {
 	public static EntityType<RocketEntity> ROCKET_ENTITY;
 	public static EntityType<SulfurTntEntity> SULFUR_TNT_ENTITY;
 	public static EntityType<SulfurCreeperEntity> SULFUR_CREEPER_ENTITY;
+
+	public static final Block OXYGEN = new OxygenBlock(FabricBlockSettings.of(Material.AIR).noCollision().dropsNothing().air().ticksRandomly());
 
 	public static final Block ROCKET_NOSE = new RocketNoseBlock(FabricBlockSettings.of(Material.METAL, MapColor.ORANGE).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER));
 	public static final ItemGroup MY_ITEM_GROUP = FabricItemGroupBuilder.build(id("spacepunk"), () -> new ItemStack(ROCKET_NOSE));
@@ -87,12 +87,16 @@ public class Spacepunk implements ModInitializer {
 
 	public static final Item SPACESUIT_HELMET = new ArmorItem(MyArmorMaterials.SPACESUIT, EquipmentSlot.HEAD, new FabricItemSettings().group(MY_ITEM_GROUP));
 	public static final Item BOTTLED_AIR = new BottledAirItem(new FabricItemSettings().maxDamage(180).group(MY_ITEM_GROUP));
+	public static final Item PRESSURE_GAUGE = new Item(new FabricItemSettings().group(MY_ITEM_GROUP));
+
 
 	//public static final BoatEntity.Type VENUS_BOAT_TYPE = new BoatEntity.Type(VENUS_PLANKS,"venus");
 
 	//public static final Item VENUS_BOAT = new BoatItem(BoatEntity.Type.SPRUCE, new FabricItemSettings().maxCount(1).group(ItemGroup.MISC));
 
 	public static final ExtendedScreenHandlerType<RocketScreenHandler> ROCKET_SCREEN_HANDLER = new ExtendedScreenHandlerType<>(RocketScreenHandler::new);
+
+
 
 	@Override
 	public void onInitialize() {
@@ -154,6 +158,7 @@ public class Spacepunk implements ModInitializer {
 
 		//Registry.register(Registry.BLOCK, id("venus_sign"), VENUS_SIGN);
 		//Registry.register(Registry.BLOCK, id("venus_wall_sign"), VENUS_WALL_SIGN);
+		Registry.register(Registry.BLOCK, id("oxygen"), OXYGEN);
 		Registry.register(Registry.BLOCK, id("venus_door"), VENUS_DOOR);
 		Registry.register(Registry.BLOCK, id("extra_tall_grass"), EXTRA_TALL_GRASS);
 
@@ -162,6 +167,7 @@ public class Spacepunk implements ModInitializer {
 		Registry.register(Registry.ITEM, id("extra_tall_grass"), EXTRA_TALL_GRASS_ITEM);
 		Registry.register(Registry.ITEM, id("copper_spacesuit_helmet"), SPACESUIT_HELMET);
 		Registry.register(Registry.ITEM, id("bottled_air"), BOTTLED_AIR);
+		Registry.register(Registry.ITEM, id("pressure_gauge"), PRESSURE_GAUGE);
 
 		Registry.register(Registry.FEATURE, id("fractal_star"), new FractalStarFeature(FractalStarFeatureConfig.CODEC));
 		Registry.register(Registry.FEATURE, id("boulder"), new BoulderFeature(BoulderFeatureConfig.CODEC));
@@ -183,6 +189,7 @@ public class Spacepunk implements ModInitializer {
 		if (entity.world == null) return false;
 		if (PlanetProperties.hasAtmosphere(entity.world.getRegistryKey().getValue())) return false;
 		if (entity.getVehicle() instanceof RocketEntity) return false;
+		if (OxygenBlock.getPressure(entity.world, new BlockPos(entity.getEyePos())) >= 4) return false;
 		return true;
 	}
 }

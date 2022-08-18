@@ -1,6 +1,7 @@
 package cyborgcabbage.spacepunk.client;
 
 import cyborgcabbage.spacepunk.Spacepunk;
+import cyborgcabbage.spacepunk.block.OxygenBlock;
 import cyborgcabbage.spacepunk.client.inventory.RocketScreen;
 import cyborgcabbage.spacepunk.client.render.entity.RocketEntityRenderer;
 import cyborgcabbage.spacepunk.client.render.entity.SulfurCreeperEntityRenderer;
@@ -20,11 +21,14 @@ import net.minecraft.client.color.block.BlockColorProvider;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.color.world.GrassColors;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
+import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class SpacepunkClient implements ClientModInitializer {
@@ -42,6 +46,7 @@ public class SpacepunkClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(Spacepunk.VENUS_TRAPDOOR, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(Spacepunk.VENUS_SAPLING, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(Spacepunk.EXTRA_TALL_GRASS, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(Spacepunk.OXYGEN, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(Spacepunk.VENUS_LEAVES, RenderLayer.getCutoutMipped());
         ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> {
             if (world == null || pos == null) {
@@ -55,5 +60,13 @@ public class SpacepunkClient implements ClientModInitializer {
             BlockColorProvider blockColorProvider = ColorProviderRegistry.BLOCK.get(block);
             return blockColorProvider == null ? -1 : blockColorProvider.getColor(blockState, null, null, tintIndex);
         }, Spacepunk.EXTRA_TALL_GRASS);
+        ModelPredicateProviderRegistry.register(Spacepunk.PRESSURE_GAUGE, new Identifier("pressure"), (stack, clientWorld, livingEntity, seed) -> {
+            Entity entity = (livingEntity != null) ? livingEntity : stack.getHolder();
+            if(entity == null) return 0.5f;
+            World world = (clientWorld != null) ? clientWorld : entity.world;
+            if(world == null) return 0.5f;
+            int pressure = OxygenBlock.getPressure(world, new BlockPos(entity.getEyePos()));
+            return pressure/8.f;
+        });
     }
 }

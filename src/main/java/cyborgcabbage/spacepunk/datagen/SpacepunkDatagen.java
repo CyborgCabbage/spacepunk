@@ -1,6 +1,7 @@
 package cyborgcabbage.spacepunk.datagen;
 
 import cyborgcabbage.spacepunk.Spacepunk;
+import cyborgcabbage.spacepunk.block.OxygenBlock;
 import cyborgcabbage.spacepunk.block.SulfurTntBlock;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
@@ -9,7 +10,6 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.data.client.*;
 import net.minecraft.data.family.BlockFamilies;
 import net.minecraft.data.family.BlockFamily;
@@ -17,7 +17,6 @@ import net.minecraft.data.server.BlockLootTableGenerator;
 import net.minecraft.data.server.RecipeProvider;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.item.Item;
-import net.minecraft.item.Items;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
@@ -106,6 +105,7 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
             addDrop(Spacepunk.VENUS_LEAVES, (Block block) -> BlockLootTableGenerator.leavesDrop(block, Spacepunk.VENUS_SAPLING, SAPLING_DROP_CHANCE));
             addDrop(Spacepunk.EXTRA_TALL_GRASS, BlockLootTableGenerator::grassDrops);
             addDrop(Spacepunk.SULFUR);
+            addDrop(Spacepunk.OXYGEN, dropsNothing());
             addSulfurTntDrop();
         }
 
@@ -135,6 +135,19 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
                             .coordinate(BlockStateModelGenerator.createBooleanModelMap(Properties.UP,top,middle)));
         }
 
+        private void registerDebugOxygen(BlockStateModelGenerator gen) {
+            BlockStateVariantMap b = BlockStateVariantMap.create(OxygenBlock.PRESSURE).register(
+                    pressure -> BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(Spacepunk.OXYGEN, "_" + pressure))
+            );
+            gen.blockStateCollector.accept(VariantsBlockStateSupplier.create(Spacepunk.OXYGEN).coordinate(b));
+        }
+
+        public final void registerPressureGauge(ItemModelGenerator gen) {
+            for (int i = 0; i <= 8; ++i) {
+                gen.register(Spacepunk.PRESSURE_GAUGE, String.format("_%d", i), Models.GENERATED);
+            }
+        }
+
         @Override
         public void generateBlockStateModels(BlockStateModelGenerator gen) {
             gen.registerCubeAllModelTexturePool(VENUS.getBaseBlock()).family(VENUS);
@@ -148,12 +161,14 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
             gen.registerSingleton(Spacepunk.VENUS_LEAVES, TexturedModel.LEAVES);
             gen.registerSimpleState(Spacepunk.ROCKET_NOSE);
             registerExtraTallGrass(gen);
+            registerDebugOxygen(gen);
         }
 
         @Override
         public void generateItemModels(ItemModelGenerator gen) {
             gen.register(Spacepunk.SPACESUIT_HELMET, Models.GENERATED);
             gen.register(Spacepunk.BOTTLED_AIR, Models.GENERATED);
+            registerPressureGauge(gen);
         }
     }
 
