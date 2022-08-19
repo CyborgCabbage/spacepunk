@@ -3,20 +3,17 @@ package cyborgcabbage.spacepunk.block;
 import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.util.PlanetProperties;
 import net.minecraft.block.*;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,7 +21,8 @@ import java.util.HashSet;
 
 public class OxygenBlock extends Block {
     public static final IntProperty PRESSURE = IntProperty.of("pressure", 1, 8);
-    private static final int TICKRATE = 1;
+    private static final int TICKRATE = 5;
+    private static final int DECAY_CHANCE = 10;
 
     public OxygenBlock(Settings settings) {
         super(settings);
@@ -48,7 +46,7 @@ public class OxygenBlock extends Block {
 
     @Override
     public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.INVISIBLE;
+        return BlockRenderType.MODEL;
     }
 
     @Override
@@ -59,6 +57,17 @@ public class OxygenBlock extends Block {
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(PRESSURE);
+    }
+
+    @Override
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if(pos.getX() < 20) System.out.println(pos);
+        if(random.nextBoolean()) {
+            decay(state, world, pos, random);
+
+        }else {
+            spread(state, world, pos);
+        }
     }
 
     @Override
@@ -74,7 +83,8 @@ public class OxygenBlock extends Block {
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        world.createAndScheduleBlockTick(pos, this, TICKRATE);
+        if(!world.isClient)
+            world.createAndScheduleBlockTick(pos, this, TICKRATE);
     }
 
     private void spread(BlockState state, ServerWorld world, BlockPos pos){
@@ -103,6 +113,13 @@ public class OxygenBlock extends Block {
                     setPressure(world, gas.pos, divided+extra);
                 diff--;
             }
+        }
+    }
+
+    private void decay(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        int pressure = getPressure(state);
+        if(pressure > 0) {
+            setPressure(world, pos, pressure - 1);
         }
     }
 
