@@ -61,10 +61,8 @@ public class OxygenBlock extends Block {
 
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if(pos.getX() < 20) System.out.println(pos);
         if(random.nextBoolean()) {
             decay(state, world, pos, random);
-
         }else {
             spread(state, world, pos);
         }

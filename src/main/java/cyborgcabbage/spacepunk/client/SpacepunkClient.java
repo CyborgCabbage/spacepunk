@@ -1,8 +1,11 @@
 package cyborgcabbage.spacepunk.client;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.block.OxygenBlock;
 import cyborgcabbage.spacepunk.client.inventory.RocketScreen;
+import cyborgcabbage.spacepunk.client.render.dimension.MoonRenderer;
 import cyborgcabbage.spacepunk.client.render.entity.RocketEntityRenderer;
 import cyborgcabbage.spacepunk.client.render.entity.SulfurCreeperEntityRenderer;
 import cyborgcabbage.spacepunk.client.render.entity.SulfurTntEntityRenderer;
@@ -12,7 +15,9 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.block.Block;
@@ -20,14 +25,17 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.color.block.BlockColorProvider;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.color.world.GrassColors;
+import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
-import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -68,5 +76,6 @@ public class SpacepunkClient implements ClientModInitializer {
             int pressure = OxygenBlock.getPressure(world, new BlockPos(entity.getEyePos()));
             return pressure/8.f;
         });
+        DimensionRenderingRegistry.registerSkyRenderer(Spacepunk.MOON, new MoonRenderer());
     }
 }
