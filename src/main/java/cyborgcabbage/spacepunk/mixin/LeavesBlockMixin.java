@@ -1,6 +1,7 @@
 package cyborgcabbage.spacepunk.mixin;
 
 import cyborgcabbage.spacepunk.block.OxygenBlock;
+import cyborgcabbage.spacepunk.util.PlanetProperties;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.server.world.ServerWorld;
@@ -18,7 +19,8 @@ public class LeavesBlockMixin {
 
     @Inject(method="randomTick",at=@At("HEAD"))
     private void produceOxygen(BlockState state, ServerWorld world, BlockPos pos, Random random, CallbackInfo ci){
-        OxygenBlock.depositOxygen(world, pos, OXYGEN_AMOUNT);
+        if(!PlanetProperties.hasAtmosphere(world.getRegistryKey().getValue()))
+            OxygenBlock.depositOxygen(world, pos, OXYGEN_AMOUNT);
     }
 
     @Inject(method="hasRandomTicks",at=@At("HEAD"),cancellable = true)
