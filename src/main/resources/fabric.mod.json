@@ -31,7 +31,7 @@
   "mixins": [
     "spacepunk.mixins.json"
   ],
-
+  "accessWidener": "spacepunk.accesswidener",
   "depends": {
     "fabricloader": ">=0.11.3",
     "fabric": "*",

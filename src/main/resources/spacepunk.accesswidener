@@ -1,0 +1,2 @@
+accessWidener	v2	named
+transitive-accessible	method	net/minecraft/world/gen/foliage/FoliagePlacerType	<init>  (Lcom/mojang/serialization/Codec;)V

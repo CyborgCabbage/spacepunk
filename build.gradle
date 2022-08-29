@@ -104,6 +104,7 @@ loom {
 			source sourceSets.datagen
 		}
 	}
+	accessWidenerPath = file("src/main/resources/spacepunk.accesswidener")
 }
 
 runDatagen {

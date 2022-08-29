@@ -15,27 +15,27 @@ public class MoonRenderer implements DimensionRenderingRegistry.SkyRenderer {
     @Override
     public void render(WorldRenderContext context) {
         if (context.world() == null || context.matrixStack() == null) return;
-
+        context.world().calculateAmbientDarkness();
         BackgroundRenderer.setFogBlack();
         RenderSystem.depthMask(false);
 
         RenderSystem.disableBlend();
-        RenderSystem.setShaderColor(0.0f, 0.0f, 0.0f, 1.0f);
+        RenderSystem.setShaderColor(0, 0, 0, 1);
         DimensionRenderUtil.drawLightSky(context);
 
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
         DimensionRenderUtil.drawBody(context, 0.f, 100.f, 15.f, DimensionRenderUtil.SUN_NO_GLOW);
         DimensionRenderUtil.drawBody(context, 180.f, 100.f, 20.f, DimensionRenderUtil.EARTH);
         DimensionRenderUtil.drawStars(context);
 
         RenderSystem.disableBlend();
-        RenderSystem.setShaderColor(0.0f, 0.0f, 0.0f, 1.0f);
+        RenderSystem.setShaderColor(0, 0, 0, 1);
         DimensionRenderUtil.drawDarkSky(context);
 
         RenderSystem.disableBlend();
-        RenderSystem.setShaderColor(0, 0, 0, 1.0f);
+        RenderSystem.setShaderColor(0, 0, 0, 1);
         RenderSystem.enableTexture();
 
         RenderSystem.depthMask(true);
