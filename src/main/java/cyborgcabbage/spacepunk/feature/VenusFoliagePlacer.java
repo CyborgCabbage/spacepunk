@@ -38,7 +38,7 @@ public class VenusFoliagePlacer extends FoliagePlacer {
         LeafContext leafContext = new LeafContext(world, replacer, random, config, blockPos, giantTrunk);
         if(trunkHeight < 15) {
             cap(leafContext);
-            circle(leafContext, 0.9, 1.4, 0, 0.5);
+            circle(leafContext, Math.sqrt(2)-0.01, Math.sqrt(2)+0.01, 0, 0.5);
             circle(leafContext, radius-0.5, radius+0.8, 0, 1.0);
             circle(leafContext, 0, radius, -1, 1.0);
             if (trunkHeight >= 9) {
