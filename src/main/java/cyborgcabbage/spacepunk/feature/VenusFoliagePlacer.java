@@ -45,7 +45,7 @@ public class VenusFoliagePlacer extends FoliagePlacer {
                 circle(leafContext, 0, 1.5, -3, 0.5);
                 circle(leafContext, 0, 1, -3, 1.0);
                 circle(leafContext, 0, 1, -5, 0.6);
-            } else {
+            } else if (trunkHeight >= 5) {
                 circle(leafContext, 0, 1, -3, 0.8);
             }
         }else{

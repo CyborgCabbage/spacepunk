@@ -101,7 +101,7 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
             addDrop(Spacepunk.VENUS_FENCE_GATE);
             addDrop(Spacepunk.VENUS_FENCE);
             addDrop(Spacepunk.VENUS_SLAB, BlockLootTableGenerator::slabDrops);
-            addDrop(Spacepunk.VENUS_DOOR, BlockLootTableGenerator::addDoorDrop);
+            addDrop(Spacepunk.VENUS_DOOR, BlockLootTableGenerator::doorDrops);
             addDrop(Spacepunk.VENUS_LEAVES, (Block block) -> BlockLootTableGenerator.leavesDrop(block, Spacepunk.VENUS_SAPLING, SAPLING_DROP_CHANCE));
             addDrop(Spacepunk.EXTRA_TALL_GRASS, BlockLootTableGenerator::grassDrops);
             addDrop(Spacepunk.SULFUR);

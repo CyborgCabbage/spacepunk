@@ -35,9 +35,9 @@ public class VenusSaplingGenerator extends LargeTreeSaplingGenerator {
 
     public static final RegistryEntry<ConfiguredFeature<TreeFeatureConfig, Feature<TreeFeatureConfig>>> FLAT_VENUS = RegistryEntry.of(Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, Spacepunk.id("flat_venus_tree"), new ConfiguredFeature<>(Feature.TREE, new TreeFeatureConfig.Builder(
             BlockStateProvider.of(Spacepunk.VENUS_LOG),
-            new StraightTrunkPlacer(5, 2, 0),
+            new StraightTrunkPlacer(4, 1, 0),
             BlockStateProvider.of(Spacepunk.VENUS_LEAVES),
-            new VenusFoliagePlacer(ConstantIntProvider.create(4), ConstantIntProvider.create(0)),
+            new VenusFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(0)),
             new TwoLayersFeatureSize(1, 0, 1)
     ).ignoreVines().build())));
     /*
@@ -48,6 +48,7 @@ public class VenusSaplingGenerator extends LargeTreeSaplingGenerator {
     @Nullable
     @Override
     protected RegistryEntry<? extends ConfiguredFeature<?, ?>> getTreeFeature(net.minecraft.util.math.random.Random random, boolean bees) {
+        if (random.nextInt(10) == 0) return FLAT_VENUS;
         return VENUS;
     }
 

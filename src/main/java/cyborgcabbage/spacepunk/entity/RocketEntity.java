@@ -111,7 +111,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
 
     // Allows the entity to be collided with (like when the player clicks on it or tries to place a block that overlaps it).
     @Override
-    public boolean collides() {
+    public boolean canHit() {
         return !isRemoved();
     }
     

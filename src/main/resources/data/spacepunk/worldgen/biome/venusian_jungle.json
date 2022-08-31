@@ -71,15 +71,11 @@
     ],
     [
       "minecraft:glow_lichen",
-      "minecraft:bamboo_light",
       "spacepunk:venus_trees_jungle",
       "minecraft:flower_warm",
       "minecraft:patch_grass_jungle",
       "minecraft:brown_mushroom_normal",
-      "minecraft:red_mushroom_normal",
-      "minecraft:patch_pumpkin",
-      "minecraft:vines",
-      "minecraft:patch_melon"
+      "minecraft:red_mushroom_normal"
     ],
     [
       "minecraft:freeze_top_layer"

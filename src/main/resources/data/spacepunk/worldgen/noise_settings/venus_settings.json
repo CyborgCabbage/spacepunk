@@ -2381,7 +2381,7 @@
                       },
                       {
                         "result_state": {
-                          "Name": "minecraft:gravel"
+                          "Name": "minecraft:sand"
                         },
                         "type": "minecraft:block"
                       }
