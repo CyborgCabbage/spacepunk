@@ -178,7 +178,7 @@ public class Spacepunk implements ModInitializer {
 
 		TARGET_DIMENSION_LIST.add(World.OVERWORLD);
 		TARGET_DIMENSION_LIST.add(MOON);
-		TARGET_DIMENSION_LIST.add(VENUS);
+		//TARGET_DIMENSION_LIST.add(VENUS);
 	}
 	private void registerBlockAndItem(String name, Block block){
 		Registry.register(Registry.BLOCK, id(name), block);
