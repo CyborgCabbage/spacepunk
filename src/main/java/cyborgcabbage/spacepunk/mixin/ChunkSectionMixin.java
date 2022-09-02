@@ -6,11 +6,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(targets = "net.minecraft.world.chunk.ChunkSection$class_6869")
+@Mixin(targets = "net.minecraft.world.chunk.ChunkSection$BlockStateCounter")
 public class ChunkSectionMixin {
-    @Shadow public int field_36408;
-    @Shadow public int field_36409;
-    @Shadow public int field_36410;
+    @Shadow public int nonEmptyBlockCount;
+    @Shadow public int randomTickableBlockCount;
+    @Shadow public int nonEmptyFluidCount;
 
     /**
      * @author CyborgCabbage
@@ -20,15 +20,15 @@ public class ChunkSectionMixin {
     public void accept(BlockState blockState, int i) {
         FluidState fluidState = blockState.getFluidState();
         if (!blockState.isAir()) {
-            this.field_36408 += i;
+            this.nonEmptyBlockCount += i;
         }
         if (blockState.hasRandomTicks()) {
-            this.field_36409 += i;
+            this.randomTickableBlockCount += i;
         }
         if (!fluidState.isEmpty()) {
-            this.field_36408 += i;
+            this.nonEmptyBlockCount += i;
             if (fluidState.hasRandomTicks()) {
-                this.field_36410 += i;
+                this.nonEmptyFluidCount += i;
             }
         }
     }
