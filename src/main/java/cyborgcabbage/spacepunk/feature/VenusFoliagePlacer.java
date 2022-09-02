@@ -20,7 +20,8 @@ public class VenusFoliagePlacer extends FoliagePlacer {
     public static final Codec<VenusFoliagePlacer> CODEC =
             RecordCodecBuilder.create(instance -> VenusFoliagePlacer.fillFoliagePlacerFields(instance).apply(instance, VenusFoliagePlacer::new));
 
-    public static final FoliagePlacerType<VenusFoliagePlacer> VENUS_FOLIAGE_PLACER = Registry.register(Registry.FOLIAGE_PLACER_TYPE, Spacepunk.id("venus_foliage_placer"), new FoliagePlacerType<>(CODEC));
+    public static final FoliagePlacerType<VenusFoliagePlacer> VENUS_FOLIAGE_PLACER =
+            Registry.register(Registry.FOLIAGE_PLACER_TYPE, Spacepunk.id("venus_foliage_placer"), new FoliagePlacerType<>(CODEC));
 
     public VenusFoliagePlacer(IntProvider intProvider, IntProvider intProvider2) {
         super(intProvider, intProvider2);

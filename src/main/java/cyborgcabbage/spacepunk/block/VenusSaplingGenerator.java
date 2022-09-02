@@ -27,7 +27,7 @@ public class VenusSaplingGenerator extends LargeTreeSaplingGenerator {
 
     public static final RegistryEntry<ConfiguredFeature<TreeFeatureConfig, Feature<TreeFeatureConfig>>> MEGA_VENUS = RegistryEntry.of(Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, Spacepunk.id("mega_venus_tree"), new ConfiguredFeature<>(Feature.TREE, new TreeFeatureConfig.Builder(
             BlockStateProvider.of(Spacepunk.VENUS_LOG),
-            new GiantTrunkPlacer(13, 2, 14),
+            new GiantTrunkPlacer(19, 2, 2),
             BlockStateProvider.of(Spacepunk.VENUS_LEAVES),
             new VenusFoliagePlacer(ConstantIntProvider.create(2), ConstantIntProvider.create(0)),
             new TwoLayersFeatureSize(1, 1, 2)
