@@ -6,17 +6,16 @@ import cyborgcabbage.spacepunk.inventory.RocketScreenHandler;
 import cyborgcabbage.spacepunk.util.PlanetProperties;
 import net.fabricmc.fabric.api.dimension.v1.FabricDimensions;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.MovementType;
+import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
@@ -26,6 +25,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -37,13 +37,17 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -58,11 +62,23 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
 
     private static final int FUEL_CAPACITY = 10;
 
-    private static final int TELEPORT_HEIGHT = 0;
+    private static final int TELEPORT_HEIGHT = 1024;
 
+    private static final double MAX_SPEED = 50.0;
+    
     private static final TrackedData<Integer> TRAVEL_STATE = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> FUEL = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
+    private int interpolationCountdown;
+    private float velocityDecay;
+    private float yawVelocity;
+    private double x;
+    private double y;
+    private double z;
+    private double waterLevel;
+    private float nearbySlipperiness;
+    private BoatEntity.Location location;
+    
     private UUID passengerUuid;
 
     private int targetDimensionIndex = 0;
@@ -200,16 +216,66 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
         return 1.0;
     }
 
+    private void updateVelocity() {
+        setVelocity(0.0, MathHelper.clamp(getVelocity().y, -MAX_SPEED/20, MAX_SPEED/20), 0.0);
+        double gravity = -0.08 * PlanetProperties.getGravity(world.getRegistryKey().getValue());
+        switch (dataTracker.get(TRAVEL_STATE)) {
+            case STATE_IDLE -> {
+                addVelocity(0.0, gravity, 0.0);
+            }
+            case STATE_GOING_UP -> {
+                addVelocity(0.0, 0.01, 0.0);
+            }
+            case STATE_WAITING -> setVelocity(0.0, 0.0, 0.0);
+        }
+    }
+
     @Override
-    public void baseTick() {
+    public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.interpolationCountdown = 10;
+    }
+
+    private void updatePositionAndRotation() {
+        if (isLogicalSideForUpdatingMovement()) {
+            interpolationCountdown = 0;
+            updateTrackedPosition(getX(), getY(), getZ());
+        }
+        if (interpolationCountdown <= 0) {
+            return;
+        }
+        double newX = getX() + (x - getX()) / (double) interpolationCountdown;
+        double newY = getY() + (y - getY()) / (double) interpolationCountdown;
+        double newZ = getZ() + (z - getZ()) / (double) interpolationCountdown;
+        --interpolationCountdown;
+        setPosition(newX, newY, newZ);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
         //Movement
-        moveRocket();
+        updatePositionAndRotation();
+        if (isLogicalSideForUpdatingMovement()) {
+            updateVelocity();
+            move(MovementType.SELF, getVelocity());
+        } else {
+            setVelocity(Vec3d.ZERO);
+        }
         //Particles
         if(world.isClient() && dataTracker.get(TRAVEL_STATE) == STATE_GOING_UP){
             Vec3d vel = getVelocity();
             world.addParticle(ParticleTypes.SMOKE, getX(), getY(), getZ(), vel.x, vel.y-1.0, vel.z);
         }
-        super.baseTick();
+        //Collision
+        checkBlockCollision();
+        List<Entity> entities = world.getOtherEntities(this, getBoundingBox().expand(0.2f, 0.2f, 0.2f), EntityPredicates.canBePushedBy(this));
+        for (Entity entity : entities) {
+            if (entity.hasPassenger(this)) continue;
+            pushAwayFrom(entity);
+        }
         if(!world.isClient()){
             //Teleport
             if(getY() > world.getTopY() + TELEPORT_HEIGHT && dataTracker.get(TRAVEL_STATE) == STATE_GOING_UP){
@@ -233,7 +299,17 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
                         passengerUuid = null;
                     }
                 }else{
-                    dataTracker.set(TRAVEL_STATE, STATE_IDLE);
+                    //Place landing pad if necessary
+                    BlockPos topPosition = world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, getBlockPos());
+                    if(topPosition.getY() > world.getBottomY()){
+                        BlockState topBlock = world.getBlockState(topPosition.down());
+                        if (!topBlock.hasSolidTopSurface(world, topPosition.down(), this)) {
+                            boolean placed = world.setBlockState(topPosition, Blocks.STONE.getDefaultState());
+                            if(!placed)
+                                world.setBlockState(topPosition.down(), Blocks.STONE.getDefaultState());
+                        }
+                        dataTracker.set(TRAVEL_STATE, STATE_IDLE);
+                    }
                 }
             }
         }
@@ -248,24 +324,6 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
         Entity passenger = getFirstPassenger();
         if(passenger instanceof PlayerEntity player)
             passengerUuid = player.getUuid();
-    }
-
-    private void moveRocket() {
-        setVelocity(0.0, getVelocity().y, 0.0);
-        double gravity = -0.08 * PlanetProperties.getGravity(world.getRegistryKey().getValue());
-        switch (dataTracker.get(TRAVEL_STATE)) {
-            case STATE_IDLE -> {
-                addVelocity(0.0, gravity, 0.0);
-                move(MovementType.SELF, getVelocity());
-            }
-            case STATE_GOING_UP -> {
-                addVelocity(0.0, 0.01, 0.0);
-                move(MovementType.SELF, getVelocity());
-            }
-            case STATE_WAITING -> {
-                setVelocity(0.0, 0.0, 0.0);
-            }
-        }
     }
 
     public void launch(PlayerEntity player){
