@@ -8,7 +8,10 @@ import net.fabricmc.fabric.api.dimension.v1.FabricDimensions;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -62,10 +65,10 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
 
     private static final int FUEL_CAPACITY = 10;
 
-    private static final int TELEPORT_HEIGHT = 1024;
+    private static final int TELEPORT_HEIGHT = 256;
 
     private static final double MAX_SPEED = 50.0;
-    
+
     private static final TrackedData<Integer> TRAVEL_STATE = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> FUEL = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
@@ -78,7 +81,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     private double waterLevel;
     private float nearbySlipperiness;
     private BoatEntity.Location location;
-    
+
     private UUID passengerUuid;
 
     private int targetDimensionIndex = 0;
@@ -217,14 +220,35 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     }
 
     private void updateVelocity() {
-        setVelocity(0.0, MathHelper.clamp(getVelocity().y, -MAX_SPEED/20, MAX_SPEED/20), 0.0);
+        setVelocity(0.0, getVelocity().y, 0.0);
         double gravity = -0.08 * PlanetProperties.getGravity(world.getRegistryKey().getValue());
         switch (dataTracker.get(TRAVEL_STATE)) {
             case STATE_IDLE -> {
+                if (PlanetProperties.hasAtmosphere(world.getRegistryKey().getValue()))
+                    setVelocity(0.0, getVelocity().y * 0.995, 0.0);
                 addVelocity(0.0, gravity, 0.0);
+
+                double height = getY() - world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, getBlockPos()).getY();
+                double u = getVelocity().y;
+                double v = 0.0;
+                double a = 0.02;
+                double t = (v - u) / a;
+                if(t > 0.0){
+                    double s = 0.5 * (u + v) * t;
+                    if (-s > (height-10)) {
+                        if (getVelocity().y > -0.3) {
+                            setVelocity(0.0, -0.3, 0.0);
+                        } else {
+                            addVelocity(0.0, a-gravity, 0.0);
+                        }
+                        createParticles();
+                    }
+                }
             }
             case STATE_GOING_UP -> {
+                setVelocity(0.0, getVelocity().y*0.995, 0.0);
                 addVelocity(0.0, 0.01, 0.0);
+                createParticles();
             }
             case STATE_WAITING -> setVelocity(0.0, 0.0, 0.0);
         }
@@ -262,12 +286,8 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
             updateVelocity();
             move(MovementType.SELF, getVelocity());
         } else {
+            updateVelocity(); //For generating particles
             setVelocity(Vec3d.ZERO);
-        }
-        //Particles
-        if(world.isClient() && dataTracker.get(TRAVEL_STATE) == STATE_GOING_UP){
-            Vec3d vel = getVelocity();
-            world.addParticle(ParticleTypes.SMOKE, getX(), getY(), getZ(), vel.x, vel.y-1.0, vel.z);
         }
         //Collision
         checkBlockCollision();
@@ -312,6 +332,13 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
                     }
                 }
             }
+        }
+    }
+
+    private void createParticles() {
+        if(world.isClient()){
+            Vec3d vel = getVelocity();
+            world.addParticle(ParticleTypes.SMOKE, getX(), getY(), getZ(), vel.x, vel.y-1.0, vel.z);
         }
     }
 
