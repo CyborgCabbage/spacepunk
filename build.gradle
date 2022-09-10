@@ -93,23 +93,18 @@ sourceSets {
 
 loom {
 	runs {
-		// Add a data gen run config
-		datagen {
-			server()
-			name "Data Generation"
+		// This adds a new gradle task that runs the datagen API: "gradlew runDatagenClient"
+		datagenClient {
+			inherit client
+			name "Data Generation 2"
 			vmArg "-Dfabric-api.datagen"
 			vmArg "-Dfabric-api.datagen.output-dir=${file("src/main/generated")}"
-			vmArg "-Dfabric-api.datagen.modid=spacepunk-datagen"
+			vmArg "-Dfabric-api.datagen.strict-validation"
+
 			runDir "build/datagen"
-			source sourceSets.datagen
 		}
 	}
 	accessWidenerPath = file("src/main/resources/spacepunk.accesswidener")
-}
-
-runDatagen {
-	// Doesn't re-run the task when its up-to date
-	outputs.dir('src/main/generated')
 }
 
 jar {
