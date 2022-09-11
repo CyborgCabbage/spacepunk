@@ -31,6 +31,7 @@ public class RocketEntityRenderer extends EntityRenderer<RocketEntity> {
     public void render(RocketEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         matrices.push();
         matrices.multiply(new Quaternion(Vec3f.POSITIVE_X,180.0f,true));
+        matrices.multiply(new Quaternion(Vec3f.POSITIVE_Y,yaw,true));
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(model.getLayer(this.getTexture(entity)));
         model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
         matrices.pop();

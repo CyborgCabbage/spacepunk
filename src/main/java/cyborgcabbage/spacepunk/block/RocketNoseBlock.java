@@ -2,23 +2,27 @@ package cyborgcabbage.spacepunk.block;
 
 import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.entity.RocketEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.ShapeContext;
+import net.minecraft.block.*;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.Wearable;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
 public class RocketNoseBlock extends Block implements Wearable {
+    public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+
     private static final VoxelShape NOSE_SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 12.0, 14.0);
     public RocketNoseBlock(Settings settings) {
         super(settings);
+        setDefaultState(stateManager.getDefaultState().with(FACING, Direction.NORTH));
     }
 
     @Override
@@ -49,7 +53,8 @@ public class RocketNoseBlock extends Block implements Wearable {
                         world.updateNeighbors(d1, Blocks.AIR);
                         world.updateNeighbors(d2, Blocks.AIR);
                         world.updateNeighbors(d3, Blocks.AIR);
-                        rocketEntity.refreshPositionAndAngles(d3.getX() + 0.5, d3.getY(), d3.getZ() + 0.5, 0.0f, 0.0f);
+                        Spacepunk.LOGGER.info(""+state.get(FACING));
+                        rocketEntity.refreshPositionAndAngles(d3.getX() + 0.5, d3.getY(), d3.getZ() + 0.5, state.get(FACING).asRotation(), 0.0f);
                         world.spawnEntity(rocketEntity);
                         if (!world.isClient) world.playSound(null, d2, SoundEvents.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1f, 1);
                     }else{
@@ -58,5 +63,15 @@ public class RocketNoseBlock extends Block implements Wearable {
                 }
             }
         }
+    }
+
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite());
+    }
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        builder.add(FACING);
     }
 }

@@ -41,7 +41,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Heightmap;
@@ -55,9 +54,10 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory, ImplementedInventory {
-    public static final int STATE_IDLE = 0;
+    public static final int STATE_GOING_DOWN = 0;
     public static final int STATE_GOING_UP = 1;
     public static final int STATE_WAITING = 2;
+    public static final int STATE_IDLE = 3;
 
     public static final int ACTION_DISASSEMBLE = 0;
     public static final int ACTION_LAUNCH = 1;
@@ -71,6 +71,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
 
     private static final TrackedData<Integer> TRAVEL_STATE = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> FUEL = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Boolean> PARTICLES = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     private int interpolationCountdown;
     private float velocityDecay;
@@ -92,8 +93,9 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
 
     @Override
     protected void initDataTracker() {
-        this.dataTracker.startTracking(TRAVEL_STATE, 0);
-        this.dataTracker.startTracking(FUEL, 0);
+        dataTracker.startTracking(TRAVEL_STATE, 0);
+        dataTracker.startTracking(FUEL, 0);
+        dataTracker.startTracking(PARTICLES, false);
     }
 
     @Override
@@ -219,11 +221,11 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
         return 1.0;
     }
 
-    private void updateVelocity() {
+    private boolean updateVelocity() {
         setVelocity(0.0, getVelocity().y, 0.0);
         double gravity = -0.08 * PlanetProperties.getGravity(world.getRegistryKey().getValue());
         switch (dataTracker.get(TRAVEL_STATE)) {
-            case STATE_IDLE -> {
+            case STATE_GOING_DOWN -> {
                 if (PlanetProperties.hasAtmosphere(world.getRegistryKey().getValue()))
                     setVelocity(0.0, getVelocity().y * 0.995, 0.0);
                 addVelocity(0.0, gravity, 0.0);
@@ -235,23 +237,29 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
                 double t = (v - u) / a;
                 if(t > 0.0){
                     double s = 0.5 * (u + v) * t;
-                    if (-s > (height-10)) {
+                    if (-s > (height-10) && height > 1) {
                         if (getVelocity().y > -0.3) {
                             setVelocity(0.0, -0.3, 0.0);
                         } else {
                             addVelocity(0.0, a-gravity, 0.0);
                         }
-                        createParticles();
+                        return true;
                     }
                 }
             }
             case STATE_GOING_UP -> {
                 setVelocity(0.0, getVelocity().y*0.995, 0.0);
                 addVelocity(0.0, 0.01, 0.0);
-                createParticles();
+                return true;
             }
             case STATE_WAITING -> setVelocity(0.0, 0.0, 0.0);
+            case STATE_IDLE -> {
+                if (PlanetProperties.hasAtmosphere(world.getRegistryKey().getValue()))
+                    setVelocity(0.0, getVelocity().y * 0.995, 0.0);
+                addVelocity(0.0, gravity, 0.0);
+            }
         }
+        return false;
     }
 
     @Override
@@ -283,15 +291,22 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
         //Movement
         updatePositionAndRotation();
         if (isLogicalSideForUpdatingMovement()) {
-            updateVelocity();
+            boolean particles = updateVelocity();
+            if(world.isClient()){
+                if(particles) createParticles();
+            }else{
+                dataTracker.set(PARTICLES, particles);
+            }
             move(MovementType.SELF, getVelocity());
         } else {
-            updateVelocity(); //For generating particles
+            if(world.isClient() && dataTracker.get(PARTICLES)) {
+                createParticles();
+            }
             setVelocity(Vec3d.ZERO);
         }
         //Collision
         checkBlockCollision();
-        List<Entity> entities = world.getOtherEntities(this, getBoundingBox().expand(0.2f, 0.2f, 0.2f), EntityPredicates.canBePushedBy(this));
+        List<Entity> entities = world.getOtherEntities(this, getBoundingBox(), EntityPredicates.canBePushedBy(this));
         for (Entity entity : entities) {
             if (entity.hasPassenger(this)) continue;
             pushAwayFrom(entity);
@@ -328,8 +343,14 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
                             if(!placed)
                                 world.setBlockState(topPosition.down(), Blocks.STONE.getDefaultState());
                         }
-                        dataTracker.set(TRAVEL_STATE, STATE_IDLE);
+                        dataTracker.set(TRAVEL_STATE, STATE_GOING_DOWN);
                     }
+                }
+            }
+            if(dataTracker.get(TRAVEL_STATE) == STATE_GOING_DOWN){
+                double height = getY() - world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, getBlockPos()).getY();
+                if(height <= 1){
+                    dataTracker.set(TRAVEL_STATE, STATE_IDLE);
                 }
             }
         }
@@ -338,7 +359,11 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     private void createParticles() {
         if(world.isClient()){
             Vec3d vel = getVelocity();
-            world.addParticle(ParticleTypes.SMOKE, getX(), getY(), getZ(), vel.x, vel.y-1.0, vel.z);
+            for (int i = 0; i < 10; i++) {
+                float x2d = random.nextFloat()*2-1;
+                float y2d = random.nextFloat()*2-1;
+                world.addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, getX(), getY()+0.6, getZ(), vel.x+x2d*0.05, vel.y-0.15, vel.z+y2d*0.05);
+            }
         }
     }
 
