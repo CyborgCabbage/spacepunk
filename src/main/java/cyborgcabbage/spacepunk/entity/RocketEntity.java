@@ -67,21 +67,14 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
 
     private static final int TELEPORT_HEIGHT = 256;
 
-    private static final double MAX_SPEED = 50.0;
-
     private static final TrackedData<Integer> TRAVEL_STATE = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> FUEL = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Boolean> PARTICLES = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     private int interpolationCountdown;
-    private float velocityDecay;
-    private float yawVelocity;
     private double x;
     private double y;
     private double z;
-    private double waterLevel;
-    private float nearbySlipperiness;
-    private BoatEntity.Location location;
 
     private UUID passengerUuid;
 
