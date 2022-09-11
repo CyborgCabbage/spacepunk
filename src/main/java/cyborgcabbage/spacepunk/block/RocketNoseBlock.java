@@ -53,7 +53,6 @@ public class RocketNoseBlock extends Block implements Wearable {
                         world.updateNeighbors(d1, Blocks.AIR);
                         world.updateNeighbors(d2, Blocks.AIR);
                         world.updateNeighbors(d3, Blocks.AIR);
-                        Spacepunk.LOGGER.info(""+state.get(FACING));
                         rocketEntity.refreshPositionAndAngles(d3.getX() + 0.5, d3.getY(), d3.getZ() + 0.5, state.get(FACING).asRotation(), 0.0f);
                         world.spawnEntity(rocketEntity);
                         if (!world.isClient) world.playSound(null, d2, SoundEvents.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1f, 1);
