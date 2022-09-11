@@ -18,7 +18,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
@@ -342,7 +341,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
             }
             if(dataTracker.get(TRAVEL_STATE) == STATE_GOING_DOWN){
                 double height = getY() - world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, getBlockPos()).getY();
-                if(height <= 1){
+                if(height <= 1 || onGround) {
                     dataTracker.set(TRAVEL_STATE, STATE_IDLE);
                 }
             }
