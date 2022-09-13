@@ -4,6 +4,7 @@ import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.block.OxygenBlock;
 import cyborgcabbage.spacepunk.client.inventory.RocketScreen;
 import cyborgcabbage.spacepunk.client.render.dimension.MoonRenderer;
+import cyborgcabbage.spacepunk.client.render.dimension.VenusRenderer;
 import cyborgcabbage.spacepunk.client.render.entity.RocketEntityRenderer;
 import cyborgcabbage.spacepunk.client.render.entity.SulfurCreeperEntityRenderer;
 import cyborgcabbage.spacepunk.client.render.entity.SulfurTntEntityRenderer;
@@ -72,5 +73,6 @@ public class SpacepunkClient implements ClientModInitializer {
         });
         DimensionRenderingRegistry.registerSkyRenderer(Spacepunk.MOON, new MoonRenderer());
         DimensionRenderingRegistry.registerDimensionEffects(Spacepunk.MOON.getValue(), new MoonRenderer.MoonEffects());
+        DimensionRenderingRegistry.registerSkyRenderer(Spacepunk.VENUS, new VenusRenderer());
     }
 }
