@@ -10,18 +10,21 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.data.client.*;
 import net.minecraft.data.family.BlockFamilies;
 import net.minecraft.data.family.BlockFamily;
 import net.minecraft.data.server.BlockLootTableGenerator;
 import net.minecraft.data.server.RecipeProvider;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
+import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
 import net.minecraft.item.Item;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.predicate.StatePredicate;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
@@ -45,7 +48,15 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
             .group("wooden")
             .unlockCriterionName("has_planks")
             .build();
-    
+
+    public static final BlockFamily LUNAR_BRICK = BlockFamilies.register(Spacepunk.LUNAR_BRICKS)
+            .wall(Spacepunk.LUNAR_BRICK_WALL)
+            .stairs(Spacepunk.LUNAR_BRICK_STAIRS)
+            .slab(Spacepunk.LUNAR_BRICK_SLAB)
+            .chiseled(Spacepunk.CHISELED_LUNAR_BRICKS)
+            .cracked(Spacepunk.CRACKED_LUNAR_BRICKS)
+            .build();
+
     @Override
     public void onInitializeDataGenerator(FabricDataGenerator gen) {
         var blockTag = new BlockTagGenerator(gen);
@@ -69,9 +80,13 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
         @Override
         protected void generateRecipes(Consumer<RecipeJsonProvider> exporter) {
             RecipeProvider.generateFamily(exporter, VENUS);
+            RecipeProvider.generateFamily(exporter, LUNAR_BRICK);
             RecipeProvider.offerPlanksRecipe2(exporter, Spacepunk.VENUS_PLANKS, ItemTagGenerator.VENUS_LOGS);
             RecipeProvider.offerBarkBlockRecipe(exporter, Spacepunk.VENUS_WOOD, Spacepunk.VENUS_LOG);
             RecipeProvider.offerBarkBlockRecipe(exporter, Spacepunk.STRIPPED_VENUS_WOOD, Spacepunk.STRIPPED_VENUS_LOG);
+            ShapedRecipeJsonBuilder.create(Spacepunk.LUNAR_BRICKS, 4).input('#', Spacepunk.LUNAR_ROCK).pattern("##").pattern("##").criterion("has_lunar_rock", RecipeProvider.conditionsFromItem(Spacepunk.LUNAR_ROCK)).offerTo(exporter);
+            //RecipeProvider.createStairsRecipe(Spacepunk.LUNAR_BRICK_STAIRS, Ingredient.ofItems(Spacepunk.LUNAR_BRICKS)).criterion("has_lunar_bricks", RecipeProvider.conditionsFromItem(Spacepunk.LUNAR_BRICKS)).offerTo(exporter);
+            //RecipeProvider.create
         }
     }
     
@@ -87,7 +102,16 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
         protected void generateBlockLootTables() {
             addDrop(Spacepunk.LUNAR_SOIL);
             addDrop(Spacepunk.LUNAR_ROCK);
+
+            addDrop(Spacepunk.LUNAR_BRICKS);
+            addDrop(Spacepunk.LUNAR_BRICK_WALL);
+            addDrop(Spacepunk.CHISELED_LUNAR_BRICKS);
+            addDrop(Spacepunk.CRACKED_LUNAR_BRICKS);
+            addDrop(Spacepunk.LUNAR_BRICK_SLAB, BlockLootTableGenerator::slabDrops);
+            addDrop(Spacepunk.LUNAR_BRICK_STAIRS);
+
             addDrop(Spacepunk.ROCKET_NOSE);
+
             addDrop(Spacepunk.VENUS_PLANKS);
             addDrop(Spacepunk.VENUS_SAPLING);
             addDrop(Spacepunk.VENUS_LOG);
@@ -103,6 +127,7 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
             addDrop(Spacepunk.VENUS_SLAB, BlockLootTableGenerator::slabDrops);
             addDrop(Spacepunk.VENUS_DOOR, BlockLootTableGenerator::doorDrops);
             addDrop(Spacepunk.VENUS_LEAVES, (Block block) -> BlockLootTableGenerator.leavesDrop(block, Spacepunk.VENUS_SAPLING, SAPLING_DROP_CHANCE));
+
             addDrop(Spacepunk.EXTRA_TALL_GRASS, BlockLootTableGenerator::grassDrops);
             addDrop(Spacepunk.SULFUR);
             addDrop(Spacepunk.OXYGEN, dropsNothing());
@@ -151,6 +176,7 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
         @Override
         public void generateBlockStateModels(BlockStateModelGenerator gen) {
             gen.registerCubeAllModelTexturePool(VENUS.getBaseBlock()).family(VENUS);
+            gen.registerCubeAllModelTexturePool(LUNAR_BRICK.getBaseBlock()).family(LUNAR_BRICK);
             gen.registerSimpleCubeAll(Spacepunk.LUNAR_SOIL);
             gen.registerSimpleCubeAll(Spacepunk.LUNAR_ROCK);
             gen.registerSimpleCubeAll(Spacepunk.SULFUR);
@@ -182,12 +208,27 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
 
         @Override
         protected void generateTags() {
-            q(VENUS_LOGS, Spacepunk.VENUS_LOG, Spacepunk.STRIPPED_VENUS_LOG, Spacepunk.VENUS_WOOD, Spacepunk.STRIPPED_VENUS_WOOD);
-
+            q(VENUS_LOGS,
+                    Spacepunk.VENUS_LOG,
+                    Spacepunk.STRIPPED_VENUS_LOG,
+                    Spacepunk.VENUS_WOOD,
+                    Spacepunk.STRIPPED_VENUS_WOOD);
+            q(BlockTags.STONE_ORE_REPLACEABLES, Spacepunk.LUNAR_ROCK);
             q(BlockTags.LEAVES, Spacepunk.VENUS_LEAVES);
+            q(BlockTags.SLABS, Spacepunk.LUNAR_BRICK_SLAB);
+            q(BlockTags.STAIRS, Spacepunk.LUNAR_BRICK_STAIRS);
+            q(BlockTags.WALLS, Spacepunk.LUNAR_BRICK_WALL);
             q(BlockTags.AXE_MINEABLE);
             q(BlockTags.HOE_MINEABLE, Spacepunk.VENUS_LEAVES);
-            q(BlockTags.PICKAXE_MINEABLE, Spacepunk.LUNAR_ROCK, Spacepunk.ROCKET_NOSE);
+            q(BlockTags.PICKAXE_MINEABLE,
+                    Spacepunk.LUNAR_ROCK,
+                    Spacepunk.LUNAR_BRICKS,
+                    Spacepunk.ROCKET_NOSE,
+                    Spacepunk.LUNAR_BRICK_STAIRS,
+                    Spacepunk.LUNAR_BRICK_SLAB,
+                    Spacepunk.LUNAR_BRICK_WALL,
+                    Spacepunk.CHISELED_LUNAR_BRICKS,
+                    Spacepunk.CRACKED_LUNAR_BRICKS);
             q(BlockTags.SHOVEL_MINEABLE, Spacepunk.LUNAR_SOIL);
             q(BlockTags.ENDERMAN_HOLDABLE, Spacepunk.LUNAR_SOIL);
             q(BlockTags.FENCE_GATES, Spacepunk.VENUS_FENCE_GATE);
@@ -237,6 +278,9 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
             copy(BlockTags.WOODEN_SLABS, ItemTags.WOODEN_SLABS);
             copy(BlockTags.WOODEN_STAIRS, ItemTags.WOODEN_STAIRS);
             copy(BlockTags.WOODEN_TRAPDOORS, ItemTags.WOODEN_TRAPDOORS);
+            copy(BlockTags.SLABS, ItemTags.SLABS);
+            copy(BlockTags.STAIRS, ItemTags.STAIRS);
+            copy(BlockTags.WALLS, ItemTags.WALLS);
         }
     }
 }

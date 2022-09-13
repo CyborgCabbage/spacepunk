@@ -62,6 +62,12 @@ public class Spacepunk implements ModInitializer {
 	//Moon
 	public static final Block LUNAR_SOIL = new Block(FabricBlockSettings.of(Material.SOIL, MapColor.LIGHT_GRAY).strength(0.5f).sounds(BlockSoundGroup.GRAVEL));
 	public static final Block LUNAR_ROCK = new Block(FabricBlockSettings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(1.5f, 6.0f));
+	public static final Block LUNAR_BRICKS = new Block(FabricBlockSettings.of(Material.STONE).requiresTool().strength(1.5f, 6.0f));
+	public static final Block LUNAR_BRICK_STAIRS = new StairsBlock(LUNAR_BRICKS.getDefaultState(), FabricBlockSettings.copy(LUNAR_BRICKS));
+	public static final Block LUNAR_BRICK_SLAB = new SlabBlock(FabricBlockSettings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(2.0f, 6.0f));
+	public static final Block LUNAR_BRICK_WALL =  new WallBlock(FabricBlockSettings.copy(LUNAR_BRICKS));
+	public static final Block CHISELED_LUNAR_BRICKS =  new Block(FabricBlockSettings.of(Material.STONE).requiresTool().strength(1.5f, 6.0f));
+	public static final Block CRACKED_LUNAR_BRICKS =  new Block(FabricBlockSettings.of(Material.STONE).requiresTool().strength(1.5f, 6.0f));
 	//Venus
 	public static final Block VENUS_WOOD = new PillarBlock(FabricBlockSettings.of(Material.WOOD, MapColor.DIRT_BROWN).strength(2.0f).sounds(BlockSoundGroup.WOOD));
 	public static final Block VENUS_LEAVES = new LeavesBlock(FabricBlockSettings.of(Material.LEAVES).strength(0.2f).ticksRandomly().sounds(BlockSoundGroup.GRASS).nonOpaque().allowsSpawning((a,b,c,d)->false).suffocates((a,b,c)->false).blockVision((a,b,c)->false));
@@ -78,7 +84,7 @@ public class Spacepunk implements ModInitializer {
 	public static final Block STRIPPED_VENUS_WOOD = new PillarBlock(FabricBlockSettings.of(Material.WOOD, MapColor.PALE_YELLOW).strength(2.0f).sounds(BlockSoundGroup.WOOD));
 	public static final Block SULFUR_TNT = new SulfurTntBlock(FabricBlockSettings.of(Material.TNT).breakInstantly().sounds(BlockSoundGroup.GRASS));
 	public static final Block SULFUR = new Block(FabricBlockSettings.of(Material.AGGREGATE, MapColor.YELLOW).strength(0.5f).sounds(BlockSoundGroup.SAND));
-	public static final Block EXTRA_TALL_GRASS = new ExtraTallGrassBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS));
+	public static final Block EXTRA_TALL_GRASS = new ExtraTallGrassBlock(FabricBlockSettings.of(Material.REPLACEABLE_PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS));
 
 	//public static final Block VENUS_SIGN = new SignBlock(FabricBlockSettings.of(Material.WOOD, MapColor.PALE_YELLOW).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), SignType.ACACIA); //TODO: figure out what SignType is
 	//public static final Block VENUS_WALL_SIGN = new WallSignBlock(FabricBlockSettings.of(Material.WOOD, MapColor.PALE_YELLOW).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD).dropsLike(VENUS_SIGN), SignType.ACACIA);
@@ -140,6 +146,12 @@ public class Spacepunk implements ModInitializer {
 		//Moon
 		registerBlockAndItem("lunar_soil", LUNAR_SOIL);
 		registerBlockAndItem("lunar_rock", LUNAR_ROCK);
+		registerBlockAndItem("lunar_bricks", LUNAR_BRICKS);
+		registerBlockAndItem("lunar_brick_stairs", LUNAR_BRICK_STAIRS);
+		registerBlockAndItem("lunar_brick_slab", LUNAR_BRICK_SLAB);
+		registerBlockAndItem("cracked_lunar_bricks", CRACKED_LUNAR_BRICKS);
+		registerBlockAndItem("chiseled_lunar_bricks", CHISELED_LUNAR_BRICKS);
+		registerBlockAndItem("lunar_brick_wall", LUNAR_BRICK_WALL);
 		//Venus
 		registerBlockAndItem("venus_wood", VENUS_WOOD);
 		registerBlockAndItem("venus_leaves", VENUS_LEAVES);
