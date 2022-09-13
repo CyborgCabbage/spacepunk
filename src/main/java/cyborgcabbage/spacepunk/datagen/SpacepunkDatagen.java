@@ -49,6 +49,11 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
             .unlockCriterionName("has_planks")
             .build();
 
+    public static final BlockFamily LUNAR_ROCK = BlockFamilies.register(Spacepunk.LUNAR_ROCK)
+            .slab(Spacepunk.LUNAR_ROCK_SLAB)
+            .stairs(Spacepunk.LUNAR_ROCK_STAIRS)
+            .build();
+
     public static final BlockFamily LUNAR_BRICK = BlockFamilies.register(Spacepunk.LUNAR_BRICKS)
             .wall(Spacepunk.LUNAR_BRICK_WALL)
             .stairs(Spacepunk.LUNAR_BRICK_STAIRS)
@@ -80,6 +85,7 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
         @Override
         protected void generateRecipes(Consumer<RecipeJsonProvider> exporter) {
             RecipeProvider.generateFamily(exporter, VENUS);
+            RecipeProvider.generateFamily(exporter, LUNAR_ROCK);
             RecipeProvider.generateFamily(exporter, LUNAR_BRICK);
             RecipeProvider.offerPlanksRecipe2(exporter, Spacepunk.VENUS_PLANKS, ItemTagGenerator.VENUS_LOGS);
             RecipeProvider.offerBarkBlockRecipe(exporter, Spacepunk.VENUS_WOOD, Spacepunk.VENUS_LOG);
@@ -101,7 +107,10 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
         @Override
         protected void generateBlockLootTables() {
             addDrop(Spacepunk.LUNAR_SOIL);
+
             addDrop(Spacepunk.LUNAR_ROCK);
+            addDrop(Spacepunk.LUNAR_ROCK_SLAB, BlockLootTableGenerator::slabDrops);
+            addDrop(Spacepunk.LUNAR_ROCK_STAIRS);
 
             addDrop(Spacepunk.LUNAR_BRICKS);
             addDrop(Spacepunk.LUNAR_BRICK_WALL);
@@ -176,9 +185,9 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
         @Override
         public void generateBlockStateModels(BlockStateModelGenerator gen) {
             gen.registerCubeAllModelTexturePool(VENUS.getBaseBlock()).family(VENUS);
+            gen.registerCubeAllModelTexturePool(LUNAR_ROCK.getBaseBlock()).family(LUNAR_ROCK);
             gen.registerCubeAllModelTexturePool(LUNAR_BRICK.getBaseBlock()).family(LUNAR_BRICK);
             gen.registerSimpleCubeAll(Spacepunk.LUNAR_SOIL);
-            gen.registerSimpleCubeAll(Spacepunk.LUNAR_ROCK);
             gen.registerSimpleCubeAll(Spacepunk.SULFUR);
             gen.registerSingleton(Spacepunk.SULFUR_TNT, TexturedModel.CUBE_BOTTOM_TOP);
             gen.registerLog(Spacepunk.VENUS_LOG).log(Spacepunk.VENUS_LOG).wood(Spacepunk.VENUS_WOOD);
@@ -215,13 +224,19 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
                     Spacepunk.STRIPPED_VENUS_WOOD);
             q(BlockTags.STONE_ORE_REPLACEABLES, Spacepunk.LUNAR_ROCK);
             q(BlockTags.LEAVES, Spacepunk.VENUS_LEAVES);
-            q(BlockTags.SLABS, Spacepunk.LUNAR_BRICK_SLAB);
-            q(BlockTags.STAIRS, Spacepunk.LUNAR_BRICK_STAIRS);
+            q(BlockTags.SLABS,
+                    Spacepunk.LUNAR_ROCK_SLAB,
+                    Spacepunk.LUNAR_BRICK_SLAB);
+            q(BlockTags.STAIRS,
+                    Spacepunk.LUNAR_ROCK_STAIRS,
+                    Spacepunk.LUNAR_BRICK_STAIRS);
             q(BlockTags.WALLS, Spacepunk.LUNAR_BRICK_WALL);
             q(BlockTags.AXE_MINEABLE);
             q(BlockTags.HOE_MINEABLE, Spacepunk.VENUS_LEAVES);
             q(BlockTags.PICKAXE_MINEABLE,
                     Spacepunk.LUNAR_ROCK,
+                    Spacepunk.LUNAR_ROCK_STAIRS,
+                    Spacepunk.LUNAR_ROCK_SLAB,
                     Spacepunk.LUNAR_BRICKS,
                     Spacepunk.ROCKET_NOSE,
                     Spacepunk.LUNAR_BRICK_STAIRS,

@@ -62,6 +62,8 @@ public class Spacepunk implements ModInitializer {
 	//Moon
 	public static final Block LUNAR_SOIL = new Block(FabricBlockSettings.of(Material.SOIL, MapColor.LIGHT_GRAY).strength(0.5f).sounds(BlockSoundGroup.GRAVEL));
 	public static final Block LUNAR_ROCK = new Block(FabricBlockSettings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(1.5f, 6.0f));
+	public static final Block LUNAR_ROCK_STAIRS = new StairsBlock(LUNAR_ROCK.getDefaultState(), FabricBlockSettings.copy(LUNAR_ROCK));
+	public static final Block LUNAR_ROCK_SLAB = new SlabBlock(FabricBlockSettings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(2.0f, 6.0f));
 	public static final Block LUNAR_BRICKS = new Block(FabricBlockSettings.of(Material.STONE).requiresTool().strength(1.5f, 6.0f));
 	public static final Block LUNAR_BRICK_STAIRS = new StairsBlock(LUNAR_BRICKS.getDefaultState(), FabricBlockSettings.copy(LUNAR_BRICKS));
 	public static final Block LUNAR_BRICK_SLAB = new SlabBlock(FabricBlockSettings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(2.0f, 6.0f));
@@ -145,7 +147,11 @@ public class Spacepunk implements ModInitializer {
 		registerBlockAndItem("rocket_nose", ROCKET_NOSE);
 		//Moon
 		registerBlockAndItem("lunar_soil", LUNAR_SOIL);
+
 		registerBlockAndItem("lunar_rock", LUNAR_ROCK);
+		registerBlockAndItem("lunar_rock_stairs", LUNAR_ROCK_STAIRS);
+		registerBlockAndItem("lunar_rock_slab", LUNAR_ROCK_SLAB);
+
 		registerBlockAndItem("lunar_bricks", LUNAR_BRICKS);
 		registerBlockAndItem("lunar_brick_stairs", LUNAR_BRICK_STAIRS);
 		registerBlockAndItem("lunar_brick_slab", LUNAR_BRICK_SLAB);
