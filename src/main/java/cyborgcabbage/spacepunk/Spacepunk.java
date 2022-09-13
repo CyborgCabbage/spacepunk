@@ -12,11 +12,9 @@ import cyborgcabbage.spacepunk.feature.FractalStarFeatureConfig;
 import cyborgcabbage.spacepunk.inventory.RocketScreenHandler;
 import cyborgcabbage.spacepunk.item.BottledAirItem;
 import cyborgcabbage.spacepunk.item.ExtraTallGrassBlockItem;
-import cyborgcabbage.spacepunk.util.MyDamageSource;
 import cyborgcabbage.spacepunk.util.PlanetProperties;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
@@ -29,12 +27,9 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
-import org.apache.logging.log4j.core.jmx.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +39,7 @@ public class Spacepunk implements ModInitializer {
 	public static final String MOD_ID = "spacepunk";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	public static final DamageSource VACUUM = new MyDamageSource("vacuum").setBypassesArmor();
+	public static final DamageSource VACUUM = new DamageSource("vacuum").setBypassesArmor();
 
 	public static ArrayList<RegistryKey<World>> TARGET_DIMENSION_LIST = new ArrayList<>();
 
