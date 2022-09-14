@@ -83,23 +83,15 @@ public class Spacepunk implements ModInitializer {
 	public static final Block SULFUR = new Block(FabricBlockSettings.of(Material.AGGREGATE, MapColor.YELLOW).strength(0.5f).sounds(BlockSoundGroup.SAND));
 	public static final Block EXTRA_TALL_GRASS = new ExtraTallGrassBlock(FabricBlockSettings.of(Material.REPLACEABLE_PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS));
 
-	//public static final Block VENUS_SIGN = new SignBlock(FabricBlockSettings.of(Material.WOOD, MapColor.PALE_YELLOW).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), SignType.ACACIA); //TODO: figure out what SignType is
-	//public static final Block VENUS_WALL_SIGN = new WallSignBlock(FabricBlockSettings.of(Material.WOOD, MapColor.PALE_YELLOW).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD).dropsLike(VENUS_SIGN), SignType.ACACIA);
 	public static final Block VENUS_DOOR = new DoorBlock(FabricBlockSettings.of(Material.WOOD, VENUS_PLANKS.getDefaultMapColor()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque());
 	public static final Block VENUS_SAPLING = new SaplingBlock(new VenusSaplingGenerator(), FabricBlockSettings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.GRASS));
 
-	//public static final Item VENUS_SIGN_ITEM = new SignItem(new FabricItemSettings().maxCount(16).group(ItemGroup.MISC), VENUS_SIGN, VENUS_WALL_SIGN);
 	public static final Item VENUS_DOOR_ITEM = new TallBlockItem(VENUS_DOOR, new FabricItemSettings().group(MY_ITEM_GROUP));
 	public static final Item EXTRA_TALL_GRASS_ITEM = new ExtraTallGrassBlockItem(EXTRA_TALL_GRASS, new Item.Settings().group(MY_ITEM_GROUP));
 
 	public static final Item SPACESUIT_HELMET = new ArmorItem(MyArmorMaterials.SPACESUIT, EquipmentSlot.HEAD, new FabricItemSettings().group(MY_ITEM_GROUP));
 	public static final Item BOTTLED_AIR = new BottledAirItem(new FabricItemSettings().maxDamage(180).group(MY_ITEM_GROUP));
 	public static final Item PRESSURE_GAUGE = new Item(new FabricItemSettings().group(MY_ITEM_GROUP));
-
-
-	//public static final BoatEntity.Type VENUS_BOAT_TYPE = new BoatEntity.Type(VENUS_PLANKS,"venus");
-
-	//public static final Item VENUS_BOAT = new BoatItem(BoatEntity.Type.SPRUCE, new FabricItemSettings().maxCount(1).group(ItemGroup.MISC));
 
 	public static final ExtendedScreenHandlerType<RocketScreenHandler> ROCKET_SCREEN_HANDLER = new ExtendedScreenHandlerType<>(RocketScreenHandler::new);
 
@@ -140,6 +132,9 @@ public class Spacepunk implements ModInitializer {
 		);
 		//Tech
 		registerBlockAndItem("rocket_nose", ROCKET_NOSE);
+		Registry.register(Registry.ITEM, id("copper_spacesuit_helmet"), SPACESUIT_HELMET);
+		Registry.register(Registry.ITEM, id("bottled_air"), BOTTLED_AIR);
+		Registry.register(Registry.ITEM, id("pressure_gauge"), PRESSURE_GAUGE);
 		//Moon
 		registerBlockAndItem("lunar_soil", LUNAR_SOIL);
 
@@ -162,29 +157,21 @@ public class Spacepunk implements ModInitializer {
 		registerBlockAndItem("venus_log", VENUS_LOG);
 		registerBlockAndItem("venus_pressure_plate", VENUS_PRESSURE_PLATE);
 		registerBlockAndItem("venus_trapdoor", VENUS_TRAPDOOR);
+		Registry.register(Registry.ITEM, id("venus_door"), VENUS_DOOR_ITEM);
 		registerBlockAndItem("venus_button", VENUS_BUTTON);
 		registerBlockAndItem("venus_fence_gate", VENUS_FENCE_GATE);
 		registerBlockAndItem("venus_fence", VENUS_FENCE);
 		registerBlockAndItem("stripped_venus_log", STRIPPED_VENUS_LOG);
 		registerBlockAndItem("stripped_venus_wood", STRIPPED_VENUS_WOOD);
-
 		registerBlockAndItem("venus_sapling", VENUS_SAPLING);
+		Registry.register(Registry.ITEM, id("extra_tall_grass"), EXTRA_TALL_GRASS_ITEM);
 
-		registerBlockAndItem("sulfur_tnt", SULFUR_TNT);
 		registerBlockAndItem("sulfur", SULFUR);
+		registerBlockAndItem("sulfur_tnt", SULFUR_TNT);
 
-		//Registry.register(Registry.BLOCK, id("venus_sign"), VENUS_SIGN);
-		//Registry.register(Registry.BLOCK, id("venus_wall_sign"), VENUS_WALL_SIGN);
 		Registry.register(Registry.BLOCK, id("oxygen"), OXYGEN);
 		Registry.register(Registry.BLOCK, id("venus_door"), VENUS_DOOR);
 		Registry.register(Registry.BLOCK, id("extra_tall_grass"), EXTRA_TALL_GRASS);
-
-		//Registry.register(Registry.ITEM, id("venus_sign"), VENUS_SIGN_ITEM);
-		Registry.register(Registry.ITEM, id("venus_door"), VENUS_DOOR_ITEM);
-		Registry.register(Registry.ITEM, id("extra_tall_grass"), EXTRA_TALL_GRASS_ITEM);
-		Registry.register(Registry.ITEM, id("copper_spacesuit_helmet"), SPACESUIT_HELMET);
-		Registry.register(Registry.ITEM, id("bottled_air"), BOTTLED_AIR);
-		Registry.register(Registry.ITEM, id("pressure_gauge"), PRESSURE_GAUGE);
 
 		Registry.register(Registry.FEATURE, id("fractal_star"), new FractalStarFeature(FractalStarFeatureConfig.CODEC));
 		Registry.register(Registry.FEATURE, id("boulder"), new BoulderFeature(BoulderFeatureConfig.CODEC));
