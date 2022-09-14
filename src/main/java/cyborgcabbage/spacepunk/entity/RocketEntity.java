@@ -26,6 +26,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.screen.PropertyDelegate;
@@ -48,6 +49,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -351,10 +353,16 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     private void createParticles() {
         if(world.isClient()){
             Vec3d vel = getVelocity();
-            for (int i = 0; i < 10; i++) {
-                float x2d = random.nextFloat()*2-1;
-                float y2d = random.nextFloat()*2-1;
-                world.addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, getX(), getY()+0.6, getZ(), vel.x+x2d*0.05, vel.y-0.15, vel.z+y2d*0.05);
+            for (int i = 0; i < 20; i++) {
+                DefaultParticleType[] particleTypeArray = new DefaultParticleType[]{
+                        ParticleTypes.FLAME,
+                        ParticleTypes.SMALL_FLAME
+                };
+                for (DefaultParticleType pt : particleTypeArray) {
+                    float x2d = random.nextFloat()*2-1;
+                    float y2d = random.nextFloat()*2-1;
+                    world.addParticle(pt, getX(), getY()+0.6, getZ(), vel.x+x2d*0.2, vel.y-0.5, vel.z+y2d*0.2);
+                }
             }
         }
     }
