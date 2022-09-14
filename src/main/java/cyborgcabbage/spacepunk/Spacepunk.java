@@ -55,7 +55,7 @@ public class Spacepunk implements ModInitializer {
 	public static final Block ROCKET_NOSE = new RocketNoseBlock(FabricBlockSettings.of(Material.METAL, MapColor.ORANGE).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER));
 	public static final ItemGroup MY_ITEM_GROUP = FabricItemGroupBuilder.build(id("spacepunk"), () -> new ItemStack(ROCKET_NOSE));
 	//Moon
-	public static final Block LUNAR_SOIL = new Block(FabricBlockSettings.of(Material.SOIL, MapColor.LIGHT_GRAY).strength(0.5f).sounds(BlockSoundGroup.GRAVEL));
+	public static final Block LUNAR_SOIL = new FallingBlock(FabricBlockSettings.of(Material.SOIL, MapColor.LIGHT_GRAY).strength(0.5f).sounds(BlockSoundGroup.GRAVEL));
 	public static final Block LUNAR_ROCK = new Block(FabricBlockSettings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(1.5f, 6.0f));
 	public static final Block LUNAR_ROCK_STAIRS = new StairsBlock(LUNAR_ROCK.getDefaultState(), FabricBlockSettings.copy(LUNAR_ROCK));
 	public static final Block LUNAR_ROCK_SLAB = new SlabBlock(FabricBlockSettings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(2.0f, 6.0f));
