@@ -65,6 +65,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     public static final int ACTION_CHANGE_TARGET = 2;
 
     private static final int FUEL_CAPACITY = 10;
+    private static final int LAUNCH_COST = 5;
 
     private static final int TELEPORT_HEIGHT = 256;
 
@@ -380,7 +381,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
 
     public void launch(PlayerEntity player){
         if(!world.isClient) {
-            if (dataTracker.get(FUEL) < FUEL_CAPACITY){
+            if (dataTracker.get(FUEL) < LAUNCH_COST){
                 player.sendMessage(Text.translatable("entity.spacepunk.rocket.fuel"), true);
                 return;
             }
@@ -393,7 +394,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
                 return;
             }
             player.sendMessage(Text.translatable("entity.spacepunk.rocket.launch"), true);
-            dataTracker.set(FUEL, 0);
+            dataTracker.set(FUEL, dataTracker.get(FUEL)-LAUNCH_COST);
             dataTracker.set(TRAVEL_STATE, STATE_GOING_UP);
         }
     }

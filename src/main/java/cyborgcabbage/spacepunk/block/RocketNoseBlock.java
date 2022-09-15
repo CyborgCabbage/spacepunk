@@ -15,6 +15,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
+import vazkii.patchouli.api.PatchouliAPI;
 
 public class RocketNoseBlock extends Block implements Wearable {
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
@@ -56,6 +57,9 @@ public class RocketNoseBlock extends Block implements Wearable {
                         rocketEntity.refreshPositionAndAngles(d3.getX() + 0.5, d3.getY(), d3.getZ() + 0.5, state.get(FACING).asRotation(), 0.0f);
                         world.spawnEntity(rocketEntity);
                         if (!world.isClient) world.playSound(null, d2, SoundEvents.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1f, 1);
+                        if (PatchouliAPI.get().getCurrentMultiblock() == Spacepunk.ROCKET_MULTIBLOCK){
+                            PatchouliAPI.get().clearMultiblock();
+                        }
                     }else{
                         Spacepunk.LOGGER.error("RocketEntity spawning failed at "+d3+", RocketEntity was null");
                     }

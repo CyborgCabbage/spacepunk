@@ -11,7 +11,7 @@ import net.minecraft.util.Lazy;
 import java.util.function.Supplier;
 
 public enum MyArmorMaterials implements ArmorMaterial {
-    SPACESUIT("copper_spacesuit", 15, new int[]{1, 4, 5, 2}, 12, SoundEvents.ITEM_ARMOR_EQUIP_GOLD, 0.0f, 0.0f, () -> Ingredient.ofItems(Items.COPPER_INGOT));
+    SPACESUIT("spacesuit", 15, new int[]{1, 4, 5, 2}, 12, SoundEvents.ITEM_ARMOR_EQUIP_GOLD, 0.0f, 0.0f, () -> Ingredient.ofItems(Items.COPPER_INGOT));
 
     private static final int[] BASE_DURABILITY;
     private final String name;

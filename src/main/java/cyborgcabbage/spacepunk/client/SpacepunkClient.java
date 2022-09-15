@@ -2,6 +2,7 @@ package cyborgcabbage.spacepunk.client;
 
 import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.block.OxygenBlock;
+import cyborgcabbage.spacepunk.client.book.MyPageMultiblock;
 import cyborgcabbage.spacepunk.client.inventory.RocketScreen;
 import cyborgcabbage.spacepunk.client.render.dimension.MoonRenderer;
 import cyborgcabbage.spacepunk.client.render.dimension.VenusRenderer;
@@ -32,6 +33,9 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
+import vazkii.patchouli.api.PatchouliAPI;
+import vazkii.patchouli.client.book.ClientBookRegistry;
+import vazkii.patchouli.client.book.page.PageText;
 
 @Environment(EnvType.CLIENT)
 public class SpacepunkClient implements ClientModInitializer {
@@ -74,5 +78,7 @@ public class SpacepunkClient implements ClientModInitializer {
         DimensionRenderingRegistry.registerSkyRenderer(Spacepunk.MOON, new MoonRenderer());
         DimensionRenderingRegistry.registerDimensionEffects(Spacepunk.MOON.getValue(), new MoonRenderer.MoonEffects());
         DimensionRenderingRegistry.registerSkyRenderer(Spacepunk.VENUS, new VenusRenderer());
+
+        ClientBookRegistry.INSTANCE.pageTypes.put(Spacepunk.id("my_multiblock"), MyPageMultiblock.class);
     }
 }

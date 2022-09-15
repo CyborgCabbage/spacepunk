@@ -1,0 +1,7 @@
+{
+    "name": "A Guide To Rocketry",
+    "landing_text": "Space is the final frontier.",
+    "version": 1,
+    "creative_tab" : "spacepunk.spacepunk",
+    "use_blocky_font" : true
+}

@@ -32,6 +32,8 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import vazkii.patchouli.api.IMultiblock;
+import vazkii.patchouli.api.PatchouliAPI;
 
 import java.util.ArrayList;
 
@@ -95,7 +97,12 @@ public class Spacepunk implements ModInitializer {
 
 	public static final ExtendedScreenHandlerType<RocketScreenHandler> ROCKET_SCREEN_HANDLER = new ExtendedScreenHandlerType<>(RocketScreenHandler::new);
 
-
+	public static final IMultiblock ROCKET_MULTIBLOCK = PatchouliAPI.get().makeMultiblock(new String[][]{
+			{"N"},
+			{"C"},
+			{"C"},
+			{"0"},
+	}, 'N', ROCKET_NOSE, 'C', Blocks.COPPER_BLOCK, '0', Blocks.BLAST_FURNACE).setSymmetrical(true);
 
 	@Override
 	public void onInitialize() {
@@ -132,7 +139,7 @@ public class Spacepunk implements ModInitializer {
 		);
 		//Tech
 		registerBlockAndItem("rocket_nose", ROCKET_NOSE);
-		Registry.register(Registry.ITEM, id("copper_spacesuit_helmet"), SPACESUIT_HELMET);
+		Registry.register(Registry.ITEM, id("spacesuit_helmet"), SPACESUIT_HELMET);
 		Registry.register(Registry.ITEM, id("bottled_air"), BOTTLED_AIR);
 		Registry.register(Registry.ITEM, id("pressure_gauge"), PRESSURE_GAUGE);
 		//Moon
@@ -178,7 +185,8 @@ public class Spacepunk implements ModInitializer {
 
 		TARGET_DIMENSION_LIST.add(World.OVERWORLD);
 		TARGET_DIMENSION_LIST.add(MOON);
-		//TARGET_DIMENSION_LIST.add(VENUS);
+
+		PatchouliAPI.get().registerMultiblock(id("rocket_mk1"), ROCKET_MULTIBLOCK);
 	}
 	private void registerBlockAndItem(String name, Block block){
 		Registry.register(Registry.BLOCK, id(name), block);

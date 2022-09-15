@@ -1,0 +1,18 @@
+{
+    "name": "3) Atmosphere",
+    "icon": "minecraft:oak_leaves",
+    "category": "spacepunk:first_launch",
+    "sortnum" : 2,
+    "pages": [
+        "If you want to make a long term settlement on the Moon, you will want to create some atmosphere. $(br)$(br)Leave some $(item)leaves/$ in an enclosed space, and the pressure will rise in no time!",
+        {
+            "type" : "patchouli:image",
+            "images" : [
+                "spacepunk:textures/book/moonbase0.png",
+                "spacepunk:textures/book/moonbase1.png"
+            ],
+            "title" : "Example Habitat",
+            "border" : true
+        }
+    ]
+}
