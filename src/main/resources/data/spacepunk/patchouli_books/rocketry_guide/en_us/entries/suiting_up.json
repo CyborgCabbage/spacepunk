@@ -7,7 +7,7 @@
         {
             "type" : "patchouli:crafting",
             "recipe" : "spacepunk:bottled_air",
-            "text" : "$(item)Bottled Air/$ can be consumed to refill your air bar. Each bottle contains roughly $(thing)three minutes/$ of air."
+            "text" : "$(item)Bottled Air/$ can be consumed to refill your air bar. Each bottle contains $(thing)three minutes/$ of air."
         },
         {
             "type" : "patchouli:crafting",

@@ -4,6 +4,6 @@
     "category": "spacepunk:first_launch",
     "sortnum" : 3,
     "pages": [
-        "If you've read all the other entries and think your prepared for your journey, then there is only one thing left to do: hit LAUNCH!"
+        "If you've read all the other entries and think your prepared for your journey, then there is only one thing left to do: $(p)HIT LAUNCH!"
     ]
 }

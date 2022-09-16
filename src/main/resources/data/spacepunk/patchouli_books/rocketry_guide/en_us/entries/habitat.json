@@ -4,7 +4,7 @@
     "category": "spacepunk:first_launch",
     "sortnum" : 2,
     "pages": [
-        "If you want to make a long term settlement on the Moon, you will want to create some atmosphere. $(br)$(br)Leave some $(item)leaves/$ in an enclosed space, and the pressure will rise in no time!",
+        "If you want to make a long term settlement on the Moon, you will want to create some atmosphere. $(p)Leave some $(item)leaves/$ in an enclosed space, and the pressure will rise in no time!",
         {
             "type" : "patchouli:image",
             "images" : [

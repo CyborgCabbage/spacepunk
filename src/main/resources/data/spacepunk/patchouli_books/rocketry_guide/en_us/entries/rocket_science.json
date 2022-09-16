@@ -4,7 +4,6 @@
     "category": "spacepunk:first_launch",
     "sortnum" : 0,
     "pages": [
-        "To get to space, you need a rocket. ",
         {
             "type": "patchouli:crafting",
             "recipe": "spacepunk:rocket_nose",
@@ -15,7 +14,7 @@
             "name" : "Rocket Multi-block",
             "multiblock_id": "spacepunk:rocket_mk1",
             "gui_offset" : -15,
-            "text" : "$(o)Make sure you place the $(item)Rocket Nose Cone/$$(o) last!"
+            "text" : "Make sure you place the $(item)Rocket Nose Cone/$ last!"
         },
         {
             "type" : "patchouli:entity",
@@ -23,12 +22,12 @@
             "entity" : "spacepunk:rocket",
             "scale" : 0.8,
             "offset" : 0.5,
-            "text" : "$(o)Here's one I made earlier."
+            "text" : "Here's one I made earlier."
         },
         {
             "type" : "patchouli:text",
             "title" : "Fueling Your Rocket",
-            "text" : "To fuel this voyage your gonna need the most potent source of energy available: lava. $(br)Just use the lava buckets on the rocket to fill it up (like a cauldron). $(br)$(br)The tank can hold $(thing)ten buckets/$ of lava, which is enough for a trip to the moon and back."
+            "text" : "To fuel this voyage your gonna need the most potent source of energy available: lava. $(br)Just use the lava buckets on the rocket to fill it up (like a cauldron). $(p)The tank can hold $(thing)ten buckets of lava/$, which is enough for a trip to the moon and back."
         },
         {
             "type" : "patchouli:text",
