@@ -12,6 +12,8 @@
   "entity.spacepunk.rocket.wrong_dimension": "Cannot launch from this dimension!",
   "entity.spacepunk.rocket.in_dimension": "Already at destination!",
 
+  "gui.spacepunk.rocket.launch" : "Launch",
+  "gui.spacepunk.rocket.disassemble" : "Disassemble",
   "dimension.minecraft:overworld": "Earth",
   "dimension.spacepunk:moon": "The Moon",
   "dimension.spacepunk:venus": "Venus",

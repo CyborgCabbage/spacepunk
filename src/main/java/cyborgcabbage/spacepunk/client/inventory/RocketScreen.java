@@ -65,12 +65,12 @@ public class RocketScreen extends HandledScreen<RocketScreenHandler> {
         int buttonWidth = 70;
         int buttonHeight = 20;
         int leftWidth = backgroundWidth/2;
-        this.addDrawableChild(new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY-22-buttonHeight/2 , buttonWidth, buttonHeight, Text.literal("Launch"), button -> {
+        this.addDrawableChild(new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY-22-buttonHeight/2 , buttonWidth, buttonHeight, Text.translatable("gui.spacepunk.rocket.launch"), button -> {
             client.interactionManager.clickButton(handler.syncId, RocketEntity.ACTION_LAUNCH);
             //Exit Menu
             client.setScreen(null);
         }));
-        this.addDrawableChild(new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY-buttonHeight/2 , buttonWidth, buttonHeight, Text.literal("Disassemble"), button -> {
+        this.addDrawableChild(new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY-buttonHeight/2 , buttonWidth, buttonHeight, Text.translatable("gui.spacepunk.rocket.disassemble"), button -> {
             client.interactionManager.clickButton(handler.syncId, RocketEntity.ACTION_DISASSEMBLE);
             //Exit Menu
             client.setScreen(null);
