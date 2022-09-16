@@ -381,16 +381,16 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
 
     public void launch(PlayerEntity player){
         if(!world.isClient) {
-            if (dataTracker.get(FUEL) < LAUNCH_COST){
-                player.sendMessage(Text.translatable("entity.spacepunk.rocket.fuel"), true);
-                return;
-            }
             if(!Spacepunk.TARGET_DIMENSION_LIST.contains(world.getRegistryKey())){
                 player.sendMessage(Text.translatable("entity.spacepunk.rocket.wrong_dimension"), true);
                 return;
             }
             if(Spacepunk.TARGET_DIMENSION_LIST.get(targetDimensionIndex).equals(world.getRegistryKey())){
                 player.sendMessage(Text.translatable("entity.spacepunk.rocket.in_dimension"), true);
+                return;
+            }
+            if (dataTracker.get(FUEL) < LAUNCH_COST){
+                player.sendMessage(Text.translatable("entity.spacepunk.rocket.fuel"), true);
                 return;
             }
             player.sendMessage(Text.translatable("entity.spacepunk.rocket.launch"), true);
