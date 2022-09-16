@@ -2,8 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "CCC",
-    "CGC",
-    "B B"
+    "CGC"
   ],
   "key": {
     "C": {
@@ -11,9 +10,6 @@
     },
     "G": {
       "item": "minecraft:glass"
-    },
-    "B": {
-      "item": "spacepunk:bottled_air"
     }
   },
   "result": {
