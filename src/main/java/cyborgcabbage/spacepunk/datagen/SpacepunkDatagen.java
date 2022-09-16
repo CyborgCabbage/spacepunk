@@ -1,16 +1,19 @@
 package cyborgcabbage.spacepunk.datagen;
 
+import com.google.common.collect.Lists;
 import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.block.OxygenBlock;
 import cyborgcabbage.spacepunk.block.SulfurTntBlock;
+import cyborgcabbage.spacepunk.util.BuildRocketCriterion;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
+import net.fabricmc.fabric.api.datagen.v1.provider.*;
+import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementCriterion;
+import net.minecraft.advancement.AdvancementFrame;
+import net.minecraft.advancement.AdvancementRewards;
+import net.minecraft.advancement.criterion.*;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.data.client.*;
 import net.minecraft.data.family.BlockFamilies;
 import net.minecraft.data.family.BlockFamily;
@@ -19,19 +22,39 @@ import net.minecraft.data.server.RecipeProvider;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.Items;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
+import net.minecraft.loot.context.LootContextType;
+import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.loot.entry.ItemEntry;
+import net.minecraft.loot.function.LootFunction;
+import net.minecraft.loot.function.SetNbtLootFunction;
+import net.minecraft.loot.provider.nbt.LootNbtProvider;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtString;
+import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.StatePredicate;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.predicate.entity.EntityEquipmentPredicate;
+import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.TagKey;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
+import vazkii.patchouli.api.PatchouliAPI;
+import vazkii.patchouli.common.item.PatchouliItems;
 
+import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class SpacepunkDatagen implements DataGeneratorEntrypoint {
@@ -65,17 +88,90 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
     @Override
     public void onInitializeDataGenerator(FabricDataGenerator gen) {
         var blockTag = new BlockTagGenerator(gen);
-        var itemTag = new ItemTagGenerator(gen, blockTag);
-        var model = new ModelGenerator(gen);
-        var loot = new LootGenerator(gen);
-        var recipe = new RecipeGenerator(gen);
         gen.addProvider(blockTag);
-        gen.addProvider(itemTag);
-        gen.addProvider(model);
-        gen.addProvider(loot);
-        gen.addProvider(recipe);
+        gen.addProvider(new ItemTagGenerator(gen, blockTag));
+        gen.addProvider(new ModelGenerator(gen));
+        gen.addProvider(new BlockLootGenerator(gen));
+        gen.addProvider(new RecipeGenerator(gen));
+        gen.addProvider(new AdvancementGenerator(gen));
+        gen.addProvider(new RewardLootGenerator(gen));
     }
-    
+
+    private static class RewardLootGenerator extends SimpleFabricLootTableProvider {
+
+        public RewardLootGenerator(FabricDataGenerator dataGenerator) {
+            super(dataGenerator, LootContextTypes.ADVANCEMENT_REWARD);
+        }
+
+        @Override
+        public void accept(BiConsumer<Identifier, LootTable.Builder> consumer) {
+            NbtCompound nbt = new NbtCompound();
+            nbt.put("patchouli:book", NbtString.of("spacepunk:rocketry_guide"));
+            consumer.accept(Spacepunk.id("get_rocketry_guide"), LootTable.builder().pool(
+                    LootPool.builder().with(ItemEntry.builder(PatchouliItems.BOOK).apply(SetNbtLootFunction.builder(nbt)))
+            ));
+        }
+    }
+
+    private static class AdvancementGenerator extends FabricAdvancementProvider {
+        private final List<Consumer<Consumer<Advancement>>> list = Util.make(Lists.newArrayList(), list -> {
+            list.add(new CustomAdvancementsGenerator());
+        });
+
+        protected AdvancementGenerator(FabricDataGenerator dataGenerator) {
+            super(dataGenerator);
+        }
+
+        @Override
+        public void generateAdvancement(Consumer<Advancement> consumer) {
+            list.forEach(i -> i.accept(consumer));
+        }
+    }
+
+    private static class CustomAdvancementsGenerator implements Consumer<Consumer<Advancement>> {
+
+        @Override
+        public void accept(Consumer<Advancement> consumer) {
+            Identifier tab = Spacepunk.id("rocketry");
+            String aPath = "advancement.spacepunk.rocketry";
+            Advancement root = Advancement.Builder.create()
+                    .display(Items.BOOK, Text.translatable(aPath+".title"),
+                            Text.translatable(aPath+".description"),
+                            new Identifier("textures/block/copper_block.png"),
+                            AdvancementFrame.TASK,
+                            false,
+                            false,
+                            false)
+                    .criterion("tick", new TickCriterion.Conditions(Criteria.TICK.getId(), EntityPredicate.Extended.EMPTY))
+                    .rewards(AdvancementRewards.Builder.loot(Spacepunk.id("get_rocketry_guide")))
+                    .build(consumer, tab+"/root");
+
+            Advancement buildRocket = Advancement.Builder.create()
+                    .parent(root)
+                    .display(Spacepunk.ROCKET_NOSE, Text.translatable(aPath+".build_rocket.title"),
+                            Text.translatable(aPath+".build_rocket.description"),
+                            null,
+                            AdvancementFrame.TASK,
+                            true,
+                            true,
+                            false)
+                    .criterion("build_rocket", new BuildRocketCriterion.Conditions())
+                    .build(consumer, tab+"/build_rocket");
+
+            Advancement moon = Advancement.Builder.create()
+                    .parent(buildRocket)
+                    .display(Spacepunk.LUNAR_SOIL, Text.translatable(aPath+".moon.title"),
+                            Text.translatable(aPath+".moon.description"),
+                            null,
+                            AdvancementFrame.TASK,
+                            true,
+                            true,
+                            false)
+                    .criterion("step_on_lunar_soil", TickCriterion.Conditions.createLocation(EntityPredicate.Builder.create().steppingOn(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(Spacepunk.LUNAR_SOIL).build()).build()).build()))
+                    .build(consumer, tab+"/moon");
+        }
+    }
+
     private static class RecipeGenerator extends FabricRecipeProvider {
 
         public RecipeGenerator(FabricDataGenerator dataGenerator) {
@@ -96,11 +192,11 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
         }
     }
     
-    private static class LootGenerator extends FabricBlockLootTableProvider {
+    private static class BlockLootGenerator extends FabricBlockLootTableProvider {
 
         private static final float[] SAPLING_DROP_CHANCE = new float[]{0.05f, 0.0625f, 0.083333336f, 0.1f};
 
-        protected LootGenerator(FabricDataGenerator dataGenerator) {
+        protected BlockLootGenerator(FabricDataGenerator dataGenerator) {
             super(dataGenerator);
         }
 

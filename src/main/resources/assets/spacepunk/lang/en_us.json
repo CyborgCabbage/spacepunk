@@ -1,4 +1,11 @@
 {
+  "advancement.spacepunk.rocketry.title" : "Spacepunk",
+  "advancement.spacepunk.rocketry.description" : "Your guide book has everything you need to know",
+  "advancement.spacepunk.rocketry.build_rocket.title" : "Rocket Surgery",
+  "advancement.spacepunk.rocketry.build_rocket.description" : "Construct a rocket",
+  "advancement.spacepunk.rocketry.moon.title" : "One Small Step",
+  "advancement.spacepunk.rocketry.moon.description" : "Walk on the moon",
+
   "entity.spacepunk.rocket": "Rocket",
   "entity.spacepunk.rocket.launch": "Blast off!",
   "entity.spacepunk.rocket.fuel": "Not enough fuel!",

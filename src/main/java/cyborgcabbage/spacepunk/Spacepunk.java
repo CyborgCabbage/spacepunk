@@ -12,6 +12,7 @@ import cyborgcabbage.spacepunk.feature.FractalStarFeatureConfig;
 import cyborgcabbage.spacepunk.inventory.RocketScreenHandler;
 import cyborgcabbage.spacepunk.item.BottledAirItem;
 import cyborgcabbage.spacepunk.item.ExtraTallGrassBlockItem;
+import cyborgcabbage.spacepunk.util.BuildRocketCriterion;
 import cyborgcabbage.spacepunk.util.PlanetProperties;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
@@ -19,6 +20,8 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
+import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.advancement.criterion.TickCriterion;
 import net.minecraft.block.*;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
@@ -103,6 +106,8 @@ public class Spacepunk implements ModInitializer {
 			{"C"},
 			{"0"},
 	}, 'N', ROCKET_NOSE, 'C', Blocks.COPPER_BLOCK, '0', Blocks.BLAST_FURNACE).setSymmetrical(true);
+
+	public static final BuildRocketCriterion BUILD_ROCKET = Criteria.register(new BuildRocketCriterion());
 
 	@Override
 	public void onInitialize() {
