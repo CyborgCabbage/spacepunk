@@ -11,16 +11,19 @@ import cyborgcabbage.spacepunk.client.render.entity.SulfurCreeperEntityRenderer;
 import cyborgcabbage.spacepunk.client.render.entity.SulfurTntEntityRenderer;
 import cyborgcabbage.spacepunk.client.render.entity.model.RocketEntityModel;
 import cyborgcabbage.spacepunk.client.render.entity.model.SulfurCreeperEntityModel;
+import cyborgcabbage.spacepunk.entity.RocketEntity;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.block.BlockColorProvider;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.color.world.GrassColors;
@@ -80,5 +83,10 @@ public class SpacepunkClient implements ClientModInitializer {
         DimensionRenderingRegistry.registerSkyRenderer(Spacepunk.VENUS, new VenusRenderer());
 
         ClientBookRegistry.INSTANCE.pageTypes.put(Spacepunk.id("my_multiblock"), MyPageMultiblock.class);
+        ClientEntityEvents.ENTITY_LOAD.register((entity, clientWorld) -> {
+            if(entity instanceof RocketEntity rocket){
+                MinecraftClient.getInstance().getSoundManager().play(new RocketEngineSound(rocket));
+            }
+        });
     }
 }

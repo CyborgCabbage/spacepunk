@@ -26,6 +26,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -36,8 +37,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -49,7 +51,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -59,6 +60,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     public static final int STATE_GOING_UP = 1;
     public static final int STATE_WAITING = 2;
     public static final int STATE_IDLE = 3;
+    public static final int STATE_COUNTDOWN = 4;
 
     public static final int ACTION_DISASSEMBLE = 0;
     public static final int ACTION_LAUNCH = 1;
@@ -71,7 +73,8 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
 
     private static final TrackedData<Integer> TRAVEL_STATE = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> FUEL = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final TrackedData<Boolean> PARTICLES = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> ENGINE_ON = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private int countdown = 200;
 
     private int interpolationCountdown;
     private double x;
@@ -90,7 +93,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     protected void initDataTracker() {
         dataTracker.startTracking(TRAVEL_STATE, 0);
         dataTracker.startTracking(FUEL, 0);
-        dataTracker.startTracking(PARTICLES, false);
+        dataTracker.startTracking(ENGINE_ON, false);
     }
 
     @Override
@@ -248,7 +251,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
                 return true;
             }
             case STATE_WAITING -> setVelocity(0.0, 0.0, 0.0);
-            case STATE_IDLE -> {
+            case STATE_IDLE, STATE_COUNTDOWN -> {
                 if (PlanetProperties.hasAtmosphere(world.getRegistryKey().getValue()))
                     setVelocity(0.0, getVelocity().y * 0.995, 0.0);
                 addVelocity(0.0, gravity, 0.0);
@@ -290,11 +293,11 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
             if(world.isClient()){
                 if(particles) createParticles();
             }else{
-                dataTracker.set(PARTICLES, particles);
+                dataTracker.set(ENGINE_ON, particles);
             }
             move(MovementType.SELF, getVelocity());
         } else {
-            if(world.isClient() && dataTracker.get(PARTICLES)) {
+            if(world.isClient() && dataTracker.get(ENGINE_ON)) {
                 createParticles();
             }
             setVelocity(Vec3d.ZERO);
@@ -307,45 +310,70 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
             pushAwayFrom(entity);
         }
         if(!world.isClient()){
-            //Teleport
-            if(getY() > world.getTopY() + TELEPORT_HEIGHT && dataTracker.get(TRAVEL_STATE) == STATE_GOING_UP){
-                RegistryKey<World> targetDimensionKey = Spacepunk.TARGET_DIMENSION_LIST.get(targetDimensionIndex);
-                savePassenger();
-                dataTracker.set(TRAVEL_STATE, STATE_WAITING);
-                ServerWorld destination = world.getServer().getWorld(targetDimensionKey);
-                Vec3d pos = new Vec3d(getPos().x, destination.getTopY() + TELEPORT_HEIGHT, getPos().z);
-                for(Entity passenger: getPassengerList()) {
-                    FabricDimensions.teleport(passenger, destination, new TeleportTarget(pos, Vec3d.ZERO, passenger.getYaw(), passenger.getPitch()));
-                }
-                FabricDimensions.teleport(this, destination, new TeleportTarget(pos, Vec3d.ZERO, getYaw(), getPitch()));
-            }
-            //Land
-            if(dataTracker.get(TRAVEL_STATE) == STATE_WAITING){
-                //Pickup passenger after teleport
-                if(passengerUuid != null){
-                    PlayerEntity player = world.getPlayerByUuid(passengerUuid);
-                    if(player != null){
-                        player.startRiding(this);
-                        passengerUuid = null;
-                    }
-                }else{
-                    //Place landing pad if necessary
-                    BlockPos topPosition = world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, getBlockPos());
-                    if(topPosition.getY() > world.getBottomY()){
-                        BlockState topBlock = world.getBlockState(topPosition.down());
-                        if (!topBlock.hasSolidTopSurface(world, topPosition.down(), this)) {
-                            boolean placed = world.setBlockState(topPosition, Blocks.STONE.getDefaultState());
-                            if(!placed)
-                                world.setBlockState(topPosition.down(), Blocks.STONE.getDefaultState());
+            switch (dataTracker.get(TRAVEL_STATE)){
+                case STATE_GOING_UP -> {
+                    //Teleport
+                    if(getY() > world.getTopY() + TELEPORT_HEIGHT){
+                        RegistryKey<World> targetDimensionKey = Spacepunk.TARGET_DIMENSION_LIST.get(targetDimensionIndex);
+                        savePassenger();
+                        dataTracker.set(TRAVEL_STATE, STATE_WAITING);
+                        ServerWorld destination = world.getServer().getWorld(targetDimensionKey);
+                        Vec3d pos = new Vec3d(getPos().x, destination.getTopY() + TELEPORT_HEIGHT, getPos().z);
+                        for(Entity passenger: getPassengerList()) {
+                            FabricDimensions.teleport(passenger, destination, new TeleportTarget(pos, Vec3d.ZERO, passenger.getYaw(), passenger.getPitch()));
                         }
-                        dataTracker.set(TRAVEL_STATE, STATE_GOING_DOWN);
+                        FabricDimensions.teleport(this, destination, new TeleportTarget(pos, Vec3d.ZERO, getYaw(), getPitch()));
                     }
                 }
-            }
-            if(dataTracker.get(TRAVEL_STATE) == STATE_GOING_DOWN){
-                double height = getY() - world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, getBlockPos()).getY();
-                if(height <= 1 || onGround) {
-                    dataTracker.set(TRAVEL_STATE, STATE_IDLE);
+                case STATE_WAITING -> {
+                    //Pickup passenger after teleport
+                    if(passengerUuid != null){
+                        PlayerEntity player = world.getPlayerByUuid(passengerUuid);
+                        if(player != null){
+                            player.startRiding(this);
+                            passengerUuid = null;
+                        }
+                    }else{
+                        //Place landing pad if necessary
+                        BlockPos topPosition = world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, getBlockPos());
+                        if(topPosition.getY() > world.getBottomY()){
+                            BlockState topBlock = world.getBlockState(topPosition.down());
+                            if (!topBlock.hasSolidTopSurface(world, topPosition.down(), this)) {
+                                boolean placed = world.setBlockState(topPosition, Blocks.STONE.getDefaultState());
+                                if(!placed)
+                                    world.setBlockState(topPosition.down(), Blocks.STONE.getDefaultState());
+                            }
+                            dataTracker.set(TRAVEL_STATE, STATE_GOING_DOWN);
+                        }
+                    }
+                }
+                case STATE_GOING_DOWN -> {
+                    //End Landing Sequence
+                    double height = getY() - world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, getBlockPos()).getY();
+                    if(height <= 1 || onGround) {
+                        dataTracker.set(TRAVEL_STATE, STATE_IDLE);
+                    }
+                }
+                case STATE_COUNTDOWN -> {
+                    if(countdown % 20 == 0){
+                        playSound(SoundEvents.BLOCK_NOTE_BLOCK_PLING, countdown > 0 ? 1.0f : 1.5f, 1);
+                        for (PlayerEntity player : world.getPlayers()) {
+                            if(distanceTo(player) < 16 && player instanceof ServerPlayerEntity serverPlayer){
+                                int seconds = countdown/20;
+                                MutableText text;
+                                if (seconds > 0) text = Text.literal(String.valueOf(seconds));
+                                else text = Text.translatable("entity.spacepunk.rocket.launch");
+                                serverPlayer.networkHandler.sendPacket(new TitleS2CPacket(text.formatted(Formatting.GOLD)));
+                            }
+                        }
+                    }
+                    if(countdown > 0){
+                        countdown--;
+                    }else{
+                        dataTracker.set(TRAVEL_STATE, STATE_GOING_UP);
+                        countdown = 200;
+                    }
+
                 }
             }
         }
@@ -382,21 +410,24 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     public void launch(PlayerEntity player){
         if(!world.isClient) {
             if(!Spacepunk.TARGET_DIMENSION_LIST.contains(world.getRegistryKey())){
-                player.sendMessage(Text.translatable("entity.spacepunk.rocket.wrong_dimension"), true);
+                player.sendMessage(Text.translatable("entity.spacepunk.rocket.wrong_dimension").formatted(Formatting.RED), true);
                 return;
             }
             if(Spacepunk.TARGET_DIMENSION_LIST.get(targetDimensionIndex).equals(world.getRegistryKey())){
-                player.sendMessage(Text.translatable("entity.spacepunk.rocket.in_dimension"), true);
+                player.sendMessage(Text.translatable("entity.spacepunk.rocket.in_dimension").formatted(Formatting.RED), true);
                 return;
             }
             if (dataTracker.get(FUEL) < LAUNCH_COST){
-                player.sendMessage(Text.translatable("entity.spacepunk.rocket.fuel"), true);
+                player.sendMessage(Text.translatable("entity.spacepunk.rocket.fuel").formatted(Formatting.RED), true);
                 return;
             }
-            player.sendMessage(Text.translatable("entity.spacepunk.rocket.launch"), true);
             dataTracker.set(FUEL, dataTracker.get(FUEL)-LAUNCH_COST);
-            dataTracker.set(TRAVEL_STATE, STATE_GOING_UP);
+            dataTracker.set(TRAVEL_STATE, STATE_COUNTDOWN);
         }
+    }
+
+    public boolean engineOn(){
+        return dataTracker.get(ENGINE_ON);
     }
 
     public void disassemble(boolean dropItems){

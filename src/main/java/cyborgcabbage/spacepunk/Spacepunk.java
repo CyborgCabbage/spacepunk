@@ -27,6 +27,7 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.*;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -108,6 +109,9 @@ public class Spacepunk implements ModInitializer {
 	}, 'N', ROCKET_NOSE, 'C', Blocks.COPPER_BLOCK, '0', Blocks.BLAST_FURNACE).setSymmetrical(true);
 
 	public static final BuildRocketCriterion BUILD_ROCKET = Criteria.register(new BuildRocketCriterion());
+
+	public static final Identifier ROCKET_LAUNCH_SOUND_ID = id("rocket_launch");
+	public static SoundEvent ROCKET_LAUNCH_SOUND_EVENT = new SoundEvent(ROCKET_LAUNCH_SOUND_ID);
 
 	@Override
 	public void onInitialize() {
@@ -192,6 +196,8 @@ public class Spacepunk implements ModInitializer {
 		TARGET_DIMENSION_LIST.add(MOON);
 
 		PatchouliAPI.get().registerMultiblock(id("rocket_mk1"), ROCKET_MULTIBLOCK);
+
+		Registry.register(Registry.SOUND_EVENT, ROCKET_LAUNCH_SOUND_ID, ROCKET_LAUNCH_SOUND_EVENT);
 	}
 	private void registerBlockAndItem(String name, Block block){
 		Registry.register(Registry.BLOCK, id(name), block);

@@ -7,7 +7,7 @@
   "advancement.spacepunk.rocketry.moon.description" : "Walk on the moon",
 
   "entity.spacepunk.rocket": "Rocket",
-  "entity.spacepunk.rocket.launch": "Blast off!",
+  "entity.spacepunk.rocket.launch": "IGNITION",
   "entity.spacepunk.rocket.fuel": "Not enough fuel!",
   "entity.spacepunk.rocket.wrong_dimension": "Cannot launch from this dimension!",
   "entity.spacepunk.rocket.in_dimension": "Already at destination!",
