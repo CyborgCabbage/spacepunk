@@ -79,6 +79,9 @@ public class RocketScreen extends HandledScreen<RocketScreenHandler> {
             client.interactionManager.clickButton(handler.syncId, RocketEntity.ACTION_CHANGE_TARGET);
         });
         this.addDrawableChild(buttonChangeTarget);
+        this.addDrawableChild(new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY+44-buttonHeight/2 , buttonWidth, buttonHeight, Text.translatable("gui.spacepunk.rocket.rotate"), button -> {
+            client.interactionManager.clickButton(handler.syncId, RocketEntity.ACTION_ROTATE);
+        }));
     }
 
     private void updateCentreY(){

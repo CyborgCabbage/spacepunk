@@ -100,6 +100,7 @@ public class RocketScreenHandler extends ScreenHandler {
                 case RocketEntity.ACTION_DISASSEMBLE -> rocketEntity.disassemble(true);
                 case RocketEntity.ACTION_LAUNCH -> rocketEntity.launch(player);
                 case RocketEntity.ACTION_CHANGE_TARGET -> rocketEntity.changeTarget();
+                case RocketEntity.ACTION_ROTATE -> rocketEntity.rotate();
                 default -> {
                     Spacepunk.LOGGER.error("Rocket Action Packet: Unexpected value " + id);
                     return false;

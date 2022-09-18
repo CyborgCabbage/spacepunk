@@ -65,6 +65,8 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     public static final int ACTION_DISASSEMBLE = 0;
     public static final int ACTION_LAUNCH = 1;
     public static final int ACTION_CHANGE_TARGET = 2;
+    public static final int ACTION_ROTATE = 3;
+
 
     private static final int FUEL_CAPACITY = 10;
     private static final int LAUNCH_COST = 5;
@@ -266,6 +268,7 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
         this.y = y;
         this.z = z;
         this.interpolationCountdown = 10;
+        this.setRotation(yaw, pitch);
     }
 
     private void updatePositionAndRotation() {
@@ -373,7 +376,6 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
                         dataTracker.set(TRAVEL_STATE, STATE_GOING_UP);
                         countdown = 200;
                     }
-
                 }
             }
         }
@@ -423,6 +425,13 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
             }
             dataTracker.set(FUEL, dataTracker.get(FUEL)-LAUNCH_COST);
             dataTracker.set(TRAVEL_STATE, STATE_COUNTDOWN);
+        }
+    }
+
+    public void rotate(){
+        if(!world.isClient){
+            setYaw((getYaw()+90)%360);
+            Spacepunk.LOGGER.info("SERVER"+getYaw());
         }
     }
 
