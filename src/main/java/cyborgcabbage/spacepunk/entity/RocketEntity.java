@@ -32,6 +32,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -55,7 +56,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory, ImplementedInventory {
+public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory {
     public static final int STATE_GOING_DOWN = 0;
     public static final int STATE_GOING_UP = 1;
     public static final int STATE_WAITING = 2;
@@ -100,7 +101,6 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
-        Inventories.readNbt(nbt, items);
         dataTracker.set(TRAVEL_STATE, nbt.getInt("TravelState"));
         dataTracker.set(FUEL, nbt.getInt("Fuel"));
         if(nbt.contains("Passenger"))
@@ -110,7 +110,6 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
 
     @Override
     protected void writeCustomDataToNbt(NbtCompound nbt) {
-        Inventories.writeNbt(nbt, items);
         nbt.putInt("TravelState", dataTracker.get(TRAVEL_STATE));
         nbt.putInt("Fuel", dataTracker.get(FUEL));
         if(passengerUuid != null)
@@ -194,19 +193,11 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new RocketScreenHandler(syncId, inv, this, propertyDelegate, this);
+        return new RocketScreenHandler(syncId, propertyDelegate, this);
     }
     @Override
     public Text getDisplayName() {
         return Text.translatable(getType().getTranslationKey());
-    }
-
-    // Inventory
-    private final DefaultedList<ItemStack> items = DefaultedList.ofSize(9, ItemStack.EMPTY);
-
-    @Override
-    public DefaultedList<ItemStack> getItems() {
-        return items;
     }
 
     // Ride Rocket
