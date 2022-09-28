@@ -17,6 +17,7 @@ import cyborgcabbage.spacepunk.util.BuildRocketCriterion;
 import cyborgcabbage.spacepunk.util.PlanetProperties;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
+import net.fabricmc.fabric.api.entity.event.v1.EntitySleepEvents;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
@@ -25,9 +26,11 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.*;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -118,6 +121,16 @@ public class Spacepunk implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		EntitySleepEvents.ALLOW_SLEEPING.register((player, sleepingPos) -> {
+			if(PlanetProperties.getTimeDivisor(player.world.getRegistryKey().getValue()) != 1){
+				if(!player.world.isClient)
+					player.sendMessage(Text.translatable("bed.spacepunk.cant_sleep"), true);
+				return PlayerEntity.SleepFailureReason.NOT_POSSIBLE_HERE;
+			}else {
+				return null;
+			}
+		});
+
 		Registry.register(Registry.SCREEN_HANDLER, id("rocket"), ROCKET_SCREEN_HANDLER);
 		ROCKET_ENTITY = Registry.register(
 				Registry.ENTITY_TYPE,

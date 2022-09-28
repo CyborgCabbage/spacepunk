@@ -12,6 +12,8 @@
   "entity.spacepunk.rocket.wrong_dimension": "Cannot launch from this dimension!",
   "entity.spacepunk.rocket.in_dimension": "Already at destination!",
 
+  "bed.spacepunk.cant_sleep" : "You can not sleep in this dimension",
+
   "gui.spacepunk.rocket.launch" : "Launch",
   "gui.spacepunk.rocket.disassemble" : "Disassemble",
   "gui.spacepunk.rocket.rotate" : "Rotate",
