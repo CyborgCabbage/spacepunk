@@ -25,10 +25,13 @@ public class RocketScreen extends HandledScreen<RocketScreenHandler> {
         super(handler, inventory, title);
         screenHandler = handler;
         backgroundHeight += 16;
-        playerInventoryTitleY += 16;
+        playerInventoryTitleY += 10000;
     }
 
     private ButtonWidget buttonChangeTarget;
+    private ButtonWidget buttonRotate;
+    private ButtonWidget buttonLaunch;
+    private ButtonWidget buttonDisassemble;
 
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
@@ -65,23 +68,20 @@ public class RocketScreen extends HandledScreen<RocketScreenHandler> {
         int buttonWidth = 70;
         int buttonHeight = 20;
         int leftWidth = backgroundWidth/2;
-        this.addDrawableChild(new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY-22-buttonHeight/2 , buttonWidth, buttonHeight, Text.translatable("gui.spacepunk.rocket.launch"), button -> {
-            client.interactionManager.clickButton(handler.syncId, RocketEntity.ACTION_LAUNCH);
-            //Exit Menu
-            client.setScreen(null);
-        }));
-        this.addDrawableChild(new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY-buttonHeight/2 , buttonWidth, buttonHeight, Text.translatable("gui.spacepunk.rocket.disassemble"), button -> {
-            client.interactionManager.clickButton(handler.syncId, RocketEntity.ACTION_DISASSEMBLE);
-            //Exit Menu
-            client.setScreen(null);
-        }));
-        buttonChangeTarget = new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY+22-buttonHeight/2 , buttonWidth, buttonHeight, Text.literal(""), button -> {
-            client.interactionManager.clickButton(handler.syncId, RocketEntity.ACTION_CHANGE_TARGET);
-        });
+        buttonLaunch = new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY-22-buttonHeight/2 , buttonWidth, buttonHeight, Text.translatable("gui.spacepunk.rocket.launch"), b -> buttonAction(RocketEntity.ACTION_LAUNCH, true));
+        buttonDisassemble = new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY-buttonHeight/2 , buttonWidth, buttonHeight, Text.translatable("gui.spacepunk.rocket.disassemble"), b -> buttonAction(RocketEntity.ACTION_DISASSEMBLE, true));
+        buttonChangeTarget = new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY+22-buttonHeight/2 , buttonWidth, buttonHeight, Text.literal(""), b -> buttonAction(RocketEntity.ACTION_CHANGE_TARGET, false));
+        buttonRotate = new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY+44-buttonHeight/2 , buttonWidth, buttonHeight, Text.translatable("gui.spacepunk.rocket.rotate"), b -> buttonAction(RocketEntity.ACTION_ROTATE, false));
+        this.addDrawableChild(buttonLaunch);
+        this.addDrawableChild(buttonDisassemble);
         this.addDrawableChild(buttonChangeTarget);
-        this.addDrawableChild(new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY+44-buttonHeight/2 , buttonWidth, buttonHeight, Text.translatable("gui.spacepunk.rocket.rotate"), button -> {
-            client.interactionManager.clickButton(handler.syncId, RocketEntity.ACTION_ROTATE);
-        }));
+        this.addDrawableChild(buttonRotate);
+    }
+
+    private void buttonAction(int actionId, boolean closeScreen){
+        client.interactionManager.clickButton(handler.syncId, actionId);
+        //Exit Menu
+        if(closeScreen) client.setScreen(null);
     }
 
     private void updateCentreY(){

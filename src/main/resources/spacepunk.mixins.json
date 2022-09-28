@@ -5,9 +5,9 @@
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "ChunkSectionMixin",
+    "DimensionTypeMixin",
     "LeavesBlockMixin",
     "LivingEntityMixin",
-    "DimensionTypeMixin",
     "StripMixin"
   ],
   "client": [

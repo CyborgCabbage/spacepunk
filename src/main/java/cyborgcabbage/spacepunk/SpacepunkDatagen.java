@@ -1,7 +1,6 @@
-package cyborgcabbage.spacepunk.datagen;
+package cyborgcabbage.spacepunk;
 
 import com.google.common.collect.Lists;
-import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.block.OxygenBlock;
 import cyborgcabbage.spacepunk.block.SulfurTntBlock;
 import cyborgcabbage.spacepunk.util.BuildRocketCriterion;
@@ -9,10 +8,10 @@ import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.provider.*;
 import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
-import net.minecraft.advancement.criterion.*;
+import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.advancement.criterion.TickCriterion;
 import net.minecraft.block.Block;
 import net.minecraft.data.client.*;
 import net.minecraft.data.family.BlockFamilies;
@@ -22,26 +21,15 @@ import net.minecraft.data.server.RecipeProvider;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.Items;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
-import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.loot.entry.ItemEntry;
-import net.minecraft.loot.function.LootFunction;
-import net.minecraft.loot.function.SetNbtLootFunction;
-import net.minecraft.loot.provider.nbt.LootNbtProvider;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.StatePredicate;
-import net.minecraft.predicate.entity.EntityEquipmentPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
-import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
@@ -50,8 +38,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
-import vazkii.patchouli.api.PatchouliAPI;
-import vazkii.patchouli.common.item.PatchouliItems;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -105,10 +91,8 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
 
         @Override
         public void accept(BiConsumer<Identifier, LootTable.Builder> consumer) {
-            NbtCompound nbt = new NbtCompound();
-            nbt.put("patchouli:book", NbtString.of("spacepunk:rocketry_guide"));
             consumer.accept(Spacepunk.id("get_rocketry_guide"), LootTable.builder().pool(
-                    LootPool.builder().with(ItemEntry.builder(PatchouliItems.BOOK).apply(SetNbtLootFunction.builder(nbt)))
+                    LootPool.builder().with(ItemEntry.builder(Spacepunk.ROCKETRY_GUIDE))
             ));
         }
     }
@@ -135,7 +119,7 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
             Identifier tab = Spacepunk.id("rocketry");
             String aPath = "advancement.spacepunk.rocketry";
             Advancement root = Advancement.Builder.create()
-                    .display(Items.BOOK, Text.translatable(aPath+".title"),
+                    .display(Spacepunk.ROCKETRY_GUIDE, Text.translatable(aPath+".title"),
                             Text.translatable(aPath+".description"),
                             new Identifier("textures/block/copper_block.png"),
                             AdvancementFrame.TASK,

@@ -1,12 +1,10 @@
 package cyborgcabbage.spacepunk.mixin;
 
 import cyborgcabbage.spacepunk.Spacepunk;
-import cyborgcabbage.spacepunk.entity.RocketEntity;
 import cyborgcabbage.spacepunk.util.PlanetProperties;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.collection.DefaultedList;

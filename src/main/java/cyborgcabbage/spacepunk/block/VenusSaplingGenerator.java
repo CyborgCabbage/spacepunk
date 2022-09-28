@@ -2,14 +2,15 @@ package cyborgcabbage.spacepunk.block;
 
 import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.feature.VenusFoliagePlacer;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.sapling.LargeTreeSaplingGenerator;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.world.gen.feature.*;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.feature.size.TwoLayersFeatureSize;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.trunk.GiantTrunkPlacer;

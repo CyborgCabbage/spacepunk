@@ -12,6 +12,7 @@ import cyborgcabbage.spacepunk.feature.FractalStarFeatureConfig;
 import cyborgcabbage.spacepunk.inventory.RocketScreenHandler;
 import cyborgcabbage.spacepunk.item.BottledAirItem;
 import cyborgcabbage.spacepunk.item.ExtraTallGrassBlockItem;
+import cyborgcabbage.spacepunk.item.GuideBookItem;
 import cyborgcabbage.spacepunk.util.BuildRocketCriterion;
 import cyborgcabbage.spacepunk.util.PlanetProperties;
 import net.fabricmc.api.ModInitializer;
@@ -21,7 +22,6 @@ import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.advancement.criterion.TickCriterion;
 import net.minecraft.block.*;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
@@ -99,6 +99,9 @@ public class Spacepunk implements ModInitializer {
 	public static final Item BOTTLED_AIR = new BottledAirItem(new FabricItemSettings().maxDamage(180).group(MY_ITEM_GROUP));
 	public static final Item PRESSURE_GAUGE = new Item(new FabricItemSettings().group(MY_ITEM_GROUP));
 
+	public static final Item ROCKETRY_GUIDE = new GuideBookItem(id("rocketry_guide"), new FabricItemSettings().group(MY_ITEM_GROUP));
+	//public static final Item ROCKETRY_GUIDE = new Item(new FabricItemSettings().group(MY_ITEM_GROUP));
+
 	public static final ExtendedScreenHandlerType<RocketScreenHandler> ROCKET_SCREEN_HANDLER = new ExtendedScreenHandlerType<>(RocketScreenHandler::new);
 
 	public static final IMultiblock ROCKET_MULTIBLOCK = PatchouliAPI.get().makeMultiblock(new String[][]{
@@ -146,11 +149,16 @@ public class Spacepunk implements ModInitializer {
 						.trackRangeChunks(8)
 						.build()
 		);
+
+		//Book
+		Registry.register(Registry.ITEM, id("rocketry_guide"), ROCKETRY_GUIDE);
+
 		//Tech
 		registerBlockAndItem("rocket_nose", ROCKET_NOSE);
 		Registry.register(Registry.ITEM, id("spacesuit_helmet"), SPACESUIT_HELMET);
 		Registry.register(Registry.ITEM, id("bottled_air"), BOTTLED_AIR);
 		Registry.register(Registry.ITEM, id("pressure_gauge"), PRESSURE_GAUGE);
+
 		//Moon
 		registerBlockAndItem("lunar_soil", LUNAR_SOIL);
 

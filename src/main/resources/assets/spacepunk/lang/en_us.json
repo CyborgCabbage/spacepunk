@@ -16,9 +16,10 @@
   "gui.spacepunk.rocket.disassemble" : "Disassemble",
   "gui.spacepunk.rocket.rotate" : "Rotate",
   "dimension.minecraft:overworld": "Earth",
-  "dimension.spacepunk:moon": "The Moon",
+  "dimension.spacepunk:moon": "Moon",
   "dimension.spacepunk:venus": "Venus",
 
+  "item.spacepunk.rocketry_guide" : "A Guide To Rocketry",
   "item.spacepunk.spacesuit_helmet" : "Spacesuit Helmet",
   "item.spacepunk.bottled_air" : "Bottled Air",
   "item.spacepunk.pressure_gauge" : "Pressure Gauge",
