@@ -1,11 +1,7 @@
 {
   "type": "minecraft:overworld",
   "generator": {
-    "type": "minecraft:noise",
-    "biome_source": {
-      "type": "minecraft:multi_noise",
-      "preset": "minecraft:overworld"
-    },
+    "type": "spacepunk:beta",
     "settings": "spacepunk:e_settings"
   }
 }

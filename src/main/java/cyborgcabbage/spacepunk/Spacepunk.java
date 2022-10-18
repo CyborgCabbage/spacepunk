@@ -9,6 +9,7 @@ import cyborgcabbage.spacepunk.feature.BoulderFeature;
 import cyborgcabbage.spacepunk.feature.BoulderFeatureConfig;
 import cyborgcabbage.spacepunk.feature.FractalStarFeature;
 import cyborgcabbage.spacepunk.feature.FractalStarFeatureConfig;
+import cyborgcabbage.spacepunk.gen.BetaChunkGenerator;
 import cyborgcabbage.spacepunk.inventory.RocketScreenHandler;
 import cyborgcabbage.spacepunk.item.BottledAirItem;
 import cyborgcabbage.spacepunk.item.ExtraTallGrassBlockItem;
@@ -219,6 +220,8 @@ public class Spacepunk implements ModInitializer {
 		PatchouliAPI.get().registerMultiblock(id("rocket_mk1"), ROCKET_MULTIBLOCK);
 
 		Registry.register(Registry.SOUND_EVENT, ROCKET_LAUNCH_SOUND_ID, ROCKET_LAUNCH_SOUND_EVENT);
+
+		Registry.register(Registry.CHUNK_GENERATOR, id("beta"), BetaChunkGenerator.CODEC);
 	}
 	private void registerBlockAndItem(String name, Block block){
 		Registry.register(Registry.BLOCK, id(name), block);
