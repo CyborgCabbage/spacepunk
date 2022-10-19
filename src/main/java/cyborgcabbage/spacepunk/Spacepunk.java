@@ -9,7 +9,7 @@ import cyborgcabbage.spacepunk.feature.BoulderFeature;
 import cyborgcabbage.spacepunk.feature.BoulderFeatureConfig;
 import cyborgcabbage.spacepunk.feature.FractalStarFeature;
 import cyborgcabbage.spacepunk.feature.FractalStarFeatureConfig;
-import cyborgcabbage.spacepunk.gen.BetaChunkGenerator;
+import cyborgcabbage.spacepunk.gen.beta.BetaChunkGenerator;
 import cyborgcabbage.spacepunk.inventory.RocketScreenHandler;
 import cyborgcabbage.spacepunk.item.BottledAirItem;
 import cyborgcabbage.spacepunk.item.ExtraTallGrassBlockItem;

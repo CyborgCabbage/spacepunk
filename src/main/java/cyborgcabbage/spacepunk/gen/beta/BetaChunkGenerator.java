@@ -1,17 +1,19 @@
-package cyborgcabbage.spacepunk.gen;
+package cyborgcabbage.spacepunk.gen.beta;
 
-import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import cyborgcabbage.spacepunk.Spacepunk;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeAccess;
@@ -24,21 +26,101 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
 import net.minecraft.world.gen.noise.NoiseConfig;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 public class BetaChunkGenerator extends ChunkGenerator {
     public static final Codec<BetaChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> BetaChunkGenerator.createStructureSetRegistryGetter(instance).and(RegistryOps.createRegistryCodec(Registry.BIOME_KEY).forGetter(BetaChunkGenerator -> BetaChunkGenerator.biomeRegistry)).apply(instance, instance.stable(BetaChunkGenerator::new)));
     private final Registry<Biome> biomeRegistry;
+    //Classic
+    private final BetaSeed SEED_GLACIER = new BetaSeed("Glacier");
+    private final BetaSeed SEED_404 = new BetaSeed(404L);
+    private final BetaSeed SEED_GARGAMEL = new BetaSeed("gargamel");
+    //Content Creators
+    private final BetaSeed SEED_YOGSCAST = new BetaSeed(4090136037452000329L);
+    private final BetaSeed SEED_STAMPY = new BetaSeed(6644803604819148923L);
+    private final BetaSeed SEED_ANTVENOM = new BetaSeed(3811868026651017821L);
+    //Reverse Engineering
+    private final BetaSeed SEED_PACK_PNG = new BetaSeed(3257840388504953787L);//Population differences
+    private final BetaSeed SEED_PANORAMA = new BetaSeed(2151901553968352745L);
+
+    private static long toSeed(String seedString){
+        if(seedString != null && !seedString.isEmpty()) {
+            try {
+                return Long.parseLong(seedString);
+            } catch (NumberFormatException numberFormatException7) {
+                return seedString.hashCode();
+            }
+        }
+        return (new Random()).nextLong();
+    }
+
+    //minecraftseeds.info (internet archive)
+    private final String[] SEED_ARRAY = {
+        "177907495",
+        "1385327417",
+        "MODDED",
+        "Vevelstad",
+        "Elfen Lied",
+        "729",
+        "-8388746566455332234",
+        "4238342445668208996",
+        "965334902297122527",
+        "5515274009531393841",
+        "Archespore",
+        "turnofthetides",
+        "worstseedever",
+        "beagle bagle",
+        "pokeylucky",
+        "curtis dent",
+        "1420013959",
+        "1474776471",
+        "1961263745",
+        "1541961902",
+        "Quesadila",
+        "-6362184493185806144",
+        "5944220116861330522",
+        "-780636540",
+        "Roughsauce",
+        "Wolf",
+        "Diamonds, diamonds everywhere!",
+        "Aether Collab",
+        "-2608611364321170322",
+        "-01556767897",
+        "-1293644106920865080",
+        "Werewolf",
+        "459722261485094655",
+        "1363181899730807241",
+        "5677344492879191995",
+        "5682930821",
+        "72164122",
+        "2409838883250561605",
+        "Wave Race 64",
+        "-115144210771600827",
+        "-9028489474908844496",
+        "9000.1",
+        "Dead Mau5",
+        "Ausm",
+        "-2945350671081178213",
+        "Invinsible",
+        "3666440496532277820",
+        "-442650539972332399",
+        "Timestamp: 2011-03-02 06:55:36 U",
+        "4042531831790214307",
+        "-6555642694674147910",
+        "gargamel",
+        "-1784338777788894343",
+        "Glacier",
+        "404"
+    };
+
+    private final ChunkProviderGenerate generator = new ChunkProviderGenerate(toSeed("Glacier"));
 
     private List<BlockState> layers = Collections.nCopies(50, Blocks.STONE.getDefaultState());
 
     public BetaChunkGenerator(Registry<StructureSet> structureSetRegistry, Registry<Biome> biomeRegistry) {
-        super(structureSetRegistry, Optional.empty(), new FixedBiomeSource(biomeRegistry.getOrCreateEntry(BiomeKeys.PLAINS)));
+        super(structureSetRegistry, Optional.empty(), new FixedBiomeSource(biomeRegistry.getOrCreateEntry(BiomeKeys.THE_VOID)));
         this.biomeRegistry = biomeRegistry;
     }
 
@@ -53,7 +135,12 @@ public class BetaChunkGenerator extends ChunkGenerator {
 
     @Override
     public void carve(ChunkRegion chunkRegion, long seed, NoiseConfig noiseConfig, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver carverStep) {
+    }
 
+    @Override
+    public void generateFeatures(StructureWorldAccess world, Chunk chunk, StructureAccessor structureAccessor) {
+        //super.generateFeatures(world, chunk, structureAccessor);
+        generator.populate(world, chunk);
     }
 
     @Override
@@ -73,7 +160,7 @@ public class BetaChunkGenerator extends ChunkGenerator {
 
     @Override
     public CompletableFuture<Chunk> populateNoise(Executor executor, Blender blender, NoiseConfig noiseConfig, StructureAccessor structureAccessor, Chunk chunk) {
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        /*BlockPos.Mutable mutable = new BlockPos.Mutable();
         Heightmap oceanFloor = chunk.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
         Heightmap worldSurface = chunk.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
         for (int i = 0; i < Math.min(chunk.getHeight(), layers.size()); ++i) {
@@ -87,7 +174,8 @@ public class BetaChunkGenerator extends ChunkGenerator {
                     worldSurface.trackUpdate(k, j, l, blockState);
                 }
             }
-        }
+        }*/
+        generator.fillChunk(chunk);
         return CompletableFuture.completedFuture(chunk);
     }
 
