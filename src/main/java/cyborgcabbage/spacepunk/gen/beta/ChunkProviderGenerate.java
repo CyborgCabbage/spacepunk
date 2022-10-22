@@ -1,7 +1,8 @@
 package cyborgcabbage.spacepunk.gen.beta;
 
-import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.gen.beta.biome.BiomeGenBase;
+import cyborgcabbage.spacepunk.gen.beta.map.MapGenBase;
+import cyborgcabbage.spacepunk.gen.beta.map.MapGenCaves;
 import cyborgcabbage.spacepunk.gen.beta.noise.NoiseGeneratorOctaves;
 import cyborgcabbage.spacepunk.gen.beta.noise.NoiseGeneratorOctaves2;
 import cyborgcabbage.spacepunk.gen.beta.worldgen.*;
@@ -13,7 +14,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
 import java.util.Random;
@@ -32,7 +32,7 @@ public class ChunkProviderGenerate {
     private double[] sandNoise = new double[256];
     private double[] gravelNoise = new double[256];
     private double[] stoneNoise = new double[256];
-    //private MapGenBase field_902_u = new MapGenCaves();
+    private final MapGenBase genCaves = new MapGenCaves();
     private BiomeGenBase[] biomesForGeneration;
     double[] field_4185_d;
     double[] field_4184_e;
@@ -202,7 +202,7 @@ public class ChunkProviderGenerate {
         this.biomes = loadBlockGeneratorData(this.biomes, pos.x * 16, pos.z * 16, 16, 16);
         this.generateTerrain(chunk);
         this.replaceBlocksForBiome(chunk, this.biomes);
-        //this.field_902_u.func_867_a(this, this.worldObj, i1, i2, b3);
+        this.genCaves.generate(chunk, worldSeed);
         //chunk4.func_1024_c();
     }
 
@@ -454,26 +454,26 @@ public class ChunkProviderGenerate {
             worldGenerator18.generate(world, this.rand, i16, world.getTopY(Heightmap.Type.WORLD_SURFACE, i16, i17), i17);
         }
 
-        byte b27 = 0;
+        byte dandelionAmount = 0;
         if(biomeGenBase6 == BiomeGenBase.forest) {
-            b27 = 2;
+            dandelionAmount = 2;
         }
 
         if(biomeGenBase6 == BiomeGenBase.seasonalForest) {
-            b27 = 4;
+            dandelionAmount = 4;
         }
 
         if(biomeGenBase6 == BiomeGenBase.taiga) {
-            b27 = 2;
+            dandelionAmount = 2;
         }
 
         if(biomeGenBase6 == BiomeGenBase.plains) {
-            b27 = 3;
+            dandelionAmount = 3;
         }
 
         int i19;
         int i25;
-        for(i16 = 0; i16 < b27; ++i16) {
+        for(i16 = 0; i16 < dandelionAmount; ++i16) {
             i17 = i4 + this.rand.nextInt(16) + 8;
             i25 = this.rand.nextInt(128);
             i19 = i5 + this.rand.nextInt(16) + 8;
