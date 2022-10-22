@@ -33,10 +33,6 @@ import java.util.concurrent.Executor;
 public class BetaChunkGenerator extends ChunkGenerator {
     public static final Codec<BetaChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> BetaChunkGenerator.createStructureSetRegistryGetter(instance).and(RegistryOps.createRegistryCodec(Registry.BIOME_KEY).forGetter(BetaChunkGenerator -> BetaChunkGenerator.biomeRegistry)).apply(instance, instance.stable(BetaChunkGenerator::new)));
     private final Registry<Biome> biomeRegistry;
-    //Classic
-    private final BetaSeed SEED_GLACIER = new BetaSeed("Glacier");
-    private final BetaSeed SEED_404 = new BetaSeed(404L);
-    private final BetaSeed SEED_GARGAMEL = new BetaSeed("gargamel");
     //Content Creators
     private final BetaSeed SEED_YOGSCAST = new BetaSeed(4090136037452000329L);
     private final BetaSeed SEED_STAMPY = new BetaSeed(6644803604819148923L);
@@ -115,9 +111,7 @@ public class BetaChunkGenerator extends ChunkGenerator {
         "404"
     };
 
-    private final ChunkProviderGenerate generator = new ChunkProviderGenerate(toSeed("Glacier"));
-
-    private List<BlockState> layers = Collections.nCopies(50, Blocks.STONE.getDefaultState());
+    private final ChunkProviderGenerate generator = new ChunkProviderGenerate(toSeed("gargamel"));
 
     public BetaChunkGenerator(Registry<StructureSet> structureSetRegistry, Registry<Biome> biomeRegistry) {
         super(structureSetRegistry, Optional.empty(), new FixedBiomeSource(biomeRegistry.getOrCreateEntry(BiomeKeys.THE_VOID)));
@@ -155,33 +149,18 @@ public class BetaChunkGenerator extends ChunkGenerator {
 
     @Override
     public int getWorldHeight() {
-        return 384;
+        return 128;
     }
 
     @Override
     public CompletableFuture<Chunk> populateNoise(Executor executor, Blender blender, NoiseConfig noiseConfig, StructureAccessor structureAccessor, Chunk chunk) {
-        /*BlockPos.Mutable mutable = new BlockPos.Mutable();
-        Heightmap oceanFloor = chunk.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
-        Heightmap worldSurface = chunk.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
-        for (int i = 0; i < Math.min(chunk.getHeight(), layers.size()); ++i) {
-            BlockState blockState = layers.get(i);
-            if (blockState == null) continue;
-            int j = chunk.getBottomY() + i;
-            for (int k = 0; k < 16; ++k) {
-                for (int l = 0; l < 16; ++l) {
-                    chunk.setBlockState(mutable.set(k, j, l), blockState, false);
-                    oceanFloor.trackUpdate(k, j, l, blockState);
-                    worldSurface.trackUpdate(k, j, l, blockState);
-                }
-            }
-        }*/
         generator.fillChunk(chunk);
         return CompletableFuture.completedFuture(chunk);
     }
 
     @Override
     public int getSeaLevel() {
-        return -63;
+        return 0;
     }
 
     @Override
@@ -191,17 +170,12 @@ public class BetaChunkGenerator extends ChunkGenerator {
 
     @Override
     public int getHeight(int x, int z, Heightmap.Type heightmap, HeightLimitView world, NoiseConfig noiseConfig) {
-        for (int i = Math.min(layers.size(), world.getTopY()) - 1; i >= 0; --i) {
-            BlockState blockState = layers.get(i);
-            if (blockState == null || !heightmap.getBlockPredicate().test(blockState)) continue;
-            return world.getBottomY() + i + 1;
-        }
-        return world.getBottomY();
+        return 64;
     }
 
     @Override
     public VerticalBlockSample getColumnSample(int x, int z, HeightLimitView world, NoiseConfig noiseConfig) {
-        return new VerticalBlockSample(world.getBottomY(), layers.stream().limit(world.getHeight()).map(state -> state == null ? Blocks.AIR.getDefaultState() : state).toArray(BlockState[]::new));
+        return new VerticalBlockSample(world.getBottomY(), Collections.nCopies(64, Blocks.STONE.getDefaultState()).toArray(new BlockState[]{}));
     }
 
     @Override
