@@ -1,0 +1,6 @@
+{
+  "type": "spacepunk:beta_overworld_type",
+  "generator": {
+    "type": "spacepunk:beta"
+  }
+}

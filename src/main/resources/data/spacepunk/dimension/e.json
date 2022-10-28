@@ -1,7 +1,0 @@
-{
-  "type": "minecraft:overworld",
-  "generator": {
-    "type": "spacepunk:beta",
-    "settings": "spacepunk:e_settings"
-  }
-}

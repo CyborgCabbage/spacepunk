@@ -91,7 +91,7 @@ public class NoiseGeneratorPerlin {
         return this.generateNoise(d1, d3, 0.0D);
     }
 
-    public void func_805_a(double[] d1, double d2, double d4, double d6, int i8, int i9, int i10, double d11, double d13, double d15, double d17) {
+    public void func_805_a(double[] output, double xOffset, double yOffset, double zOffset, int xSize, int ySize, int zSize, double xScale, double yScale, double zScale, double inverseMagnitude) {
         int i10001;
         int i19;
         int i22;
@@ -103,7 +103,7 @@ public class NoiseGeneratorPerlin {
         int i41;
         double d42;
         int i75;
-        if(i9 == 1) {
+        if(ySize == 1) {
             boolean z64 = false;
             boolean z65 = false;
             boolean z21 = false;
@@ -111,10 +111,10 @@ public class NoiseGeneratorPerlin {
             double d70 = 0.0D;
             double d73 = 0.0D;
             i75 = 0;
-            double d77 = 1.0D / d17;
+            double d77 = 1.0D / inverseMagnitude;
 
-            for(int i30 = 0; i30 < i8; ++i30) {
-                d31 = (d2 + (double)i30) * d11 + this.xCoord;
+            for(int i30 = 0; i30 < xSize; ++i30) {
+                d31 = (xOffset + (double)i30) * xScale + this.xCoord;
                 int i78 = (int)d31;
                 if(d31 < (double)i78) {
                     --i78;
@@ -124,8 +124,8 @@ public class NoiseGeneratorPerlin {
                 d31 -= (double)i78;
                 d35 = d31 * d31 * d31 * (d31 * (d31 * 6.0D - 15.0D) + 10.0D);
 
-                for(i37 = 0; i37 < i10; ++i37) {
-                    d38 = (d6 + (double)i37) * d15 + this.zCoord;
+                for(i37 = 0; i37 < zSize; ++i37) {
+                    d38 = (zOffset + (double)i37) * zScale + this.zCoord;
                     i40 = (int)d38;
                     if(d38 < (double)i40) {
                         --i40;
@@ -142,13 +142,13 @@ public class NoiseGeneratorPerlin {
                     d73 = this.lerp(d35, this.grad(this.permutations[i66 + 1], d31, 0.0D, d38 - 1.0D), this.grad(this.permutations[i22 + 1], d31 - 1.0D, 0.0D, d38 - 1.0D));
                     double d79 = this.lerp(d42, d70, d73);
                     i10001 = i75++;
-                    d1[i10001] += d79 * d77;
+                    output[i10001] += d79 * d77;
                 }
             }
 
         } else {
             i19 = 0;
-            double d20 = 1.0D / d17;
+            double d20 = 1.0D / inverseMagnitude;
             i22 = -1;
             boolean z23 = false;
             boolean z24 = false;
@@ -161,8 +161,8 @@ public class NoiseGeneratorPerlin {
             double d33 = 0.0D;
             d35 = 0.0D;
 
-            for(i37 = 0; i37 < i8; ++i37) {
-                d38 = (d2 + (double)i37) * d11 + this.xCoord;
+            for(i37 = 0; i37 < xSize; ++i37) {
+                d38 = (xOffset + (double)i37) * xScale + this.xCoord;
                 i40 = (int)d38;
                 if(d38 < (double)i40) {
                     --i40;
@@ -172,8 +172,8 @@ public class NoiseGeneratorPerlin {
                 d38 -= (double)i40;
                 d42 = d38 * d38 * d38 * (d38 * (d38 * 6.0D - 15.0D) + 10.0D);
 
-                for(int i44 = 0; i44 < i10; ++i44) {
-                    double d45 = (d6 + (double)i44) * d15 + this.zCoord;
+                for(int i44 = 0; i44 < zSize; ++i44) {
+                    double d45 = (zOffset + (double)i44) * zScale + this.zCoord;
                     int i47 = (int)d45;
                     if(d45 < (double)i47) {
                         --i47;
@@ -183,8 +183,8 @@ public class NoiseGeneratorPerlin {
                     d45 -= (double)i47;
                     double d49 = d45 * d45 * d45 * (d45 * (d45 * 6.0D - 15.0D) + 10.0D);
 
-                    for(int i51 = 0; i51 < i9; ++i51) {
-                        double d52 = (d4 + (double)i51) * d13 + this.yCoord;
+                    for(int i51 = 0; i51 < ySize; ++i51) {
+                        double d52 = (yOffset + (double)i51) * yScale + this.yCoord;
                         int i54 = (int)d52;
                         if(d52 < (double)i54) {
                             --i54;
@@ -211,7 +211,7 @@ public class NoiseGeneratorPerlin {
                         double d60 = this.lerp(d56, d33, d35);
                         double d62 = this.lerp(d49, d58, d60);
                         i10001 = i19++;
-                        d1[i10001] += d62 * d20;
+                        output[i10001] += d62 * d20;
                     }
                 }
             }

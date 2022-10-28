@@ -111,7 +111,7 @@ public class BetaChunkGenerator extends ChunkGenerator {
         "404"
     };
 
-    private final ChunkProviderGenerate generator = new ChunkProviderGenerate(toSeed("gargamel"));
+    private final ChunkProviderGenerate generator = new ChunkProviderGenerate(toSeed("Glacier"));
 
     public BetaChunkGenerator(Registry<StructureSet> structureSetRegistry, Registry<Biome> biomeRegistry) {
         super(structureSetRegistry, Optional.empty(), new FixedBiomeSource(biomeRegistry.getOrCreateEntry(BiomeKeys.THE_VOID)));

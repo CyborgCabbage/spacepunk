@@ -12,6 +12,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.chunk.Chunk;
@@ -19,43 +20,43 @@ import net.minecraft.world.chunk.Chunk;
 import java.util.Random;
 
 public class ChunkProviderGenerate {
-    private Random rand;
-    private NoiseGeneratorOctaves noise0;
-    private NoiseGeneratorOctaves noise1;
-    private NoiseGeneratorOctaves noise2;
-    private NoiseGeneratorOctaves noise3;
-    private NoiseGeneratorOctaves noise4;
-    public NoiseGeneratorOctaves noise5;
-    public NoiseGeneratorOctaves noise6;
-    public NoiseGeneratorOctaves mobSpawnerNoise;
+    private final Random rand;
+    private final NoiseGeneratorOctaves noise16a;
+    private final NoiseGeneratorOctaves noise16b;
+    private final NoiseGeneratorOctaves noise8a;
+    private final NoiseGeneratorOctaves noise4a;
+    private final NoiseGeneratorOctaves noise4b;
+    private final NoiseGeneratorOctaves noise10a;
+    private final NoiseGeneratorOctaves noise16c;
+    private final NoiseGeneratorOctaves treeNoise;
     private double[] terrainNoiseValues;
     private double[] sandNoise = new double[256];
     private double[] gravelNoise = new double[256];
     private double[] stoneNoise = new double[256];
     private final MapGenBase genCaves = new MapGenCaves();
     private BiomeGenBase[] biomesForGeneration;
-    double[] field_4185_d;
-    double[] field_4184_e;
-    double[] field_4183_f;
-    double[] field_4182_g;
-    double[] field_4181_h;
+    double[] highFreq3d8;
+    double[] lowFreq3d16a;
+    double[] lowFreq3d16b;
+    double[] highFreq2d10;
+    double[] lowFreq2d16;
     int[][] field_914_i = new int[32][32];
     private double[] generatedTemperatures;
     final long worldSeed;
     public ChunkProviderGenerate(long seed) {
         this.worldSeed = seed;
         this.temperatureGenerator = new NoiseGeneratorOctaves2(new Random(seed * 9871L), 4);
-        this.noise8 = new NoiseGeneratorOctaves2(new Random(seed * 39811L), 4);
+        this.humidityGenrator = new NoiseGeneratorOctaves2(new Random(seed * 39811L), 4);
         this.noise9 = new NoiseGeneratorOctaves2(new Random(seed * 543321L), 2);
         this.rand = new Random(seed);
-        this.noise0 = new NoiseGeneratorOctaves(this.rand, 16);
-        this.noise1 = new NoiseGeneratorOctaves(this.rand, 16);
-        this.noise2 = new NoiseGeneratorOctaves(this.rand, 8);
-        this.noise3 = new NoiseGeneratorOctaves(this.rand, 4);
-        this.noise4 = new NoiseGeneratorOctaves(this.rand, 4);
-        this.noise5 = new NoiseGeneratorOctaves(this.rand, 10);
-        this.noise6 = new NoiseGeneratorOctaves(this.rand, 16);
-        this.mobSpawnerNoise = new NoiseGeneratorOctaves(this.rand, 8);
+        this.noise16a = new NoiseGeneratorOctaves(this.rand, 16);
+        this.noise16b = new NoiseGeneratorOctaves(this.rand, 16);
+        this.noise8a = new NoiseGeneratorOctaves(this.rand, 8);
+        this.noise4a = new NoiseGeneratorOctaves(this.rand, 4);
+        this.noise4b = new NoiseGeneratorOctaves(this.rand, 4);
+        this.noise10a = new NoiseGeneratorOctaves(this.rand, 10);
+        this.noise16c = new NoiseGeneratorOctaves(this.rand, 16);
+        this.treeNoise = new NoiseGeneratorOctaves(this.rand, 8);
     }
 
     public void generateTerrain(Chunk chunk) {
@@ -66,33 +67,36 @@ public class ChunkProviderGenerate {
         byte yNoiseSize = 17;
         int zNoiseSIze = horizontalNoiseSize + 1;
         this.terrainNoiseValues = this.generateTerrainNoise(this.terrainNoiseValues, pos.x * horizontalNoiseSize, 0, pos.z * horizontalNoiseSize, xNoiseSize, yNoiseSize, zNoiseSIze);
+        BlockPos.Mutable blockPos = new BlockPos.Mutable(0, 0, 0);
         for(int xNoiseIndex = 0; xNoiseIndex < horizontalNoiseSize; ++xNoiseIndex) {
             for(int zNoiseIndex = 0; zNoiseIndex < horizontalNoiseSize; ++zNoiseIndex) {
                 for(int yNoiseIndex = 0; yNoiseIndex < 16; ++yNoiseIndex) {
                     double yFrac = 0.125D;
-                    double d16 = this.terrainNoiseValues[((xNoiseIndex + 0) * zNoiseSIze + zNoiseIndex + 0) * yNoiseSize + yNoiseIndex + 0];
-                    double d18 = this.terrainNoiseValues[((xNoiseIndex + 0) * zNoiseSIze + zNoiseIndex + 1) * yNoiseSize + yNoiseIndex + 0];
-                    double d20 = this.terrainNoiseValues[((xNoiseIndex + 1) * zNoiseSIze + zNoiseIndex + 0) * yNoiseSize + yNoiseIndex + 0];
-                    double d22 = this.terrainNoiseValues[((xNoiseIndex + 1) * zNoiseSIze + zNoiseIndex + 1) * yNoiseSize + yNoiseIndex + 0];
-                    double d24 = (this.terrainNoiseValues[((xNoiseIndex + 0) * zNoiseSIze + zNoiseIndex + 0) * yNoiseSize + yNoiseIndex + 1] - d16) * yFrac;
-                    double d26 = (this.terrainNoiseValues[((xNoiseIndex + 0) * zNoiseSIze + zNoiseIndex + 1) * yNoiseSize + yNoiseIndex + 1] - d18) * yFrac;
-                    double d28 = (this.terrainNoiseValues[((xNoiseIndex + 1) * zNoiseSIze + zNoiseIndex + 0) * yNoiseSize + yNoiseIndex + 1] - d20) * yFrac;
-                    double d30 = (this.terrainNoiseValues[((xNoiseIndex + 1) * zNoiseSIze + zNoiseIndex + 1) * yNoiseSize + yNoiseIndex + 1] - d22) * yFrac;
+                    double v000 = this.terrainNoiseValues[((xNoiseIndex + 0) * zNoiseSIze + zNoiseIndex + 0) * yNoiseSize + yNoiseIndex + 0];
+                    double v010 = this.terrainNoiseValues[((xNoiseIndex + 0) * zNoiseSIze + zNoiseIndex + 1) * yNoiseSize + yNoiseIndex + 0];
+                    double v100 = this.terrainNoiseValues[((xNoiseIndex + 1) * zNoiseSIze + zNoiseIndex + 0) * yNoiseSize + yNoiseIndex + 0];
+                    double v110 = this.terrainNoiseValues[((xNoiseIndex + 1) * zNoiseSIze + zNoiseIndex + 1) * yNoiseSize + yNoiseIndex + 0];
+                    double v001 = (this.terrainNoiseValues[((xNoiseIndex + 0) * zNoiseSIze + zNoiseIndex + 0) * yNoiseSize + yNoiseIndex + 1] - v000) * yFrac;
+                    double v011 = (this.terrainNoiseValues[((xNoiseIndex + 0) * zNoiseSIze + zNoiseIndex + 1) * yNoiseSize + yNoiseIndex + 1] - v010) * yFrac;
+                    double v101 = (this.terrainNoiseValues[((xNoiseIndex + 1) * zNoiseSIze + zNoiseIndex + 0) * yNoiseSize + yNoiseIndex + 1] - v100) * yFrac;
+                    double v111 = (this.terrainNoiseValues[((xNoiseIndex + 1) * zNoiseSIze + zNoiseIndex + 1) * yNoiseSize + yNoiseIndex + 1] - v110) * yFrac;
 
                     for(int ySub = 0; ySub < 8; ++ySub) {
+                        blockPos.setY(yNoiseIndex * 8 + ySub);
                         double xFrac = 0.25D;
-                        double d35 = d16;
-                        double d37 = d18;
-                        double d39 = (d20 - d16) * xFrac;
-                        double d41 = (d22 - d18) * xFrac;
+                        double d35 = v000;
+                        double d37 = v010;
+                        double d39 = (v100 - v000) * xFrac;
+                        double d41 = (v110 - v010) * xFrac;
 
                         for(int xSub = 0; xSub < 4; ++xSub) {
-                            BlockPos.Mutable blockPos = new BlockPos.Mutable(xSub + xNoiseIndex * 4, yNoiseIndex * 8 + ySub, zNoiseIndex * 4);
+                            blockPos.setX(xNoiseIndex * 4 + xSub);
                             double zFrac = 0.25D;
                             double density = d35;
                             double zNoiseStep = (d37 - d35) * zFrac;
 
                             for(int zSub = 0; zSub < 4; ++zSub) {
+                                blockPos.setZ(zNoiseIndex * 4 + zSub);
                                 double d53 = temperature[(xNoiseIndex * 4 + xSub) * 16 + zNoiseIndex * 4 + zSub];
                                 Block blockState = Blocks.AIR;
                                 if(yNoiseIndex * 8 + ySub < seaLevel) {
@@ -107,16 +111,15 @@ public class ChunkProviderGenerate {
                                     blockState = Blocks.STONE;
                                 }
                                 chunk.setBlockState(blockPos, blockState.getDefaultState(), false);
-                                blockPos.move(0, 0, 1);
                                 density += zNoiseStep;
                             }
                             d35 += d39;
                             d37 += d41;
                         }
-                        d16 += d24;
-                        d18 += d26;
-                        d20 += d28;
-                        d22 += d30;
+                        v000 += v001;
+                        v010 += v011;
+                        v100 += v101;
+                        v110 += v111;
                     }
                 }
             }
@@ -127,16 +130,16 @@ public class ChunkProviderGenerate {
     public void replaceBlocksForBiome(Chunk chunk, BiomeGenBase[] biomeGenBase4) {
         ChunkPos pos = chunk.getPos();
         byte b5 = 64;
-        double d6 = 8.0D / 256D;
-        this.sandNoise = this.noise3.generateNoiseOctaves(this.sandNoise, pos.x * 16, pos.z * 16, 0.0D, 16, 16, 1, d6, d6, 1.0D);
-        this.gravelNoise = this.noise3.generateNoiseOctaves(this.gravelNoise, pos.x * 16, 109.0134D, pos.z * 16, 16, 1, 16, d6, 1.0D, d6);
-        this.stoneNoise = this.noise4.generateNoiseOctaves(this.stoneNoise, pos.x * 16, pos.z * 16, 0.0D, 16, 16, 1, d6 * 2.0D, d6 * 2.0D, d6 * 2.0D);
+        double scale = 8.0D / 256D;
+        this.sandNoise = this.noise4a.generateNoiseOctaves(this.sandNoise, pos.x * 16, pos.z * 16, 0.0D, 16, 16, 1, scale, scale, 1.0D);
+        this.gravelNoise = this.noise4a.generateNoiseOctaves(this.gravelNoise, pos.x * 16, 109.0134D, pos.z * 16, 16, 1, 16, scale, 1.0D, scale);
+        this.stoneNoise = this.noise4b.generateNoiseOctaves(this.stoneNoise, pos.x * 16, pos.z * 16, 0.0D, 16, 16, 1, scale * 2.0D, scale * 2.0D, scale * 2.0D);
 
         for(int h1 = 0; h1 < 16; ++h1) {
             for(int h2 = 0; h2 < 16; ++h2) {
                 BiomeGenBase biomeGenBase10 = biomeGenBase4[h1 + h2 * 16];
-                boolean sand = this.sandNoise[h1 + h2 * 16] + this.rand.nextDouble() * 0.2D > 0.0D;
-                boolean gravel = this.gravelNoise[h1 + h2 * 16] + this.rand.nextDouble() * 0.2D > 3.0D;
+                boolean sand = this.sandNoise[h1 + h2 * 16] + this.rand.nextDouble() * 0.2d > 0.0D;
+                boolean gravel = this.gravelNoise[h1 + h2 * 16] + this.rand.nextDouble() * 0.2d > 3.0D;
                 int stone = (int)(this.stoneNoise[h1 + h2 * 16] / 3.0D + 3.0D + this.rand.nextDouble() * 0.25D);
                 int i14 = -1;
                 BlockState topBlock = biomeGenBase10.topBlock;
@@ -199,7 +202,7 @@ public class ChunkProviderGenerate {
     public void fillChunk(Chunk chunk) {
         var pos = chunk.getPos();
         this.rand.setSeed((long)pos.x * 341873128712L + (long)pos.z * 132897987541L);
-        this.biomes = loadBlockGeneratorData(this.biomes, pos.x * 16, pos.z * 16, 16, 16);
+        this.biomes = generateBiomes(this.biomes, pos.x * 16, pos.z * 16, 16, 16);
         this.generateTerrain(chunk);
         this.replaceBlocksForBiome(chunk, this.biomes);
         this.genCaves.generate(chunk, worldSeed);
@@ -211,89 +214,88 @@ public class ChunkProviderGenerate {
             noiseArray = new double[xNoiseSize * yNoiseSize * zNoiseSize];
         }
 
-        double hScale = 684.412D;
-        double vScale = 684.412D;
+        double hScale = 684.412d;
+        double vScale = 684.412d;
         double[] temp = this.temperature;
         double[] humidity = this.humidity;
-        this.field_4182_g = this.noise5.func_4109_a(this.field_4182_g, xOffset, zOffset, xNoiseSize, zNoiseSize, 1.121D, 1.121D, 0.5D);
-        this.field_4181_h = this.noise6.func_4109_a(this.field_4181_h, xOffset, zOffset, xNoiseSize, zNoiseSize, 200.0D, 200.0D, 0.5D);
-        this.field_4185_d = this.noise2.generateNoiseOctaves(this.field_4185_d, xOffset, yOffset, zOffset, xNoiseSize, yNoiseSize, zNoiseSize, hScale / 80.0D, vScale / 160.0D, hScale / 80.0D);
-        this.field_4184_e = this.noise0.generateNoiseOctaves(this.field_4184_e, xOffset, yOffset, zOffset, xNoiseSize, yNoiseSize, zNoiseSize, hScale, vScale, hScale);
-        this.field_4183_f = this.noise1.generateNoiseOctaves(this.field_4183_f, xOffset, yOffset, zOffset, xNoiseSize, yNoiseSize, zNoiseSize, hScale, vScale, hScale);
+        this.highFreq2d10 = this.noise10a.func_4109_a(this.highFreq2d10, xOffset, zOffset, xNoiseSize, zNoiseSize, 1.121D, 1.121D, 0.5D);
+        this.lowFreq2d16 = this.noise16c.func_4109_a(this.lowFreq2d16, xOffset, zOffset, xNoiseSize, zNoiseSize, 200.0D, 200.0D, 0.5D);
+        this.highFreq3d8 = this.noise8a.generateNoiseOctaves(this.highFreq3d8, xOffset, yOffset, zOffset, xNoiseSize, yNoiseSize, zNoiseSize, hScale / 80.0D, vScale / 160.0D, hScale / 80.0D);
+        this.lowFreq3d16a = this.noise16a.generateNoiseOctaves(this.lowFreq3d16a, xOffset, yOffset, zOffset, xNoiseSize, yNoiseSize, zNoiseSize, hScale, vScale, hScale);
+        this.lowFreq3d16b = this.noise16b.generateNoiseOctaves(this.lowFreq3d16b, xOffset, yOffset, zOffset, xNoiseSize, yNoiseSize, zNoiseSize, hScale, vScale, hScale);
         int noiseIndex = 0;
         int noiseIndex2 = 0;
-        int i16 = 16 / xNoiseSize;
+        int samplePeriod = 16 / xNoiseSize;
 
         for(int xNoiseIndex = 0; xNoiseIndex < xNoiseSize; ++xNoiseIndex) {
-            int i18 = xNoiseIndex * i16 + i16 / 2;
-
+            int xSample = xNoiseIndex * samplePeriod + samplePeriod / 2;
             for(int zNoiseIndex = 0; zNoiseIndex < zNoiseSize; ++zNoiseIndex) {
-                int i20 = zNoiseIndex * i16 + i16 / 2;
-                double tempVal = temp[i18 * 16 + i20];
-                double humidityVal = humidity[i18 * 16 + i20] * tempVal;
-                double h = 1.0D - humidityVal;
-                h *= h;
-                h *= h;
-                h = 1.0D - h;
-                double d27 = (this.field_4182_g[noiseIndex2] + 256.0D) / 512.0D;
-                d27 *= h;
-                if(d27 > 1.0D) {
-                    d27 = 1.0D;
+                int zSample = zNoiseIndex * samplePeriod + samplePeriod / 2;
+                double tempVal = temp[xSample * 16 + zSample];
+                double humidityVal = humidity[xSample * 16 + zSample] * tempVal;
+                humidityVal = 1.0D - humidityVal;
+                humidityVal *= humidityVal;
+                humidityVal *= humidityVal;
+                humidityVal = 1.0D - humidityVal;
+                double highFreqHumid = (this.highFreq2d10[noiseIndex2] + 256.0D) / 512.0D;
+                highFreqHumid *= humidityVal;
+                if(highFreqHumid > 1.0D) {
+                    highFreqHumid = 1.0D;
                 }
 
-                double d29 = this.field_4181_h[noiseIndex2] / 8000.0D;
-                if(d29 < 0.0D) {
-                    d29 = -d29 * 0.3D;
+                double lowFreq2d3 = this.lowFreq2d16[noiseIndex2] / 8000.0D;
+                if(lowFreq2d3 < 0.0D) {
+                    lowFreq2d3 = -lowFreq2d3 * 0.3d;
                 }
 
-                d29 = d29 * 3.0D - 2.0D;
-                if(d29 < 0.0D) {
-                    d29 /= 2.0D;
-                    if(d29 < -1.0D) {
-                        d29 = -1.0D;
+                lowFreq2d3 = lowFreq2d3 * 3.0D - 2.0D;
+                if(lowFreq2d3 < 0.0D) {
+                    lowFreq2d3 /= 2.0D;
+                    if(lowFreq2d3 < -1.0D) {
+                        lowFreq2d3 = -1.0D;
                     }
 
-                    d29 /= 1.4D;
-                    d29 /= 2.0D;
-                    d27 = 0.0D;
+                    lowFreq2d3 /= 1.4D;
+                    lowFreq2d3 /= 2.0D;
+                    highFreqHumid = 0.0D;
                 } else {
-                    if(d29 > 1.0D) {
-                        d29 = 1.0D;
+                    if(lowFreq2d3 > 1.0D) {
+                        lowFreq2d3 = 1.0D;
                     }
 
-                    d29 /= 8.0D;
+                    lowFreq2d3 /= 8.0D;
                 }
 
-                if(d27 < 0.0D) {
-                    d27 = 0.0D;
+                if(highFreqHumid < 0.0D) {
+                    highFreqHumid = 0.0D;
                 }
 
-                d27 += 0.5D;
-                d29 = d29 * (double)yNoiseSize / 16.0D;
-                double d31 = (double)yNoiseSize / 2.0D + d29 * 4.0D;
+                highFreqHumid += 0.5D;
+                lowFreq2d3 = lowFreq2d3 * (double)yNoiseSize / 16.0D;
+                double d31 = (double)yNoiseSize / 2.0D + lowFreq2d3 * 4.0D;
                 ++noiseIndex2;
 
                 for(int yNoiseIndex = 0; yNoiseIndex < yNoiseSize; ++yNoiseIndex) {
-                    double noiseValue = 0.0D;
-                    double d36 = ((double)yNoiseIndex - d31) * 12.0D / d27;
-                    if(d36 < 0.0D) {
-                        d36 *= 4.0D;
+                    double bias = ((double)yNoiseIndex - d31) * 12.0D / highFreqHumid;
+                    if(bias < 0.0D) {
+                        bias *= 4.0D;
                     }
 
-                    double d38 = this.field_4184_e[noiseIndex] / 512.0D;
-                    double d40 = this.field_4183_f[noiseIndex] / 512.0D;
-                    double d42 = (this.field_4185_d[noiseIndex] / 10.0D + 1.0D) / 2.0D;
-                    if(d42 < 0.0D) {
-                        noiseValue = d38;
-                    } else if(d42 > 1.0D) {
-                        noiseValue = d40;
+                    double a = this.lowFreq3d16a[noiseIndex] / 512.0D;
+                    double b = this.lowFreq3d16b[noiseIndex] / 512.0D;
+                    double mix = this.highFreq3d8[noiseIndex] / 20.0D + 0.5D;
+                    double noiseValue;
+                    if(mix < 0.0D) {
+                        noiseValue = a;
+                    } else if(mix > 1.0D) {
+                        noiseValue = b;
                     } else {
-                        noiseValue = d38 + (d40 - d38) * d42;
+                        noiseValue = a + (b - a) * mix;
                     }
-
-                    noiseValue -= d36;
+                    noiseValue -= bias;
+                    //Fall-off
                     if(yNoiseIndex > yNoiseSize - 4) {
-                        double d44 = (double)((float)(yNoiseIndex - (yNoiseSize - 4)) / 3.0F);
+                        double d44 = (float)(yNoiseIndex - (yNoiseSize - 4)) / 3.0F;
                         noiseValue = noiseValue * (1.0D - d44) + -10.0D * d44;
                     }
 
@@ -306,15 +308,13 @@ public class ChunkProviderGenerate {
         return noiseArray;
     }
 
-    //public boolean chunkExists(int i1, int i2) {return true;}
-
     public void populate(StructureWorldAccess world, Chunk chunk) {
         //BlockSand.fallInstantly = true;
         int i2 = chunk.getPos().x;
         int i3 = chunk.getPos().z;
         int i4 = i2 * 16;
         int i5 = i3 * 16;
-        BiomeGenBase biomeGenBase6 = getBiomeGenAt(i4 + 16, i5 + 16);
+        BiomeGenBase biomeGenBase6 = getBiomeAtBlock(i4 + 16, i5 + 16);
         this.rand.setSeed(worldSeed);
         long j7 = this.rand.nextLong() / 2L * 2L + 1L;
         long j9 = this.rand.nextLong() / 2L * 2L + 1L;
@@ -411,7 +411,7 @@ public class ChunkProviderGenerate {
         }
 
         d11 = 0.5D;
-        i13 = (int)((this.mobSpawnerNoise.func_806_a((double)i4 * d11, (double)i5 * d11) / 8.0D + this.rand.nextDouble() * 4.0D + 4.0D) / 3.0D);
+        i13 = (int)((this.treeNoise.func_806_a((double)i4 * d11, (double)i5 * d11) / 8.0D + this.rand.nextDouble() * 4.0D + 4.0D) / 3.0D);
         i14 = 0;
         if(this.rand.nextInt(10) == 0) {
             ++i14;
@@ -596,7 +596,7 @@ public class ChunkProviderGenerate {
                 i20 = i25 - (i4 + 8);
                 i21 = i19 - (i5 + 8);
                 int i22 = world.getTopY(Heightmap.Type.MOTION_BLOCKING, i25, i19);
-                double d23 = this.generatedTemperatures[i20 * 16 + i21] - (double)(i22 - 64) / 64.0D * 0.3D;
+                double d23 = this.generatedTemperatures[i20 * 16 + i21] - (double)(i22 - 64) / 64.0D * 0.3d;
                 if(d23 < 0.5D && i22 > 0 && i22 < 128 && world.isAir(new BlockPos(i25, i22, i19)) && world.getBlockState(new BlockPos(i25, i22 - 1, i19)).getMaterial().isSolid() && world.getBlockState(new BlockPos(i25, i22 - 1, i19)).getMaterial() != Material.ICE) {
                     world.setBlockState(new BlockPos(i25, i22, i19), Blocks.SNOW.getDefaultState(), Block.NOTIFY_ALL);
                 }
@@ -606,45 +606,29 @@ public class ChunkProviderGenerate {
         //BlockSand.fallInstantly = false;
     }
 
-    /*public boolean saveChunks(boolean z1, IProgressUpdate iProgressUpdate2) {
-        return true;
-    }
-
-    public boolean unload100OldestChunks() {
-        return false;
-    }
-
-    public boolean canSave() {
-        return true;
-    }
-
-    public String makeString() {
-        return "RandomLevelSource";
-    }*/
-
     //World Chunk Manager
 
-    private NoiseGeneratorOctaves2 temperatureGenerator;
-    private NoiseGeneratorOctaves2 noise8;
-    private NoiseGeneratorOctaves2 noise9;
+    private final NoiseGeneratorOctaves2 temperatureGenerator;
+    private final NoiseGeneratorOctaves2 humidityGenrator;
+    private final NoiseGeneratorOctaves2 noise9;
     public double[] temperature;
     public double[] humidity;
-    public double[] field_4196_c;
-    public BiomeGenBase[] field_4195_d;
+    public double[] biomeJitter;
+    public BiomeGenBase[] biomeRegion;
     public BiomeGenBase[] biomes;
 
-    public BiomeGenBase getBiomeGenAt(int i1, int i2) {
-        return this.func_4069_a(i1, i2, 1, 1)[0];
+    public BiomeGenBase getBiomeAtBlock(int x, int z) {
+        return this.getBiomesInRegion(x, z, 1, 1)[0];
     }
 
     public double getTemperature(int i1, int i2) {
-        this.temperature = this.temperatureGenerator.func_4112_a(this.temperature, (double)i1, (double)i2, 1, 1, 0.02500000037252903D, 0.02500000037252903D, 0.5D);
+        this.temperature = this.temperatureGenerator.func_4112_a(this.temperature, i1, i2, 1, 1, 0.02500000037252903d, 0.02500000037252903d, 0.5D);
         return this.temperature[0];
     }
 
-    public BiomeGenBase[] func_4069_a(int i1, int i2, int i3, int i4) {
-        this.field_4195_d = this.loadBlockGeneratorData(this.field_4195_d, i1, i2, i3, i4);
-        return this.field_4195_d;
+    public BiomeGenBase[] getBiomesInRegion(int xPos, int zPos, int xSize, int zSize) {
+        this.biomeRegion = this.generateBiomes(this.biomeRegion, xPos, zPos, xSize, zSize);
+        return this.biomeRegion;
     }
 
     public double[] getTemperatures(double[] d1, int i2, int i3, int i4, int i5) {
@@ -652,13 +636,13 @@ public class ChunkProviderGenerate {
             d1 = new double[i4 * i5];
         }
 
-        d1 = this.temperatureGenerator.func_4112_a(d1, (double)i2, (double)i3, i4, i5, 0.02500000037252903D, 0.02500000037252903D, 0.25D);
-        this.field_4196_c = this.noise9.func_4112_a(this.field_4196_c, (double)i2, (double)i3, i4, i5, 0.25D, 0.25D, 0.5882352941176471D);
+        d1 = this.temperatureGenerator.func_4112_a(d1, i2, i3, i4, i5, 0.02500000037252903d, 0.02500000037252903d, 0.25D);
+        this.biomeJitter = this.noise9.func_4112_a(this.biomeJitter, i2, i3, i4, i5, 0.25D, 0.25D, 0.5882352941176471D);
         int i6 = 0;
 
         for(int i7 = 0; i7 < i4; ++i7) {
             for(int i8 = 0; i8 < i5; ++i8) {
-                double d9 = this.field_4196_c[i6] * 1.1D + 0.5D;
+                double d9 = this.biomeJitter[i6] * 1.1D + 0.5D;
                 double d11 = 0.01D;
                 double d13 = 1.0D - d11;
                 double d15 = (d1[i6] * 0.15D + 0.7D) * d13 + d9 * d11;
@@ -679,45 +663,29 @@ public class ChunkProviderGenerate {
         return d1;
     }
 
-    public BiomeGenBase[] loadBlockGeneratorData(BiomeGenBase[] biomes, int i2, int i3, int i4, int i5) {
-        if(biomes == null || biomes.length < i4 * i5) {
-            biomes = new BiomeGenBase[i4 * i5];
+    public BiomeGenBase[] generateBiomes(BiomeGenBase[] biomes, int xChunk, int zChunk, int xSize, int zSize) {
+        if(biomes == null || biomes.length < xSize * zSize) {
+            biomes = new BiomeGenBase[xSize * zSize];
         }
 
-        this.temperature = this.temperatureGenerator.func_4112_a(this.temperature, (double)i2, (double)i3, i4, i4, 0.02500000037252903D, 0.02500000037252903D, 0.25D);
-        this.humidity = this.noise8.func_4112_a(this.humidity, (double)i2, (double)i3, i4, i4, (double)0.05F, (double)0.05F, 0.3333333333333333D);
-        this.field_4196_c = this.noise9.func_4112_a(this.field_4196_c, (double)i2, (double)i3, i4, i4, 0.25D, 0.25D, 0.5882352941176471D);
-        int i6 = 0;
+        this.temperature = this.temperatureGenerator.func_4112_a(this.temperature, xChunk, zChunk, xSize, xSize, 0.02500000037252903d, 0.02500000037252903d, 0.25D);
+        this.humidity = this.humidityGenrator.func_4112_a(this.humidity, xChunk, zChunk, xSize, xSize, 0.05F, 0.05F, 0.3333333333333333d);
+        this.biomeJitter = this.noise9.func_4112_a(this.biomeJitter, xChunk, zChunk, xSize, xSize, 0.25D, 0.25D, 0.5882352941176471D);
+        int i = 0;
 
-        for(int i7 = 0; i7 < i4; ++i7) {
-            for(int i8 = 0; i8 < i5; ++i8) {
-                double d9 = this.field_4196_c[i6] * 1.1D + 0.5D;
-                double d11 = 0.01D;
-                double d13 = 1.0D - d11;
-                double d15 = (this.temperature[i6] * 0.15D + 0.7D) * d13 + d9 * d11;
-                d11 = 0.002D;
-                d13 = 1.0D - d11;
-                double d17 = (this.humidity[i6] * 0.15D + 0.5D) * d13 + d9 * d11;
-                d15 = 1.0D - (1.0D - d15) * (1.0D - d15);
-                if(d15 < 0.0D) {
-                    d15 = 0.0D;
-                }
-
-                if(d17 < 0.0D) {
-                    d17 = 0.0D;
-                }
-
-                if(d15 > 1.0D) {
-                    d15 = 1.0D;
-                }
-
-                if(d17 > 1.0D) {
-                    d17 = 1.0D;
-                }
-
-                this.temperature[i6] = d15;
-                this.humidity[i6] = d17;
-                biomes[i6++] = BiomeGenBase.getBiomeFromLookup(d15, d17);
+        for(int k = 0; k < xSize; ++k) {
+            for(int l = 0; l < zSize; ++l) {
+                double d9 = this.biomeJitter[i] * 1.1D + 0.5D;
+                double weightTemp = 0.01D;
+                double tempValue = (this.temperature[i] * 0.15D + 0.7D) * (1.0D - weightTemp) + d9 * weightTemp;
+                double weightHumid = 0.002d;
+                double humidValue = (this.humidity[i] * 0.15D + 0.5D) * (1.0D - weightHumid) + d9 * weightHumid;
+                tempValue = 1.0D - (1.0D - tempValue) * (1.0D - tempValue);
+                tempValue = MathHelper.clamp(tempValue,0,1);
+                humidValue = MathHelper.clamp(humidValue, 0, 1);
+                this.temperature[i] = tempValue;
+                this.humidity[i] = humidValue;
+                biomes[i++] = BiomeGenBase.getBiomeFromLookup(tempValue, humidValue);
             }
         }
         return biomes;
