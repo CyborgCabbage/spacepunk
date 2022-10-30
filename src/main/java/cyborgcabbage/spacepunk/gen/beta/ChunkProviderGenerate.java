@@ -19,8 +19,7 @@ import net.minecraft.world.chunk.Chunk;
 
 import java.util.Random;
 
-public class ChunkProviderGenerate {
-    private final Random rand;
+public class ChunkProviderGenerate extends BetaChunkProvider{
     private final NoiseGeneratorOctaves noise16a;
     private final NoiseGeneratorOctaves noise16b;
     private final NoiseGeneratorOctaves noise8a;
@@ -33,7 +32,6 @@ public class ChunkProviderGenerate {
     private double[] sandNoise = new double[256];
     private double[] gravelNoise = new double[256];
     private double[] stoneNoise = new double[256];
-    private final MapGenBase genCaves = new MapGenCaves();
     private BiomeGenBase[] biomesForGeneration;
     double[] highFreq3d8;
     double[] lowFreq3d16a;
@@ -42,13 +40,11 @@ public class ChunkProviderGenerate {
     double[] lowFreq2d16;
     int[][] field_914_i = new int[32][32];
     private double[] generatedTemperatures;
-    final long worldSeed;
     public ChunkProviderGenerate(long seed) {
-        this.worldSeed = seed;
+        super(seed);
         this.temperatureGenerator = new NoiseGeneratorOctaves2(new Random(seed * 9871L), 4);
         this.humidityGenrator = new NoiseGeneratorOctaves2(new Random(seed * 39811L), 4);
         this.noise9 = new NoiseGeneratorOctaves2(new Random(seed * 543321L), 2);
-        this.rand = new Random(seed);
         this.noise16a = new NoiseGeneratorOctaves(this.rand, 16);
         this.noise16b = new NoiseGeneratorOctaves(this.rand, 16);
         this.noise8a = new NoiseGeneratorOctaves(this.rand, 8);
@@ -205,8 +201,7 @@ public class ChunkProviderGenerate {
         this.biomes = generateBiomes(this.biomes, pos.x * 16, pos.z * 16, 16, 16);
         this.generateTerrain(chunk);
         this.replaceBlocksForBiome(chunk, this.biomes);
-        this.genCaves.generate(chunk, worldSeed);
-        //chunk4.func_1024_c();
+        this.caveGen.generate(chunk, worldSeed);
     }
 
     private double[] generateTerrainNoise(double[] noiseArray, int xOffset, int yOffset, int zOffset, int xNoiseSize, int yNoiseSize, int zNoiseSize) {

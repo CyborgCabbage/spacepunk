@@ -1,6 +1,7 @@
 {
   "type": "spacepunk:beta_overworld_type",
   "generator": {
-    "type": "spacepunk:beta"
+    "type": "spacepunk:beta",
+    "is_moon": false
   }
 }

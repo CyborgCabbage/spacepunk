@@ -78,6 +78,9 @@ public class SpacepunkClient implements ClientModInitializer {
         });
         DimensionRenderingRegistry.registerSkyRenderer(Spacepunk.MOON, new MoonRenderer());
         DimensionRenderingRegistry.registerDimensionEffects(Spacepunk.MOON.getValue(), new MoonRenderer.MoonEffects());
+
+        DimensionRenderingRegistry.registerSkyRenderer(Spacepunk.BETA_MOON, new MoonRenderer());
+
         DimensionRenderingRegistry.registerSkyRenderer(Spacepunk.VENUS, new VenusRenderer());
 
         ClientBookRegistry.INSTANCE.pageTypes.put(Spacepunk.id("my_multiblock"), MyPageMultiblock.class);
