@@ -1,15 +1,17 @@
 package cyborgcabbage.spacepunk.client.render.entity.model;
 
+import cyborgcabbage.spacepunk.entity.SulfurCreeperEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value= EnvType.CLIENT)
-public class SulfurCreeperEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+public class SulfurCreeperEntityModel extends SinglePartEntityModel<SulfurCreeperEntity> {
     private final ModelPart root;
     private final ModelPart head;
     private final ModelPart leftHindLeg;
@@ -47,7 +49,7 @@ public class SulfurCreeperEntityModel<T extends Entity> extends SinglePartEntity
     }
 
     @Override
-    public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setAngles(SulfurCreeperEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.head.yaw = headYaw * ((float)Math.PI / 180);
         this.head.pitch = headPitch * ((float)Math.PI / 180);
         this.leftHindLeg.pitch = MathHelper.cos(limbAngle * 0.6662f) * 1.4f * limbDistance;

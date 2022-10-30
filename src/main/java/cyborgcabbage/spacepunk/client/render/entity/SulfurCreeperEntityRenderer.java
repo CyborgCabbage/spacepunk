@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value= EnvType.CLIENT)
-public class SulfurCreeperEntityRenderer extends MobEntityRenderer<SulfurCreeperEntity, SulfurCreeperEntityModel<SulfurCreeperEntity>> {
+public class SulfurCreeperEntityRenderer extends MobEntityRenderer<SulfurCreeperEntity, SulfurCreeperEntityModel> {
     private static final Identifier TEXTURE = new Identifier(Spacepunk.MOD_ID,"textures/entity/sulfur_creeper.png");
 
     public SulfurCreeperEntityRenderer(EntityRendererFactory.Context context) {
