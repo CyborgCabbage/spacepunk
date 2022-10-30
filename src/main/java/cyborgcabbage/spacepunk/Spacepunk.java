@@ -16,6 +16,7 @@ import cyborgcabbage.spacepunk.item.ExtraTallGrassBlockItem;
 import cyborgcabbage.spacepunk.item.GuideBookItem;
 import cyborgcabbage.spacepunk.util.BuildRocketCriterion;
 import cyborgcabbage.spacepunk.util.PlanetProperties;
+import cyborgcabbage.spacepunk.util.RocketNavigation;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.entity.event.v1.EntitySleepEvents;
@@ -50,8 +51,6 @@ public class Spacepunk implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	public static final DamageSource VACUUM = new DamageSource("vacuum").setBypassesArmor();
-
-	public static ArrayList<RegistryKey<World>> TARGET_DIMENSION_LIST = new ArrayList<>();
 
 	public static final RegistryKey<World> MOON = RegistryKey.of(Registry.WORLD_KEY, id("moon"));
 	public static final RegistryKey<World> VENUS = RegistryKey.of(Registry.WORLD_KEY, id("venus"));
@@ -121,6 +120,8 @@ public class Spacepunk implements ModInitializer {
 
 	public static final Identifier ROCKET_LAUNCH_SOUND_ID = id("rocket_launch");
 	public static SoundEvent ROCKET_LAUNCH_SOUND_EVENT = new SoundEvent(ROCKET_LAUNCH_SOUND_ID);
+
+	public static RocketNavigation ROCKET_NAVIGATION;
 
 	@Override
 	public void onInitialize() {
@@ -216,14 +217,13 @@ public class Spacepunk implements ModInitializer {
 		Registry.register(Registry.FEATURE, id("fractal_star"), new FractalStarFeature(FractalStarFeatureConfig.CODEC));
 		Registry.register(Registry.FEATURE, id("boulder"), new BoulderFeature(BoulderFeatureConfig.CODEC));
 
-		TARGET_DIMENSION_LIST.add(World.OVERWORLD);
-		TARGET_DIMENSION_LIST.add(MOON);
-
 		PatchouliAPI.get().registerMultiblock(id("rocket_mk1"), ROCKET_MULTIBLOCK);
 
 		Registry.register(Registry.SOUND_EVENT, ROCKET_LAUNCH_SOUND_ID, ROCKET_LAUNCH_SOUND_EVENT);
 
 		Registry.register(Registry.CHUNK_GENERATOR, id("beta"), BetaChunkGenerator.CODEC);
+
+		ROCKET_NAVIGATION = new RocketNavigation();
 	}
 	private void registerBlockAndItem(String name, Block block){
 		Registry.register(Registry.BLOCK, id(name), block);

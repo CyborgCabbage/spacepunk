@@ -5,6 +5,7 @@ import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.entity.RocketEntity;
 import cyborgcabbage.spacepunk.inventory.RocketScreenHandler;
 import cyborgcabbage.spacepunk.util.PlanetProperties;
+import cyborgcabbage.spacepunk.util.RocketNavigation;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -13,6 +14,11 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
+
+import java.util.ArrayList;
+import java.util.Optional;
 
 public class RocketScreen extends HandledScreen<RocketScreenHandler> {
     //A path to the gui texture. In this example we use the texture from the dispenser
@@ -46,7 +52,12 @@ public class RocketScreen extends HandledScreen<RocketScreenHandler> {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         updateCentreY();
-        var targetDim = Spacepunk.TARGET_DIMENSION_LIST.get(screenHandler.getTargetDimensionIndex()).getValue();
+        if(client == null) return;
+        if(client.world == null) return;
+        Optional<RocketNavigation.Body> body = Spacepunk.ROCKET_NAVIGATION.find(client.world.getRegistryKey());
+        if(body.isEmpty()) return;
+        ArrayList<RocketNavigation.Body> targetList = body.get().parent.getChildren();
+        Identifier targetDim = targetList.get(screenHandler.getTargetDimensionIndex()).getWorld().getValue();
         if(buttonChangeTarget != null)
             buttonChangeTarget.setMessage(Text.translatable("dimension."+targetDim));
         renderBackground(matrices);

@@ -20,6 +20,8 @@
   "dimension.minecraft:overworld": "Earth",
   "dimension.spacepunk:moon": "Moon",
   "dimension.spacepunk:venus": "Venus",
+  "dimension.spacepunk:beta_moon": "Moon(?)",
+  "dimension.spacepunk:beta_overworld": "Earth(?)",
 
   "item.spacepunk.rocketry_guide" : "A Guide To Rocketry",
   "item.spacepunk.spacesuit_helmet" : "Spacesuit Helmet",

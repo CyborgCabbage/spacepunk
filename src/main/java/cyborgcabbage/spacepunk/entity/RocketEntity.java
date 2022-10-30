@@ -3,6 +3,7 @@ package cyborgcabbage.spacepunk.entity;
 import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.inventory.RocketScreenHandler;
 import cyborgcabbage.spacepunk.util.PlanetProperties;
+import cyborgcabbage.spacepunk.util.RocketNavigation;
 import net.fabricmc.fabric.api.dimension.v1.FabricDimensions;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
@@ -40,6 +41,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.RegistryKey;
@@ -49,9 +51,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory {
     public static final int STATE_GOING_DOWN = 0;
@@ -305,7 +305,13 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
                 case STATE_GOING_UP -> {
                     //Teleport
                     if(getY() > world.getTopY() + TELEPORT_HEIGHT){
-                        RegistryKey<World> targetDimensionKey = Spacepunk.TARGET_DIMENSION_LIST.get(targetDimensionIndex);
+                        Optional<RocketNavigation.Body> body = Spacepunk.ROCKET_NAVIGATION.find(world.getRegistryKey());
+                        if(body.isEmpty()) {
+                            dataTracker.set(TRAVEL_STATE, STATE_GOING_DOWN);
+                            return;
+                        }
+                        ArrayList<RocketNavigation.Body> targetList = body.get().parent.getChildren();
+                        RegistryKey<World> targetDimensionKey = targetList.get(targetDimensionIndex).getWorld();
                         savePassenger();
                         dataTracker.set(TRAVEL_STATE, STATE_WAITING);
                         ServerWorld destination = world.getServer().getWorld(targetDimensionKey);
@@ -399,11 +405,13 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
 
     public void launch(PlayerEntity player){
         if(!world.isClient) {
-            if(!Spacepunk.TARGET_DIMENSION_LIST.contains(world.getRegistryKey())){
+            Optional<RocketNavigation.Body> body = Spacepunk.ROCKET_NAVIGATION.find(world.getRegistryKey());
+            if(body.isEmpty()) {
                 player.sendMessage(Text.translatable("entity.spacepunk.rocket.wrong_dimension").formatted(Formatting.RED), true);
                 return;
             }
-            if(Spacepunk.TARGET_DIMENSION_LIST.get(targetDimensionIndex).equals(world.getRegistryKey())){
+            ArrayList<RocketNavigation.Body> targetList = body.get().parent.getChildren();
+            if(targetList.get(targetDimensionIndex).getWorld() == world.getRegistryKey()){
                 player.sendMessage(Text.translatable("entity.spacepunk.rocket.in_dimension").formatted(Formatting.RED), true);
                 return;
             }
@@ -438,8 +446,11 @@ public class RocketEntity extends Entity implements ExtendedScreenHandlerFactory
     }
 
     public void changeTarget(){
+
+        Optional<RocketNavigation.Body> body = Spacepunk.ROCKET_NAVIGATION.find(world.getRegistryKey());
+        if(body.isEmpty()) return;
         targetDimensionIndex++;
-        targetDimensionIndex %= Spacepunk.TARGET_DIMENSION_LIST.size();
+        targetDimensionIndex %= body.get().parent.getChildren().size();
     }
 
 
