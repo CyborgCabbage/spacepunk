@@ -43,7 +43,7 @@ public class MoonRenderer implements DimensionRenderingRegistry.SkyRenderer {
 
     public static class MoonEffects extends DimensionEffects {
         public MoonEffects() {
-            super(Float.NaN, false, SkyType.NORMAL, true, false);
+            super(Float.NaN, false, SkyType.NORMAL, false, false);
         }
 
         @Override
