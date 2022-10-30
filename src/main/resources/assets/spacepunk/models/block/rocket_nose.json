@@ -1,86 +1,86 @@
 {
-  "credit": "Made with Blockbench",
-  "texture_size": [48, 32],
-  "textures": {
-    "0": "spacepunk:block/rocket_nose",
-    "particle": "spacepunk:block/rocket_nose"
-  },
-  "elements": [
-    {
-      "name": "nose0",
-      "from": [2, 0, 2],
-      "to": [14, 4, 14],
-      "faces": {
-        "north": {"uv": [4, 6, 8, 8], "texture": "#0"},
-        "east": {"uv": [0, 6, 4, 8], "texture": "#0"},
-        "south": {"uv": [12, 6, 16, 8], "texture": "#0"},
-        "west": {"uv": [8, 6, 12, 8], "texture": "#0"},
-        "up": {"uv": [8, 6, 4, 0], "texture": "#0"},
-        "down": {"uv": [12, 0, 8, 6], "texture": "#0"}
-      }
-    },
-    {
-      "name": "nose0",
-      "from": [4, 4, 4],
-      "to": [12, 8, 12],
-      "faces": {
-        "north": {"uv": [2.66667, 14, 5.33333, 16], "texture": "#0"},
-        "east": {"uv": [0, 14, 2.66667, 16], "texture": "#0"},
-        "south": {"uv": [8, 14, 10.66667, 16], "texture": "#0"},
-        "west": {"uv": [5.33333, 14, 8, 16], "texture": "#0"},
-        "up": {"uv": [5.33333, 14, 2.66667, 10], "texture": "#0"},
-        "down": {"uv": [8, 10, 5.33333, 14], "texture": "#0"}
-      }
-    },
-    {
-      "name": "nose0",
-      "from": [6, 8, 6],
-      "to": [10, 12, 10],
-      "faces": {
-        "north": {"uv": [12, 14, 13.33333, 16], "texture": "#0"},
-        "east": {"uv": [10.66667, 14, 12, 16], "texture": "#0"},
-        "south": {"uv": [14.66667, 14, 16, 16], "texture": "#0"},
-        "west": {"uv": [13.33333, 14, 14.66667, 16], "texture": "#0"},
-        "up": {"uv": [13.33333, 14, 12, 12], "texture": "#0"},
-        "down": {"uv": [14.66667, 12, 13.33333, 14], "texture": "#0"}
-      }
-    }
-  ],
-  "display": {
-    "thirdperson_righthand": {
-      "rotation": [75, 45, 0],
-      "translation": [0, 1.75, 1.5],
-      "scale": [0.375, 0.375, 0.375]
-    },
-    "thirdperson_lefthand": {
-      "rotation": [75, 45, 0],
-      "translation": [0, 1.75, 1.5],
-      "scale": [0.375, 0.375, 0.375]
-    },
-    "firstperson_righthand": {
-      "rotation": [0, 45, 0],
-      "translation": [0, 1.5, 0],
-      "scale": [0.4, 0.4, 0.4]
-    },
-    "firstperson_lefthand": {
-      "rotation": [0, 225, 0],
-      "translation": [0, 1.5, 0],
-      "scale": [0.4, 0.4, 0.4]
-    },
-    "ground": {
-      "translation": [0, 3, 0],
-      "scale": [0.25, 0.25, 0.25]
-    },
-    "gui": {
-      "rotation": [30, 225, 0],
-      "scale": [0.625, 0.625, 0.625]
-    },
-    "head": {
-      "translation": [0, 14.93, 0],
-      "scale": [1.0666, 1.0666, 1.0666]
-    },
-    "fixed": {
-      "scale": [0.5, 0.5, 0.5]
-    }
-  }
+	"credit": "Made with Blockbench",
+	"texture_size": [48, 32],
+	"textures": {
+		"0": "spacepunk:block/rocket_nose",
+		"particle": "spacepunk:block/rocket_nose"
+	},
+	"elements": [
+		{
+			"name": "nose0",
+			"from": [2, 0, 2],
+			"to": [14, 4, 14],
+			"faces": {
+				"north": {"uv": [4, 6, 8, 8], "texture": "#0"},
+				"east": {"uv": [0, 6, 4, 8], "texture": "#0"},
+				"south": {"uv": [12, 6, 16, 8], "texture": "#0"},
+				"west": {"uv": [8, 6, 12, 8], "texture": "#0"},
+				"up": {"uv": [8, 6, 4, 0], "texture": "#0"},
+				"down": {"uv": [12, 0, 8, 6], "texture": "#0"}
+			}
+		},
+		{
+			"name": "nose0",
+			"from": [4, 4, 4],
+			"to": [12, 8, 12],
+			"faces": {
+				"north": {"uv": [2.66667, 14, 5.33333, 16], "texture": "#0"},
+				"east": {"uv": [0, 14, 2.66667, 16], "texture": "#0"},
+				"south": {"uv": [8, 14, 10.66667, 16], "texture": "#0"},
+				"west": {"uv": [5.33333, 14, 8, 16], "texture": "#0"},
+				"up": {"uv": [5.33333, 14, 2.66667, 10], "texture": "#0"},
+				"down": {"uv": [8, 10, 5.33333, 14], "texture": "#0"}
+			}
+		},
+		{
+			"name": "nose0",
+			"from": [6, 8, 6],
+			"to": [10, 12, 10],
+			"faces": {
+				"north": {"uv": [12, 14, 13.33333, 16], "texture": "#0"},
+				"east": {"uv": [10.66667, 14, 12, 16], "texture": "#0"},
+				"south": {"uv": [14.66667, 14, 16, 16], "texture": "#0"},
+				"west": {"uv": [13.33333, 14, 14.66667, 16], "texture": "#0"},
+				"up": {"uv": [13.33333, 14, 12, 12], "texture": "#0"},
+				"down": {"uv": [14.66667, 12, 13.33333, 14], "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 1.75, 1.5],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 1.75, 1.5],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, 45, 0],
+			"translation": [0, 1.5, 0],
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0, 225, 0],
+			"translation": [0, 1.5, 0],
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"ground": {
+			"translation": [0, 3, 0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"gui": {
+			"rotation": [30, 225, 0],
+			"scale": [0.625, 0.625, 0.625]
+		},
+		"head": {
+			"translation": [0, 13, 0],
+			"scale": [0.825, 0.825, 0.825]
+		},
+		"fixed": {
+			"scale": [0.5, 0.5, 0.5]
+		}
+	}
 }
