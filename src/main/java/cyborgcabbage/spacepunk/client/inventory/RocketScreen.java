@@ -13,7 +13,9 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
@@ -65,9 +67,29 @@ public class RocketScreen extends HandledScreen<RocketScreenHandler> {
         drawMouseoverTooltip(matrices, mouseX, mouseY);
         RenderSystem.setShaderTexture(0, PlanetProperties.getIcon(targetDim));
         int size = 64;
-        int rightX = x+backgroundWidth/2;
-        int rightWidth = backgroundWidth/2;
-        DrawableHelper.drawTexture(matrices, rightX+rightWidth/2-size/2, centreY-size/2, size, size, 0, 0, 32, 32, 32, 32);
+        DrawableHelper.drawTexture(matrices, x+(backgroundWidth-size)/2, y+62-size/2, size, size, 0, 0, 32, 32, 32, 32);
+        int buttonWidth = 70;
+        int buttonHeight = 20;
+        buttonChangeTarget.x = x+backgroundWidth/2-buttonWidth/2;
+        buttonChangeTarget.y = centreY+52-buttonHeight/2;
+        buttonLaunch.x = x+backgroundWidth/2-buttonWidth/2;
+        buttonLaunch.y = centreY+74-buttonHeight/2;
+        buttonRotate.x = x+backgroundWidth/2-buttonWidth/2+36;
+        buttonRotate.y = centreY+112-buttonHeight/2;
+        buttonDisassemble.x = x+backgroundWidth/2-buttonWidth/2-36;
+        buttonDisassemble.y = centreY+112-buttonHeight/2;
+        {
+            Text text = Text.translatable("gui.spacepunk.rocket.construction").formatted(Formatting.UNDERLINE);
+            int textWidth = textRenderer.getWidth(text);
+            int textHeight = textRenderer.fontHeight;
+            textRenderer.draw(matrices, text, x + (backgroundWidth - textWidth) / 2.f, centreY + 94 - textHeight / 2.f, 0x404040);
+        }
+        {
+            Text text = Text.translatable("gui.spacepunk.rocket.navigation").formatted(Formatting.UNDERLINE);
+            int textWidth = textRenderer.getWidth(text);
+            int textHeight = textRenderer.fontHeight;
+            textRenderer.draw(matrices, text, x + (backgroundWidth - textWidth) / 2.f, y + 22 - textHeight / 2.f, 0x404040);
+        }
     }
 
     @Override
@@ -79,10 +101,10 @@ public class RocketScreen extends HandledScreen<RocketScreenHandler> {
         int buttonWidth = 70;
         int buttonHeight = 20;
         int leftWidth = backgroundWidth/2;
-        buttonLaunch = new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY-22-buttonHeight/2 , buttonWidth, buttonHeight, Text.translatable("gui.spacepunk.rocket.launch"), b -> buttonAction(RocketEntity.ACTION_LAUNCH, true));
-        buttonDisassemble = new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY-buttonHeight/2 , buttonWidth, buttonHeight, Text.translatable("gui.spacepunk.rocket.disassemble"), b -> buttonAction(RocketEntity.ACTION_DISASSEMBLE, true));
-        buttonChangeTarget = new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY+22-buttonHeight/2 , buttonWidth, buttonHeight, Text.literal(""), b -> buttonAction(RocketEntity.ACTION_CHANGE_TARGET, false));
-        buttonRotate = new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY+44-buttonHeight/2 , buttonWidth, buttonHeight, Text.translatable("gui.spacepunk.rocket.rotate"), b -> buttonAction(RocketEntity.ACTION_ROTATE, false));
+        buttonLaunch = new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY-22-buttonHeight/2, buttonWidth, buttonHeight, Text.translatable("gui.spacepunk.rocket.launch"), b -> buttonAction(RocketEntity.ACTION_LAUNCH, true));
+        buttonDisassemble = new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY-buttonHeight/2, buttonWidth, buttonHeight, Text.translatable("gui.spacepunk.rocket.disassemble"), b -> buttonAction(RocketEntity.ACTION_DISASSEMBLE, true));
+        buttonChangeTarget = new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY+22-buttonHeight/2, buttonWidth, buttonHeight, Text.literal(""), b -> buttonAction(RocketEntity.ACTION_CHANGE_TARGET, false));
+        buttonRotate = new ButtonWidget(x+(leftWidth-buttonWidth)/2, centreY+44-buttonHeight/2, buttonWidth, buttonHeight, Text.translatable("gui.spacepunk.rocket.rotate"), b -> buttonAction(RocketEntity.ACTION_ROTATE, false));
         this.addDrawableChild(buttonLaunch);
         this.addDrawableChild(buttonDisassemble);
         this.addDrawableChild(buttonChangeTarget);
