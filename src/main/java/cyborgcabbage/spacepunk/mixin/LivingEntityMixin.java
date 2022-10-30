@@ -70,6 +70,17 @@ public abstract class LivingEntityMixin {
         if (!(that instanceof PlayerEntity pe)) return newAir;
         //Restore air using bottles
         if (that.getAir() < that.getMaxAir() - 21) {
+            DefaultedList<ItemStack> offHand = pe.getInventory().offHand;
+            for (int i = 0; i < offHand.size(); i++) {
+                ItemStack stack = offHand.get(i);
+                if (stack.isOf(Spacepunk.BOTTLED_AIR)) {
+                    stack.damage(1, that, a -> {});
+                    if (stack.isEmpty()) {
+                        offHand.set(i, new ItemStack(Items.GLASS_BOTTLE));
+                    }
+                    return that.getAir() + 20;
+                }
+            }
             DefaultedList<ItemStack> main = pe.getInventory().main;
             for (int i = 0; i < main.size(); i++) {
                 ItemStack stack = main.get(i);
