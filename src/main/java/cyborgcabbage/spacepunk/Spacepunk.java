@@ -55,6 +55,8 @@ public class Spacepunk implements ModInitializer {
 
 	public static final RegistryKey<World> MOON = RegistryKey.of(Registry.WORLD_KEY, id("moon"));
 	public static final RegistryKey<World> VENUS = RegistryKey.of(Registry.WORLD_KEY, id("venus"));
+	public static final RegistryKey<World> BETA_MOON = RegistryKey.of(Registry.WORLD_KEY, id("beta_moon"));
+	public static final RegistryKey<World> BETA_OVERWORLD = RegistryKey.of(Registry.WORLD_KEY, id("beta_overworld"));
 
 	public static EntityType<RocketEntity> ROCKET_ENTITY;
 	public static EntityType<SulfurTntEntity> SULFUR_TNT_ENTITY;
