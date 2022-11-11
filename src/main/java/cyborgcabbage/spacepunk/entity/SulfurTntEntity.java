@@ -91,7 +91,8 @@ public class SulfurTntEntity extends Entity {
     }
 
     private void explode() {
-        this.world.createExplosion(this, this.getX(), this.getBodyY(0.0625), this.getZ(), power, true, Explosion.DestructionType.BREAK);
+
+        this.world.createExplosion(this, this.getX(), this.getBodyY(0.0625), this.getZ(), power, this.getBlock().getBlock() == Spacepunk.SULFUR_TNT, Explosion.DestructionType.BREAK);
     }
 
     @Override
