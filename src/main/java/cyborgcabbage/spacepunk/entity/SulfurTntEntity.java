@@ -24,8 +24,6 @@ public class SulfurTntEntity extends Entity {
     @Nullable
     private LivingEntity causingEntity;
     private float power = 5.0f;
-    //private int fuse = 80;
-    //private BlockState block = Blocks.AIR.getDefaultState();
     private static final String POWER_KEY = "power";
     private static final String FUSE_KEY = "fuse";
     private static final String BLOCK_KEY = "block";
