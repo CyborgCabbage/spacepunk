@@ -2,6 +2,7 @@ package cyborgcabbage.spacepunk.client.render.entity;
 
 import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.entity.SulfurTntEntity;
+import net.minecraft.block.Block;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -38,7 +39,7 @@ public class SulfurTntEntityRenderer extends EntityRenderer<SulfurTntEntity> {
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90.0f));
         matrixStack.translate(-0.5, -0.5, 0.5);
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0f));
-        TntMinecartEntityRenderer.renderFlashingBlock(this.blockRenderManager, Spacepunk.SULFUR_TNT.getDefaultState(), matrixStack, vertexConsumerProvider, i, j / 5 % 2 == 0);
+        TntMinecartEntityRenderer.renderFlashingBlock(this.blockRenderManager, entity.getBlock(), matrixStack, vertexConsumerProvider, i, j / 5 % 2 == 0);
         matrixStack.pop();
         super.render(entity, f, g, matrixStack, vertexConsumerProvider, i);
     }

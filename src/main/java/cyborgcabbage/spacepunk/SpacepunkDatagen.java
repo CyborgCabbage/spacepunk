@@ -2,7 +2,6 @@ package cyborgcabbage.spacepunk;
 
 import com.google.common.collect.Lists;
 import cyborgcabbage.spacepunk.block.OxygenBlock;
-import cyborgcabbage.spacepunk.block.SulfurTntBlock;
 import cyborgcabbage.spacepunk.util.BuildRocketCriterion;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
@@ -23,11 +22,9 @@ import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
 import net.minecraft.item.Item;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.predicate.BlockPredicate;
-import net.minecraft.predicate.StatePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.state.property.Properties;
@@ -220,15 +217,13 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
             addDrop(Spacepunk.EXTRA_TALL_GRASS, BlockLootTableGenerator::grassDrops);
             addDrop(Spacepunk.SULFUR);
             addDrop(Spacepunk.OXYGEN, dropsNothing());
-            addSulfurTntDrop();
+            addSulfurTntDrop(Spacepunk.SULFUR_TNT);
+            addSulfurTntDrop(Spacepunk.ENERGETIC_TNT);
         }
 
-        private void addSulfurTntDrop() {
-            var dontDropIfUnstable = BlockStatePropertyLootCondition
-                    .builder(Spacepunk.SULFUR_TNT)
-                    .properties(StatePredicate.Builder.create().exactMatch(SulfurTntBlock.UNSTABLE, false));
-            var lootPool = LootPool.builder().with(ItemEntry.builder(Spacepunk.SULFUR_TNT).conditionally(dontDropIfUnstable));
-            addDrop(Spacepunk.SULFUR_TNT, LootTable.builder().pool(BlockLootTableGenerator.addSurvivesExplosionCondition(Spacepunk.SULFUR_TNT, lootPool)));
+        private void addSulfurTntDrop(Block block) {
+            var lootPool = LootPool.builder().with(ItemEntry.builder(block));
+            addDrop(block, LootTable.builder().pool(BlockLootTableGenerator.addSurvivesExplosionCondition(block, lootPool)));
         }
     }
 
@@ -270,6 +265,7 @@ public class SpacepunkDatagen implements DataGeneratorEntrypoint {
             gen.registerSimpleCubeAll(Spacepunk.LUNAR_SOIL);
             gen.registerSimpleCubeAll(Spacepunk.SULFUR);
             gen.registerSingleton(Spacepunk.SULFUR_TNT, TexturedModel.CUBE_BOTTOM_TOP);
+            gen.registerSingleton(Spacepunk.ENERGETIC_TNT, TexturedModel.CUBE_BOTTOM_TOP);
             gen.registerLog(Spacepunk.VENUS_LOG).log(Spacepunk.VENUS_LOG).wood(Spacepunk.VENUS_WOOD);
             gen.registerLog(Spacepunk.STRIPPED_VENUS_LOG).log(Spacepunk.STRIPPED_VENUS_LOG).wood(Spacepunk.STRIPPED_VENUS_WOOD);
             gen.registerTintableCross(Spacepunk.VENUS_SAPLING, BlockStateModelGenerator.TintType.NOT_TINTED);

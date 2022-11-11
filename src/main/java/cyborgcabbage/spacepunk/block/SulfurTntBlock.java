@@ -1,7 +1,6 @@
 package cyborgcabbage.spacepunk.block;
 
 import cyborgcabbage.spacepunk.entity.SulfurTntEntity;
-import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -15,24 +14,25 @@ import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
 public class SulfurTntBlock extends Block {
-    public static final BooleanProperty UNSTABLE = Properties.UNSTABLE;
 
-    public SulfurTntBlock(AbstractBlock.Settings settings) {
+    private final int fuse;
+    private final float power;
+
+    public SulfurTntBlock(Settings settings, int fuse, float power) {
         super(settings);
-        setDefaultState(getDefaultState().with(UNSTABLE, false));
+        this.fuse = fuse;
+        this.power = power;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class SulfurTntBlock extends Block {
             return;
         }
         if (world.isReceivingRedstonePower(pos)) {
-            SulfurTntBlock.primeTnt(world, pos);
+            primeTnt(world, pos);
             world.removeBlock(pos, false);
         }
     }
@@ -49,16 +49,13 @@ public class SulfurTntBlock extends Block {
     @Override
     public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
         if (world.isReceivingRedstonePower(pos)) {
-            SulfurTntBlock.primeTnt(world, pos);
+            primeTnt(world, pos);
             world.removeBlock(pos, false);
         }
     }
 
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        if (!world.isClient() && !player.isCreative() && state.get(UNSTABLE)) {
-            SulfurTntBlock.primeTnt(world, pos);
-        }
         super.onBreak(world, pos, state, player);
     }
 
@@ -67,21 +64,21 @@ public class SulfurTntBlock extends Block {
         if (world.isClient) {
             return;
         }
-        SulfurTntEntity tntEntity = new SulfurTntEntity(world, (double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5, explosion.getCausingEntity());
+        SulfurTntEntity tntEntity = new SulfurTntEntity(world, (double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5, explosion.getCausingEntity(), fuse, power, this.getDefaultState());
         int i = tntEntity.getFuse();
         tntEntity.setFuse((short)(world.random.nextInt(i / 4) + i / 8));
         world.spawnEntity(tntEntity);
     }
 
-    public static void primeTnt(World world, BlockPos pos) {
-        SulfurTntBlock.primeTnt(world, pos, null);
+    public void primeTnt(World world, BlockPos pos) {
+        primeTnt(world, pos, null);
     }
 
-    private static void primeTnt(World world, BlockPos pos, @Nullable LivingEntity igniter) {
+    private void primeTnt(World world, BlockPos pos, @Nullable LivingEntity igniter) {
         if (world.isClient) {
             return;
         }
-        SulfurTntEntity tntEntity = new SulfurTntEntity(world, (double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5, igniter);
+        SulfurTntEntity tntEntity = new SulfurTntEntity(world, (double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5, igniter, fuse, power, this.getDefaultState());
         world.spawnEntity(tntEntity);
         world.playSound(null, tntEntity.getX(), tntEntity.getY(), tntEntity.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0f, 1.0f);
         world.emitGameEvent(igniter, GameEvent.PRIME_FUSE, pos);
@@ -91,7 +88,7 @@ public class SulfurTntBlock extends Block {
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player2, Hand hand, BlockHitResult hit) {
         ItemStack itemStack = player2.getStackInHand(hand);
         if (itemStack.isOf(Items.FLINT_AND_STEEL) || itemStack.isOf(Items.FIRE_CHARGE)) {
-            SulfurTntBlock.primeTnt(world, pos, player2);
+            primeTnt(world, pos, player2);
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
             Item item = itemStack.getItem();
             if (!player2.isCreative()) {
@@ -113,7 +110,7 @@ public class SulfurTntBlock extends Block {
             BlockPos blockPos = hit.getBlockPos();
             Entity entity = projectile.getOwner();
             if (projectile.isOnFire() && projectile.canModifyAt(world, blockPos)) {
-                SulfurTntBlock.primeTnt(world, blockPos, entity instanceof LivingEntity ? (LivingEntity)entity : null);
+                primeTnt(world, blockPos, entity instanceof LivingEntity ? (LivingEntity)entity : null);
                 world.removeBlock(blockPos, false);
             }
         }
@@ -122,10 +119,5 @@ public class SulfurTntBlock extends Block {
     @Override
     public boolean shouldDropItemsOnExplosion(Explosion explosion) {
         return false;
-    }
-
-    @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(UNSTABLE);
     }
 }

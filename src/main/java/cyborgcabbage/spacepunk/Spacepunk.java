@@ -90,7 +90,8 @@ public class Spacepunk implements ModInitializer {
 	public static final Block VENUS_FENCE = new FenceBlock(FabricBlockSettings.of(Material.WOOD, VENUS_PLANKS.getDefaultMapColor()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD));
 	public static final Block STRIPPED_VENUS_LOG = new PillarBlock(FabricBlockSettings.of(Material.WOOD, MapColor.PALE_YELLOW).strength(2.0f).sounds(BlockSoundGroup.WOOD));
 	public static final Block STRIPPED_VENUS_WOOD = new PillarBlock(FabricBlockSettings.of(Material.WOOD, MapColor.PALE_YELLOW).strength(2.0f).sounds(BlockSoundGroup.WOOD));
-	public static final Block SULFUR_TNT = new SulfurTntBlock(FabricBlockSettings.of(Material.TNT).breakInstantly().sounds(BlockSoundGroup.GRASS));
+	public static final Block SULFUR_TNT = new SulfurTntBlock(FabricBlockSettings.of(Material.TNT).breakInstantly().sounds(BlockSoundGroup.GRASS), 80, 5.f);
+	public static final Block ENERGETIC_TNT = new SulfurTntBlock(FabricBlockSettings.of(Material.TNT).breakInstantly().sounds(BlockSoundGroup.GRASS), 160, 10.f);
 	public static final Block SULFUR = new Block(FabricBlockSettings.of(Material.AGGREGATE, MapColor.YELLOW).strength(0.5f).sounds(BlockSoundGroup.SAND));
 	public static final Block EXTRA_TALL_GRASS = new ExtraTallGrassBlock(FabricBlockSettings.of(Material.REPLACEABLE_PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS));
 
@@ -209,6 +210,7 @@ public class Spacepunk implements ModInitializer {
 
 		registerBlockAndItem("sulfur", SULFUR);
 		registerBlockAndItem("sulfur_tnt", SULFUR_TNT);
+		registerBlockAndItem("energetic_tnt", ENERGETIC_TNT);
 
 		Registry.register(Registry.BLOCK, id("oxygen"), OXYGEN);
 		Registry.register(Registry.BLOCK, id("venus_door"), VENUS_DOOR);
