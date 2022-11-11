@@ -130,9 +130,11 @@ public class ChunkProviderGenerate extends BetaChunkProvider{
         this.sandNoise = this.noise4a.generateNoiseOctaves(this.sandNoise, pos.x * 16, pos.z * 16, 0.0D, 16, 16, 1, scale, scale, 1.0D);
         this.gravelNoise = this.noise4a.generateNoiseOctaves(this.gravelNoise, pos.x * 16, 109.0134D, pos.z * 16, 16, 1, 16, scale, 1.0D, scale);
         this.stoneNoise = this.noise4b.generateNoiseOctaves(this.stoneNoise, pos.x * 16, pos.z * 16, 0.0D, 16, 16, 1, scale * 2.0D, scale * 2.0D, scale * 2.0D);
-
+        BlockPos.Mutable blockPos = new BlockPos.Mutable(0, 0, 0);
         for(int h1 = 0; h1 < 16; ++h1) {
+            blockPos.setZ(h1);
             for(int h2 = 0; h2 < 16; ++h2) {
+                blockPos.setX(h2);
                 BiomeGenBase biomeGenBase10 = biomeGenBase4[h1 + h2 * 16];
                 boolean sand = this.sandNoise[h1 + h2 * 16] + this.rand.nextDouble() * 0.2d > 0.0D;
                 boolean gravel = this.gravelNoise[h1 + h2 * 16] + this.rand.nextDouble() * 0.2d > 3.0D;
@@ -140,9 +142,8 @@ public class ChunkProviderGenerate extends BetaChunkProvider{
                 int i14 = -1;
                 BlockState topBlock = biomeGenBase10.topBlock;
                 BlockState fillerBlock = biomeGenBase10.fillerBlock;
-
                 for(int yBlock = 127; yBlock >= 0; --yBlock) {
-                    BlockPos blockPos = new BlockPos(h2, yBlock, h1);
+                    blockPos.setY(yBlock);
                     BlockState block = null;
                     if(yBlock <= rand.nextInt(5)) {
                         block = Blocks.BEDROCK.getDefaultState();
