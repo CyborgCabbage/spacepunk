@@ -2,6 +2,7 @@ package cyborgcabbage.spacepunk;
 
 import cyborgcabbage.spacepunk.armor.MyArmorMaterials;
 import cyborgcabbage.spacepunk.block.*;
+import cyborgcabbage.spacepunk.entity.OrderedStoneEntity;
 import cyborgcabbage.spacepunk.entity.RocketEntity;
 import cyborgcabbage.spacepunk.entity.SulfurCreeperEntity;
 import cyborgcabbage.spacepunk.entity.SulfurTntEntity;
@@ -44,8 +45,6 @@ import org.slf4j.LoggerFactory;
 import vazkii.patchouli.api.IMultiblock;
 import vazkii.patchouli.api.PatchouliAPI;
 
-import java.util.ArrayList;
-
 public class Spacepunk implements ModInitializer {
 	public static final String MOD_ID = "spacepunk";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
@@ -60,6 +59,7 @@ public class Spacepunk implements ModInitializer {
 	public static EntityType<RocketEntity> ROCKET_ENTITY;
 	public static EntityType<SulfurTntEntity> SULFUR_TNT_ENTITY;
 	public static EntityType<SulfurCreeperEntity> SULFUR_CREEPER_ENTITY;
+	public static EntityType<OrderedStoneEntity> ORDERED_STONE_ENTITY;
 
 	public static final Block OXYGEN = new OxygenBlock(FabricBlockSettings.of(Material.AIR).noCollision().dropsNothing().air().ticksRandomly());
 
@@ -164,6 +164,18 @@ public class Spacepunk implements ModInitializer {
 						.entityFactory(SulfurCreeperEntity::new)
 						.defaultAttributes(SulfurCreeperEntity::createSulfurCreeperAttributes)
 						.dimensions(EntityDimensions.fixed(0.6f, 1.7f))
+						.trackRangeChunks(8)
+						.build()
+		);
+
+		ORDERED_STONE_ENTITY = Registry.register(
+				Registry.ENTITY_TYPE,
+				id("ordered_stone"),
+				FabricEntityTypeBuilder.createLiving()
+						.spawnGroup(SpawnGroup.MONSTER)
+						.entityFactory(OrderedStoneEntity::new)
+						.defaultAttributes(OrderedStoneEntity::createMobAttributes)
+						.dimensions(EntityDimensions.fixed(30/16f, 38/16f))
 						.trackRangeChunks(8)
 						.build()
 		);

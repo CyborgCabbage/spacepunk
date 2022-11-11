@@ -6,9 +6,11 @@ import cyborgcabbage.spacepunk.client.book.MyPageMultiblock;
 import cyborgcabbage.spacepunk.client.inventory.RocketScreen;
 import cyborgcabbage.spacepunk.client.render.dimension.MoonRenderer;
 import cyborgcabbage.spacepunk.client.render.dimension.VenusRenderer;
+import cyborgcabbage.spacepunk.client.render.entity.OrderedStoneEntityRenderer;
 import cyborgcabbage.spacepunk.client.render.entity.RocketEntityRenderer;
 import cyborgcabbage.spacepunk.client.render.entity.SulfurCreeperEntityRenderer;
 import cyborgcabbage.spacepunk.client.render.entity.SulfurTntEntityRenderer;
+import cyborgcabbage.spacepunk.client.render.entity.model.OrderedStoneEntityModel;
 import cyborgcabbage.spacepunk.client.render.entity.model.RocketEntityModel;
 import cyborgcabbage.spacepunk.client.render.entity.model.SulfurCreeperEntityModel;
 import cyborgcabbage.spacepunk.entity.RocketEntity;
@@ -40,15 +42,18 @@ import vazkii.patchouli.client.book.ClientBookRegistry;
 
 @Environment(EnvType.CLIENT)
 public class SpacepunkClient implements ClientModInitializer {
-    public static final EntityModelLayer MODEL_ROCKET_LAYER = new EntityModelLayer(new Identifier(Spacepunk.MOD_ID, "rocket"), "main");
-    public static final EntityModelLayer MODEL_SULFUR_CREEPER_LAYER = new EntityModelLayer(new Identifier(Spacepunk.MOD_ID, "sulfur_creeper"), "main");
+    public static final EntityModelLayer MODEL_ROCKET_LAYER = new EntityModelLayer(Spacepunk.id("rocket"), "main");
+    public static final EntityModelLayer MODEL_SULFUR_CREEPER_LAYER = new EntityModelLayer(Spacepunk.id("sulfur_creeper"), "main");
+    public static final EntityModelLayer MODEL_ORDERED_STONE_LAYER = new EntityModelLayer(Spacepunk.id("ordered_stone"), "main");
     @Override
     public void onInitializeClient() {
         EntityRendererRegistry.register(Spacepunk.ROCKET_ENTITY, RocketEntityRenderer::new);
         EntityRendererRegistry.register(Spacepunk.SULFUR_TNT_ENTITY, SulfurTntEntityRenderer::new);
         EntityRendererRegistry.register(Spacepunk.SULFUR_CREEPER_ENTITY, SulfurCreeperEntityRenderer::new);
+        EntityRendererRegistry.register(Spacepunk.ORDERED_STONE_ENTITY, OrderedStoneEntityRenderer::new);
         EntityModelLayerRegistry.registerModelLayer(MODEL_ROCKET_LAYER, RocketEntityModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(MODEL_SULFUR_CREEPER_LAYER, SulfurCreeperEntityModel::getTexturedModelData);
+        EntityModelLayerRegistry.registerModelLayer(MODEL_ORDERED_STONE_LAYER, OrderedStoneEntityModel::getTexturedModelData);
         HandledScreens.register(Spacepunk.ROCKET_SCREEN_HANDLER, RocketScreen::new);
         BlockRenderLayerMap.INSTANCE.putBlock(Spacepunk.VENUS_DOOR, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(Spacepunk.VENUS_TRAPDOOR, RenderLayer.getCutout());
