@@ -26,9 +26,11 @@ public class MoonRenderer implements DimensionRenderingRegistry.SkyRenderer {
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
         RenderSystem.setShaderColor(1, 1, 1, 1);
-        DimensionRenderUtil.drawBody(context, 0.f, 100.f, 15.f, DimensionRenderUtil.SUN_NO_GLOW);
-        DimensionRenderUtil.drawBody(context, 180.f, 100.f, 20.f, DimensionRenderUtil.EARTH);
         DimensionRenderUtil.drawStars(context);
+        DimensionRenderUtil.drawBody(context, 0.f, 100.f, 15.f, DimensionRenderUtil.SUN_NO_GLOW);
+        RenderSystem.setShaderColor(.5f,.5f,.5f,1);
+        DimensionRenderUtil.drawBody(context, 180.f, 100.f, 20.f, DimensionRenderUtil.EARTH);
+
 
         RenderSystem.disableBlend();
         RenderSystem.setShaderColor(0, 0, 0, 1);
