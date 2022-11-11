@@ -91,7 +91,7 @@ public class RocketScreen extends HandledScreen<RocketScreenHandler> {
         int buttonWidth = 70;
         int buttonHeight = 20;
         int leftWidth = backgroundWidth/2;
-        buttonChangeTarget = new ButtonWidget(x+backgroundWidth/2-buttonWidth/2, centreY+22-buttonHeight/2, buttonWidth, buttonHeight, Text.literal(""), b -> buttonAction(RocketEntity.ACTION_CHANGE_TARGET, false));
+        buttonChangeTarget = new ButtonWidget(x+backgroundWidth/2-buttonWidth/2, centreY+52-buttonHeight/2, buttonWidth, buttonHeight, Text.literal(""), b -> buttonAction(RocketEntity.ACTION_CHANGE_TARGET, false));
         buttonLaunch = new ButtonWidget(x+backgroundWidth/2-buttonWidth/2, centreY+74-buttonHeight/2, buttonWidth, buttonHeight, Text.translatable("gui.spacepunk.rocket.launch"), b -> buttonAction(RocketEntity.ACTION_LAUNCH, true));
         buttonDisassemble = new ButtonWidget(x+backgroundWidth/2-buttonWidth/2-36, centreY+112-buttonHeight/2, buttonWidth, buttonHeight, Text.translatable("gui.spacepunk.rocket.disassemble"), b -> buttonAction(RocketEntity.ACTION_DISASSEMBLE, true));
         buttonRotate = new ButtonWidget( x+backgroundWidth/2-buttonWidth/2+36, centreY+112-buttonHeight/2, buttonWidth, buttonHeight, Text.translatable("gui.spacepunk.rocket.rotate"), b -> buttonAction(RocketEntity.ACTION_ROTATE, false));
