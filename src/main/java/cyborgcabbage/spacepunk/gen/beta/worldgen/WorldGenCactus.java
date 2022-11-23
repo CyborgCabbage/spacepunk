@@ -2,7 +2,6 @@ package cyborgcabbage.spacepunk.gen.beta.worldgen;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.ShapeContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 

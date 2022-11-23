@@ -1,8 +1,6 @@
 package cyborgcabbage.spacepunk.client.render.entity;
 
-import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.entity.SulfurTntEntity;
-import net.minecraft.block.Block;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.EntityRenderer;

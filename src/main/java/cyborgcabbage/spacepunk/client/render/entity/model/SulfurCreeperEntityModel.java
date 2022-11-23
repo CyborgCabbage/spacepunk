@@ -6,8 +6,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value= EnvType.CLIENT)
