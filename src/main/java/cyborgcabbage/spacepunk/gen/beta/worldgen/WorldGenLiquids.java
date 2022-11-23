@@ -9,10 +9,10 @@ import net.minecraft.world.StructureWorldAccess;
 import java.util.Random;
 
 public class WorldGenLiquids extends WorldGenerator {
-	private final BlockState liquidBlockId;
+	private final BlockState state;
 
 	public WorldGenLiquids(BlockState i1) {
-		this.liquidBlockId = i1;
+		this.state = i1;
 	}
 
 	public boolean generate(StructureWorldAccess world, Random random, int i3, int i4, int i5) {
@@ -58,7 +58,9 @@ public class WorldGenLiquids extends WorldGenerator {
 			}
 
 			if(i6 == 3 && i7 == 1) {
-				world.setBlockState(new BlockPos(i3, i4, i5), this.liquidBlockId, Block.NOTIFY_LISTENERS);
+				BlockPos pos = new BlockPos(i3, i4, i5);
+				world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
+				world.createAndScheduleFluidTick(pos, state.getFluidState().getFluid(), 1);
 				//world.scheduledUpdatesAreImmediate = true;
 				//Block.blocksList[this.liquidBlockId].updateTick(world, i3, i4, i5, random);
 				//world.scheduledUpdatesAreImmediate = false;

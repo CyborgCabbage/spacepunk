@@ -64,7 +64,9 @@ public class WorldGenHellLava extends WorldGenerator {
 			}
 
 			if(i6 == 4 && i7 == 1) {
-				world.setBlockState(new BlockPos(i3, i4, i5), this.state, Block.NOTIFY_LISTENERS);
+				BlockPos pos = new BlockPos(i3, i4, i5);
+				world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
+				world.createAndScheduleFluidTick(pos, state.getFluidState().getFluid(), 1);
 				//world.scheduledUpdatesAreImmediate = true;
 				//this.state.scheduledTick(world, new BlockPos(i3, i4, i5), random);
 				//world.scheduledUpdatesAreImmediate = false;
