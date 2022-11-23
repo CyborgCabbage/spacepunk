@@ -99,19 +99,19 @@ public class MapGenCaves extends MapGenBase {
 					}
 
 					boolean hitWater = false;
-
+					BlockPos.Mutable blockPos = new BlockPos.Mutable(0, 0, 0);
 					for(int xi = x1; !hitWater && xi < x2; ++xi) {
+						blockPos.setX(xi);
 						for(int zi = z1; !hitWater && zi < z2; ++zi) {
+							blockPos.setZ(zi);
 							for(int yi = y2 + 1; !hitWater && yi >= y1 - 1; --yi) {
-								BlockPos blockPos = new BlockPos(xi, yi, zi);
-								if(yi >= 0 && yi < 128) {
-									if(chunk.getBlockState(blockPos).isOf(Blocks.WATER)) {
-										hitWater = true;
-									}
+								blockPos.setY(yi);
+								if(chunk.getBlockState(new BlockPos(xi, yi, zi)).isOf(Blocks.WATER)) {
+									hitWater = true;
+								}
 
-									if(yi != y1 - 1 && xi != x1 && xi != x2 - 1 && zi != z1 && zi != z2 - 1) {
-										yi = y1;
-									}
+								if(yi != y1 - 1 && xi != x1 && xi != x2 - 1 && zi != z1 && zi != z2 - 1) {
+									yi = y1;
 								}
 							}
 						}
@@ -162,7 +162,7 @@ public class MapGenCaves extends MapGenBase {
 
 	}
 
-	protected void generateFromChunk(Chunk chunk, long worldSeed, int xBlock, int zBlock) {
+	protected void generateFromChunk(Chunk chunk, int xBlock, int zBlock) {
 		int xChunk = chunk.getPos().x;
 		int zChunk = chunk.getPos().z;
 		int loops = this.rand.nextInt(this.rand.nextInt(this.rand.nextInt(40) + 1) + 1);

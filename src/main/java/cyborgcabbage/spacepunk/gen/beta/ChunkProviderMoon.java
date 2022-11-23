@@ -1,5 +1,8 @@
 package cyborgcabbage.spacepunk.gen.beta;
 
+import cyborgcabbage.spacepunk.gen.beta.biome.BiomeGenBase;
+import cyborgcabbage.spacepunk.gen.beta.map.MapGenBase;
+import cyborgcabbage.spacepunk.gen.beta.map.MapGenCaves;
 import cyborgcabbage.spacepunk.gen.beta.noise.MoonPerlin;
 import cyborgcabbage.spacepunk.gen.beta.worldgen.WorldGenMinable;
 import net.minecraft.block.BlockState;
@@ -19,6 +22,7 @@ public class ChunkProviderMoon extends BetaChunkProvider {
 	private final BlockState top = Blocks.GRAVEL.getDefaultState();
 	private int chunkX;
 	private int chunkZ;
+	final protected MapGenBase caveGen = new MapGenCaves();
 
 	public ChunkProviderMoon(long seed) {
 		super(seed);
@@ -65,6 +69,11 @@ public class ChunkProviderMoon extends BetaChunkProvider {
 			(new WorldGenMinable(113, 8)).generate(this.worldObj, this.rand, x, y, z);
 		}
 		*/
+	}
+
+	@Override
+	public BiomeGenBase getBiome(int x, int z) {
+		return BiomeGenBase.sky;
 	}
 
 	public void generateTerrain(Chunk chunk) {

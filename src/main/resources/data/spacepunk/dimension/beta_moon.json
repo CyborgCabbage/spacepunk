@@ -2,6 +2,6 @@
   "type": "spacepunk:beta_moon_type",
   "generator": {
     "type": "spacepunk:beta",
-    "is_moon": true
+    "mode": "moon"
   }
 }

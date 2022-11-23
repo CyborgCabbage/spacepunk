@@ -1,0 +1,7 @@
+{
+  "type": "spacepunk:beta_nether",
+  "generator": {
+    "type": "spacepunk:beta",
+    "mode": "nether"
+  }
+}

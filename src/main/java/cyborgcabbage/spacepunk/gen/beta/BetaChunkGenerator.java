@@ -1,38 +1,36 @@
 package cyborgcabbage.spacepunk.gen.beta;
 
-import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import cyborgcabbage.spacepunk.Spacepunk;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeAccess;
-import net.minecraft.world.biome.source.BiomeSource;
-import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.chunk.*;
+import net.minecraft.world.gen.chunk.Blender;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.VerticalBlockSample;
 import net.minecraft.world.gen.noise.NoiseConfig;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 public class BetaChunkGenerator extends ChunkGenerator {
-    public static final Codec<BetaChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> BetaChunkGenerator.createStructureSetRegistryGetter(instance).and(instance.group(RegistryOps.createRegistryCodec(Registry.BIOME_KEY).forGetter(generator -> generator.biomeRegistry), Codec.BOOL.fieldOf("is_moon").orElse(false).forGetter(BetaChunkGenerator::isMoon))).apply(instance, instance.stable(BetaChunkGenerator::new)));
+    public static final Codec<BetaChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> BetaChunkGenerator.createStructureSetRegistryGetter(instance).and(instance.group(RegistryOps.createRegistryCodec(Registry.BIOME_KEY).forGetter(generator -> generator.biomeRegistry), Codec.STRING.fieldOf("mode").orElse("").forGetter(BetaChunkGenerator::getMode))).apply(instance, instance.stable(BetaChunkGenerator::new)));
     private final Registry<Biome> biomeRegistry;
     //Content Creators
     private final BetaSeed SEED_YOGSCAST = new BetaSeed(4090136037452000329L);
@@ -42,13 +40,13 @@ public class BetaChunkGenerator extends ChunkGenerator {
     private final BetaSeed SEED_PACK_PNG = new BetaSeed(3257840388504953787L);//Population differences
     private final BetaSeed SEED_PANORAMA = new BetaSeed(2151901553968352745L);
 
-    private boolean isMoon = false;
-    public boolean isMoon() {
-        return isMoon;
+    private String mode = "";
+    public String getMode() {
+        return mode;
     }
 
 
-    protected static long toSeed(String seedString){
+    public static long toSeed(String seedString){
         if(seedString != null && !seedString.isEmpty()) {
             try {
                 return Long.parseLong(seedString);
@@ -120,14 +118,17 @@ public class BetaChunkGenerator extends ChunkGenerator {
 
     protected BetaChunkProvider generator;
 
-    public BetaChunkGenerator(Registry<StructureSet> structureSetRegistry, Registry<Biome> biomeRegistry, boolean moon) {
-        super(structureSetRegistry, Optional.empty(), new FixedBiomeSource(biomeRegistry.getOrCreateEntry(BiomeKeys.THE_VOID)));
+    public BetaChunkGenerator(Registry<StructureSet> structureSetRegistry, Registry<Biome> biomeRegistry, String mode) {
+        super(structureSetRegistry, Optional.empty(), new BetaOverworldBiomeSource(biomeRegistry));
         this.biomeRegistry = biomeRegistry;
-        this.isMoon = moon;
-        if(moon){
-            generator = new ChunkProviderMoon(toSeed("Glacier"));
-        }else{
-            generator = new ChunkProviderGenerate(toSeed("Glacier"));
+        this.mode = mode;
+        generator = switch (mode){
+            case "moon" -> new ChunkProviderMoon(toSeed("Glacier"));
+            case "nether" -> new ChunkProviderHell(toSeed("Glacier"));
+            default -> new ChunkProviderGenerate(toSeed("Glacier"));
+        };
+        if(biomeSource instanceof BetaOverworldBiomeSource bobs){
+            bobs.setGenerator(generator);
         }
     }
 

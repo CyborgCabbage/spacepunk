@@ -1,13 +1,18 @@
 package cyborgcabbage.spacepunk.gen.beta.biome;
 
+import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.gen.beta.worldgen.WorldGenBigTree;
 import cyborgcabbage.spacepunk.gen.beta.worldgen.WorldGenTrees;
 import cyborgcabbage.spacepunk.gen.beta.worldgen.WorldGenerator;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.util.Pair;
+import net.minecraft.world.biome.*;
+import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -36,8 +41,13 @@ public class BiomeGenBase {
 	private boolean enableSnow;
 	private boolean enableRain = true;
 	private static BiomeGenBase[] biomeLookupTable = new BiomeGenBase[4096];
-
+	private static final HashMap<BiomeGenBase, Float> averageBiomeHumidity = new HashMap<>();
+	private static final HashMap<BiomeGenBase, Float> averageBiomeTemperature = new HashMap<>();
+	public int id;
+	public static int biomeCount = 0;
 	protected BiomeGenBase() {
+		id = biomeCount;
+		biomeCount++;
 		/*this.spawnableMonsterList.add(new SpawnListEntry(EntitySpider.class, 10));
 		this.spawnableMonsterList.add(new SpawnListEntry(EntityZombie.class, 10));
 		this.spawnableMonsterList.add(new SpawnListEntry(EntitySkeleton.class, 10));
@@ -50,18 +60,63 @@ public class BiomeGenBase {
 		this.spawnableWaterCreatureList.add(new SpawnListEntry(EntitySquid.class, 10));*/
 	}
 
+	public Biome createModernBiome() {
+		Biome build = new Biome.Builder()
+				.precipitation(enableSnow ? Biome.Precipitation.SNOW : (enableRain ? Biome.Precipitation.RAIN : Biome.Precipitation.NONE))
+				.temperature(averageBiomeTemperature.getOrDefault(this, 0.5f))
+				.downfall(averageBiomeHumidity.getOrDefault(this, 0.5f))
+				.effects(getBiomeEffects().build())
+				.spawnSettings(getSpawnSettings().build())
+				.generationSettings(new GenerationSettings.Builder().build()).build();
+		Spacepunk.LOGGER.info("Temp: "+build.getTemperature()+" Downfall: "+build.getDownfall());
+		return build;
+	}
+
+	private BiomeEffects.Builder getBiomeEffects() {
+		return new BiomeEffects.Builder()
+				.waterColor(4159204)
+				.waterFogColor(329011)
+				.fogColor(12638463)
+				.skyColor(OverworldBiomeCreator.getSkyColor(averageBiomeTemperature.getOrDefault(this, 0.5f)));
+	}
+
+	private SpawnSettings.Builder getSpawnSettings() {
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addFarmAnimals(builder);
+		DefaultBiomeFeatures.addBatsAndMonsters(builder);
+		return builder;
+	}
+
 	private BiomeGenBase setDisableRain() {
 		this.enableRain = false;
 		return this;
 	}
 
 	public static void generateBiomeLookup() {
-		for(int i0 = 0; i0 < 64; ++i0) {
-			for(int i1 = 0; i1 < 64; ++i1) {
-				biomeLookupTable[i0 + i1 * 64] = getBiome((float)i0 / 63.0F, (float)i1 / 63.0F);
+		HashMap<BiomeGenBase, Pair<Float, Float>> averageTemperature = new HashMap<>();
+		HashMap<BiomeGenBase, Pair<Float, Float>> averageHumidity = new HashMap<>();
+		for(int t = 0; t < 64; ++t) {
+			for(int h = 0; h < 64; ++h) {
+				BiomeGenBase biome = getBiome((float) t / 63.0F, (float) h / 63.0F);
+				{
+					averageTemperature.putIfAbsent(biome, new Pair<>(0.f, 0.f));
+					Pair<Float, Float> temp = averageTemperature.get(biome);
+					temp.setLeft(temp.getLeft() + 1);
+					temp.setRight(temp.getRight() + t / 63.0f);
+				}
+				{
+					averageHumidity.putIfAbsent(biome, new Pair<>(0.f, 0.f));
+					Pair<Float, Float> humidity = averageHumidity.get(biome);
+					humidity.setLeft(humidity.getLeft() + 1);
+					humidity.setRight(humidity.getRight() + h / 63.0f);
+				}
+				biomeLookupTable[t + h * 64] = biome;
 			}
 		}
-
+		averageTemperature.forEach((object, pair) -> averageBiomeTemperature.put(object, pair.getRight() / pair.getLeft()));
+		averageHumidity.forEach((object, pair) -> averageBiomeHumidity.put(object, pair.getRight() / pair.getLeft()));
+		averageBiomeTemperature.put(hell, 1.0f);
+		averageBiomeHumidity.put(hell, 0.0f);
 		desert.topBlock = desert.fillerBlock = Blocks.SAND.getDefaultState();
 		iceDesert.topBlock = iceDesert.fillerBlock = Blocks.SAND.getDefaultState();
 	}

@@ -18,12 +18,12 @@ public class MapGenBase {
 		for(int x = p.x - r; x <= p.x + r; ++x) {
 			for(int z = p.z - r; z <= p.z + r; ++z) {
 				this.rand.setSeed((long)x * rNum1 + (long)z * rNum2 ^ worldSeed);
-				this.generateFromChunk(chunk, worldSeed, x, z);
+				this.generateFromChunk(chunk, x, z);
 			}
 		}
 
 	}
 
-	protected void generateFromChunk(Chunk chunk, long worldSeed, int x, int z) {
+	protected void generateFromChunk(Chunk chunk, int x, int z) {
 	}
 }
