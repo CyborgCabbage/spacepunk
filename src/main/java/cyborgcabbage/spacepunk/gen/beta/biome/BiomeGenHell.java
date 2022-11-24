@@ -1,11 +1,21 @@
 package cyborgcabbage.spacepunk.gen.beta.biome;
 
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
+import net.minecraft.world.biome.BiomeEffects;
+import net.minecraft.world.biome.SpawnSettings;
+
 public class BiomeGenHell extends BiomeGenBase {
-	public BiomeGenHell() {
-		this.spawnableMonsterList.clear();
-		this.spawnableCreatureList.clear();
-		this.spawnableWaterCreatureList.clear();
-		//this.spawnableMonsterList.add(new SpawnListEntry(EntityGhast.class, 10));
-		//this.spawnableMonsterList.add(new SpawnListEntry(EntityPigZombie.class, 10));
+	@Override
+	protected SpawnSettings.Builder getSpawnSettings() {
+		SpawnSettings.Builder builder = new SpawnSettings.Builder()
+				.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.GHAST, 100, 4, 4))
+				.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ZOMBIFIED_PIGLIN, 100, 4, 4));
+		return builder;
+	}
+
+	@Override
+	protected BiomeEffects.Builder getBiomeEffects() {
+		return super.getBiomeEffects().fogColor(3344392);
 	}
 }

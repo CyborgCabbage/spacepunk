@@ -1,11 +1,15 @@
 package cyborgcabbage.spacepunk.gen.beta.biome;
 
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
+import net.minecraft.world.biome.SpawnSettings;
+
 public class BiomeGenSky extends BiomeGenBase {
-	public BiomeGenSky() {
-		this.spawnableMonsterList.clear();
-		this.spawnableCreatureList.clear();
-		this.spawnableWaterCreatureList.clear();
-		//this.spawnableCreatureList.add(new SpawnListEntry(EntityChicken.class, 10));
+	@Override
+	protected SpawnSettings.Builder getSpawnSettings() {
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.CHICKEN, 10, 4, 4));
+		return builder;
 	}
 
 	public int getSkyColorByTemp(float f1) {

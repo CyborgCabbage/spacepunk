@@ -6,6 +6,8 @@ import cyborgcabbage.spacepunk.gen.beta.worldgen.WorldGenTrees;
 import cyborgcabbage.spacepunk.gen.beta.worldgen.WorldGenerator;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.util.Pair;
 import net.minecraft.world.biome.*;
 import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
@@ -72,7 +74,7 @@ public class BiomeGenBase {
 		return build;
 	}
 
-	private BiomeEffects.Builder getBiomeEffects() {
+	protected BiomeEffects.Builder getBiomeEffects() {
 		return new BiomeEffects.Builder()
 				.waterColor(4159204)
 				.waterFogColor(329011)
@@ -80,11 +82,27 @@ public class BiomeGenBase {
 				.skyColor(OverworldBiomeCreator.getSkyColor(averageBiomeTemperature.getOrDefault(this, 0.5f)));
 	}
 
-	private SpawnSettings.Builder getSpawnSettings() {
+	protected SpawnSettings.Builder getSpawnSettings() {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
-		DefaultBiomeFeatures.addFarmAnimals(builder);
-		DefaultBiomeFeatures.addBatsAndMonsters(builder);
+		addBetaMonsters(builder);
+		addBetaAnimals(builder);
 		return builder;
+	}
+
+	private static void addBetaMonsters(SpawnSettings.Builder builder) {
+		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.SPIDER, 100, 4, 4));
+		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ZOMBIE, 100, 4, 4));
+		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.SKELETON, 100, 4, 4));
+		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.CREEPER, 100, 4, 4));
+		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.SLIME, 100, 4, 4));
+	}
+
+	private static void addBetaAnimals(SpawnSettings.Builder builder) {
+		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.SHEEP, 12, 4, 4));
+		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PIG, 10, 4, 4));
+		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.CHICKEN, 10, 4, 4));
+		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.COW, 8, 4, 4));
+		builder.spawn(SpawnGroup.WATER_CREATURE, new SpawnSettings.SpawnEntry(EntityType.SQUID, 1, 1, 4));
 	}
 
 	private BiomeGenBase setDisableRain() {
