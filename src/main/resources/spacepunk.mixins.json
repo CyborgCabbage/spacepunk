@@ -4,8 +4,10 @@
   "package": "cyborgcabbage.spacepunk.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "AbstractFireBlockMixin",
     "ChunkSectionMixin",
     "DimensionTypeMixin",
+    "EntityMixin",
     "LeavesBlockMixin",
     "LivingEntityMixin",
     "StripMixin"
