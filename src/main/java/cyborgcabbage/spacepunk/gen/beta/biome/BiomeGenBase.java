@@ -4,6 +4,7 @@ import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.gen.beta.worldgen.WorldGenBigTree;
 import cyborgcabbage.spacepunk.gen.beta.worldgen.WorldGenTrees;
 import cyborgcabbage.spacepunk.gen.beta.worldgen.WorldGenerator;
+import net.fabricmc.fabric.impl.client.indigo.renderer.helper.ColorHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
@@ -19,34 +20,31 @@ import java.util.List;
 import java.util.Random;
 
 public class BiomeGenBase {
-	public static final BiomeGenBase rainforest = (new BiomeGenRainforest()).setColor(588342).setBiomeName("Rainforest").func_4124_a(2094168);
-	public static final BiomeGenBase swampland = (new BiomeGenSwamp()).setColor(522674).setBiomeName("Swampland").func_4124_a(9154376);
-	public static final BiomeGenBase seasonalForest = (new BiomeGenBase()).setColor(10215459).setBiomeName("Seasonal Forest");
-	public static final BiomeGenBase forest = (new BiomeGenForest()).setColor(353825).setBiomeName("Forest").func_4124_a(5159473);
-	public static final BiomeGenBase savanna = (new BiomeGenDesert()).setColor(14278691).setBiomeName("Savanna");
-	public static final BiomeGenBase shrubland = (new BiomeGenBase()).setColor(10595616).setBiomeName("Shrubland");
-	public static final BiomeGenBase taiga = (new BiomeGenTaiga()).setColor(3060051).setBiomeName("Taiga").setEnableSnow().func_4124_a(8107825);
-	public static final BiomeGenBase desert = (new BiomeGenDesert()).setColor(16421912).setBiomeName("Desert").setDisableRain();
-	public static final BiomeGenBase plains = (new BiomeGenDesert()).setColor(16767248).setBiomeName("Plains");
-	public static final BiomeGenBase iceDesert = (new BiomeGenDesert()).setColor(16772499).setBiomeName("Ice Desert").setEnableSnow().setDisableRain().func_4124_a(12899129);
-	public static final BiomeGenBase tundra = (new BiomeGenBase()).setColor(5762041).setBiomeName("Tundra").setEnableSnow().func_4124_a(12899129);
-	public static final BiomeGenBase hell = (new BiomeGenHell()).setColor(16711680).setBiomeName("Hell").setDisableRain();
-	public static final BiomeGenBase sky = (new BiomeGenSky()).setColor(8421631).setBiomeName("Sky").setDisableRain();
+	public static final BiomeGenBase rainforest = (new BiomeGenRainforest()).setColor(588342).setBiomeName("Rainforest").func_4124_a(2094168).setTemperature(0.99f).setHumidity(0.98f);
+	public static final BiomeGenBase swampland = (new BiomeGenSwamp()).setColor(522674).setBiomeName("Swampland").func_4124_a(9154376).setTemperature(0.64f).setHumidity(0.93f);
+	public static final BiomeGenBase seasonalForest = (new BiomeGenBase()).setColor(10215459).setBiomeName("Seasonal Forest").setTemperature(0.99f).setHumidity(0.68f);
+	public static final BiomeGenBase forest = (new BiomeGenForest()).setColor(353825).setBiomeName("Forest").func_4124_a(5159473).setTemperature(0.87f).setHumidity(0.71f);
+	public static final BiomeGenBase savanna = (new BiomeGenDesert()).setColor(14278691).setBiomeName("Savanna").setTemperature(0.77f).setHumidity(0.11f);
+	public static final BiomeGenBase shrubland = (new BiomeGenBase()).setColor(10595616).setBiomeName("Shrubland").setTemperature(0.80f).setHumidity(0.37f);
+	public static final BiomeGenBase taiga = (new BiomeGenTaiga()).setColor(3060051).setBiomeName("Taiga").setEnableSnow().func_4124_a(8107825).setTemperature(0.41f).setHumidity(0.78f);
+	public static final BiomeGenBase desert = (new BiomeGenDesert()).setColor(16421912).setBiomeName("Desert").setDisableRain().setTemperature(0.98f).setHumidity(0.08f);
+	public static final BiomeGenBase plains = (new BiomeGenDesert()).setColor(16767248).setBiomeName("Plains").setTemperature(0.99f).setHumidity(0.34f);
+	public static final BiomeGenBase iceDesert = (new BiomeGenDesert()).setColor(16772499).setBiomeName("Ice Desert").setEnableSnow().setDisableRain().func_4124_a(12899129).setTemperature(0.40f).setHumidity(0.20f);
+	public static final BiomeGenBase tundra = (new BiomeGenBase()).setColor(5762041).setBiomeName("Tundra").setEnableSnow().func_4124_a(12899129).setTemperature(0.26f).setHumidity(0.37f);
+	public static final BiomeGenBase hell = (new BiomeGenHell()).setColor(16711680).setBiomeName("Hell").setDisableRain().setTemperature(2.f).setHumidity(0.f);
+	public static final BiomeGenBase sky = (new BiomeGenSky()).setColor(8421631).setBiomeName("Sky").setDisableRain().setTemperature(0.99f).setHumidity(0.34f);
 	public String biomeName;
 	public int color;
 	public BlockState topBlock = Blocks.GRASS_BLOCK.getDefaultState();
 	public BlockState fillerBlock = Blocks.DIRT.getDefaultState();
 	public int field_6502_q = 5169201;
-	protected List spawnableMonsterList = new ArrayList();
-	protected List spawnableCreatureList = new ArrayList();
-	protected List spawnableWaterCreatureList = new ArrayList();
 	private boolean enableSnow;
 	private boolean enableRain = true;
-	private static BiomeGenBase[] biomeLookupTable = new BiomeGenBase[4096];
-	private static final HashMap<BiomeGenBase, Float> averageBiomeHumidity = new HashMap<>();
-	private static final HashMap<BiomeGenBase, Float> averageBiomeTemperature = new HashMap<>();
+	private static final BiomeGenBase[] biomeLookupTable = new BiomeGenBase[4096];
 	public int id;
 	public static int biomeCount = 0;
+	private float temperature = 0.5f;
+	private float humidity = 0.5f;
 	protected BiomeGenBase() {
 		id = biomeCount;
 		biomeCount++;
@@ -63,23 +61,21 @@ public class BiomeGenBase {
 	}
 
 	public Biome createModernBiome() {
-		Biome build = new Biome.Builder()
+		return new Biome.Builder()
 				.precipitation(enableSnow ? Biome.Precipitation.SNOW : (enableRain ? Biome.Precipitation.RAIN : Biome.Precipitation.NONE))
-				.temperature(averageBiomeTemperature.getOrDefault(this, 0.5f))
-				.downfall(averageBiomeHumidity.getOrDefault(this, 0.5f))
+				.temperature(temperature)
+				.downfall(humidity)
 				.effects(getBiomeEffects().build())
 				.spawnSettings(getSpawnSettings().build())
 				.generationSettings(new GenerationSettings.Builder().build()).build();
-		Spacepunk.LOGGER.info("Temp: "+build.getTemperature()+" Downfall: "+build.getDownfall());
-		return build;
 	}
 
 	protected BiomeEffects.Builder getBiomeEffects() {
 		return new BiomeEffects.Builder()
-				.waterColor(4159204)
-				.waterFogColor(329011)
-				.fogColor(12638463)
-				.skyColor(OverworldBiomeCreator.getSkyColor(averageBiomeTemperature.getOrDefault(this, 0.5f)));
+				.waterColor(0x2F58ff)
+				.waterFogColor(0x50533)
+				.fogColor(0xC0D8FF)
+				.skyColor(OverworldBiomeCreator.getSkyColor(temperature));
 	}
 
 	protected SpawnSettings.Builder getSpawnSettings() {
@@ -105,36 +101,27 @@ public class BiomeGenBase {
 		builder.spawn(SpawnGroup.WATER_CREATURE, new SpawnSettings.SpawnEntry(EntityType.SQUID, 1, 1, 4));
 	}
 
+	private BiomeGenBase setTemperature(float temp){
+		this.temperature = temp;
+		return this;
+	}
+
+	private BiomeGenBase setHumidity(float humid){
+		this.humidity = humid;
+		return this;
+	}
+
 	private BiomeGenBase setDisableRain() {
 		this.enableRain = false;
 		return this;
 	}
 
 	public static void generateBiomeLookup() {
-		HashMap<BiomeGenBase, Pair<Float, Float>> averageTemperature = new HashMap<>();
-		HashMap<BiomeGenBase, Pair<Float, Float>> averageHumidity = new HashMap<>();
 		for(int t = 0; t < 64; ++t) {
 			for(int h = 0; h < 64; ++h) {
-				BiomeGenBase biome = getBiome((float) t / 63.0F, (float) h / 63.0F);
-				{
-					averageTemperature.putIfAbsent(biome, new Pair<>(0.f, 0.f));
-					Pair<Float, Float> temp = averageTemperature.get(biome);
-					temp.setLeft(temp.getLeft() + 1);
-					temp.setRight(temp.getRight() + t / 63.0f);
-				}
-				{
-					averageHumidity.putIfAbsent(biome, new Pair<>(0.f, 0.f));
-					Pair<Float, Float> humidity = averageHumidity.get(biome);
-					humidity.setLeft(humidity.getLeft() + 1);
-					humidity.setRight(humidity.getRight() + h / 63.0f);
-				}
-				biomeLookupTable[t + h * 64] = biome;
+				biomeLookupTable[t + h * 64] = getBiome((float) t / 63.0F, (float) h / 63.0F);
 			}
 		}
-		averageTemperature.forEach((object, pair) -> averageBiomeTemperature.put(object, pair.getRight() / pair.getLeft()));
-		averageHumidity.forEach((object, pair) -> averageBiomeHumidity.put(object, pair.getRight() / pair.getLeft()));
-		averageBiomeTemperature.put(hell, 1.0f);
-		averageBiomeHumidity.put(hell, 0.0f);
 		desert.topBlock = desert.fillerBlock = Blocks.SAND.getDefaultState();
 		iceDesert.topBlock = iceDesert.fillerBlock = Blocks.SAND.getDefaultState();
 	}

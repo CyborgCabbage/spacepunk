@@ -15,6 +15,9 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.chunk.Chunk;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 public class ChunkProviderGenerate extends BetaChunkProvider{
     private final NoiseGeneratorOctaves noise16a;
     private final NoiseGeneratorOctaves noise16b;
@@ -38,6 +41,8 @@ public class ChunkProviderGenerate extends BetaChunkProvider{
     private final BetaBiomes terrainBiomes;
     private final BetaBiomesSampler externalBiomes;
 
+    record BiomeSample(BiomeGenBase biome, double temp, double humid){};
+
     public ChunkProviderGenerate(long seed) {
         super(seed);
         this.terrainBiomes = new BetaBiomes(seed);
@@ -50,6 +55,25 @@ public class ChunkProviderGenerate extends BetaChunkProvider{
         this.noise10a = new NoiseGeneratorOctaves(this.rand, 10);
         this.noise16c = new NoiseGeneratorOctaves(this.rand, 16);
         this.treeNoise = new NoiseGeneratorOctaves(this.rand, 8);
+
+        //Calculate Average temperature and humidity for each biome
+        /*ArrayList<BiomeSample> samples = new ArrayList<>();
+        int k = 797;
+        for (int x = 0; x < 1000; x++) {
+            for (int z = 0; z < 1000; z++) {
+                samples.add(new BiomeSample(
+                        externalBiomes.getBiomeAtBlock(x*k,z*k),
+                        externalBiomes.getTemperatureAtBlock(x*k,z*k),
+                        externalBiomes.getHumidityAtBlock(x*k,z*k)
+                ));
+            }
+        }
+        Map<BiomeGenBase, List<BiomeSample>> byBiome = samples.stream().collect(Collectors.groupingBy(BiomeSample::biome));
+        byBiome.forEach((biome, list) -> {
+            OptionalDouble averageTemp = list.stream().mapToDouble(BiomeSample::temp).average();
+            OptionalDouble averageHumid = list.stream().mapToDouble(BiomeSample::humid).average();
+            System.out.println(biome.biomeName+":"+String.format("%.2f",averageTemp.orElse(0.9))+":"+String.format("%.2f",averageHumid.orElse(0.5)));
+        });*/
     }
 
     public void generateTerrain(Chunk chunk) {
