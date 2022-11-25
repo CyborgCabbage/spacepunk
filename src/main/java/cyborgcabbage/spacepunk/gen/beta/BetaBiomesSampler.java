@@ -31,5 +31,25 @@ public class BetaBiomesSampler {
         humidValue = MathHelper.clamp(humidValue, 0, 1);
         return BiomeGenBase.getBiomeFromLookup(tempValue, humidValue);
     }
-}
 
+    public double getTemperatureAtBlock( int x, int z) {
+        double temperature = this.temperatureGenerator.func_4112_a(null, x, z, 1, 1, 0.02500000037252903d, 0.02500000037252903d, 0.25D)[0];
+        double biomeJitter = this.noise9.func_4112_a(null, x, z, 1, 1, 0.25D, 0.25D, 0.5882352941176471D)[0];
+        double d9 = biomeJitter * 1.1D + 0.5D;
+        double weightTemp = 0.01D;
+        double tempValue = (temperature * 0.15D + 0.7D) * (1.0D - weightTemp) + d9 * weightTemp;
+        tempValue = 1.0D - (1.0D - tempValue) * (1.0D - tempValue);
+        tempValue = MathHelper.clamp(tempValue,0,1);
+        return tempValue;
+    }
+
+    public double getHumidityAtBlock( int x, int z) {
+        double humidity = this.humidityGenerator.func_4112_a(null, x, z, 1, 1, 0.05F, 0.05F, 0.3333333333333333d)[0];
+        double biomeJitter = this.noise9.func_4112_a(null, x, z, 1, 1, 0.25D, 0.25D, 0.5882352941176471D)[0];
+        double d9 = biomeJitter * 1.1D + 0.5D;
+        double weightHumid = 0.002d;
+        double humidValue = (humidity * 0.15D + 0.5D) * (1.0D - weightHumid) + d9 * weightHumid;
+        humidValue = MathHelper.clamp(humidValue, 0, 1);
+        return humidValue;
+    }
+}
