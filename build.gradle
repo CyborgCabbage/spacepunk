@@ -1,5 +1,3 @@
-import net.fabricmc.loom.configuration.ide.RunConfigSettings
-
 plugins {
 	id 'fabric-loom' version '1.0-SNAPSHOT'
 	id 'maven-publish'
@@ -13,7 +11,11 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
-	maven { url 'https://maven.blamejared.com' }
+	// Add repositories to retrieve artifacts from in here.
+	// You should only use this when depending on other mods because
+	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
+	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
+	// for more information about repositories.
 }
 
 dependencies {
@@ -24,11 +26,14 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	modImplementation "vazkii.patchouli:Patchouli:${project.patchouli_version}"
+
+	// Uncomment the following line to enable the deprecated Fabric API modules. 
+	// These are included in the Fabric API production distribution and allow you to update your mod to the latest modules at a later more convenient time.
+
+	// modImplementation "net.fabricmc.fabric-api:fabric-api-deprecated:${project.fabric_version}"
 }
 
 processResources {
-	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	inputs.property "version", project.version
 
 	filesMatching("fabric.mod.json") {
@@ -71,44 +76,6 @@ publishing {
 	}
 }
 
-sourceSets {
-	datagen {
-		compileClasspath += main.compileClasspath
-		runtimeClasspath += main.runtimeClasspath
-		compileClasspath += main.output
-		runtimeClasspath += main.output
-	}
-
-	main {
-		resources {
-			srcDirs += [
-					'src/main/generated'
-			]
-		}
-	}
-}
-
 loom {
-	runs {
-		// This adds a new gradle task that runs the datagen API: "gradlew runDatagenClient"
-		datagen {
-			server()
-			name "Data Generation"
-			vmArg "-Dfabric-api.datagen"
-			vmArg "-Dfabric-api.datagen.output-dir=${file("src/main/generated")}"
-			vmArg "-Dfabric-api.datagen.modid=spacepunk"
-			runDir "build/datagen"
-			source sourceSets.datagen
-		}
-	}
-	accessWidenerPath = file("src/main/resources/spacepunk.accesswidener")
-}
-
-jar {
-	from file('src/main/generated')
-
-	// A bit of a hack to allow the generated sources when they already exist
-	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-	dependsOn 'runDatagen'
+	accessWidenerPath = file("src/main/resources/cabbagebeta.accesswidener")
 }

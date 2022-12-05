@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "id": "spacepunk",
+  "id": "cabbagebeta",
   "version": "${version}",
 
-  "name": "Spacepunk",
-  "description": "A mod that makes space simple!",
+  "name": "Cabbage's Beta Terrain Generator",
+  "description": "Adds a world present for beta terrain!",
   "authors": [
     "CyborgCabbage"
   ],
@@ -14,28 +14,24 @@
   },
 
   "license": "GPL-v3",
-  "icon": "assets/spacepunk/icon.png",
+  "icon": "assets/cabbagebeta/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "cyborgcabbage.spacepunk.Spacepunk"
+      "cyborgcabbage.cabbagebeta.CabbageBeta"
     ],
     "client": [
-      "cyborgcabbage.spacepunk.client.SpacepunkClient"
-    ],
-    "fabric-datagen": [
-      "cyborgcabbage.spacepunk.SpacepunkDatagen"
     ]
   },
   "mixins": [
-    "spacepunk.mixins.json"
+    "cabbagebeta.mixins.json"
   ],
-  "accessWidener": "spacepunk.accesswidener",
+  "accessWidener": "cabbagebeta.accesswidener",
   "depends": {
     "fabricloader": ">=0.11.3",
     "fabric": "*",
-    "minecraft": "1.19.x",
+    "minecraft": " >=1.19 <1.19.3",
     "java": ">=17"
   }
 }
