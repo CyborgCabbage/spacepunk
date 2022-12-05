@@ -1,43 +1,118 @@
 package cyborgcabbage.spacepunk.gen.beta.biome;
 
-import cyborgcabbage.spacepunk.Spacepunk;
 import cyborgcabbage.spacepunk.gen.beta.worldgen.WorldGenBigTree;
 import cyborgcabbage.spacepunk.gen.beta.worldgen.WorldGenTrees;
 import cyborgcabbage.spacepunk.gen.beta.worldgen.WorldGenerator;
-import net.fabricmc.fabric.impl.client.indigo.renderer.helper.ColorHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
-import net.minecraft.util.Pair;
 import net.minecraft.world.biome.*;
-import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 
 public class BiomeGenBase {
-	public static final BiomeGenBase rainforest = (new BiomeGenRainforest()).setColor(588342).setBiomeName("Rainforest").func_4124_a(2094168).setTemperature(0.99f).setHumidity(0.98f);
-	public static final BiomeGenBase swampland = (new BiomeGenSwamp()).setColor(522674).setBiomeName("Swampland").func_4124_a(9154376).setTemperature(0.64f).setHumidity(0.93f);
-	public static final BiomeGenBase seasonalForest = (new BiomeGenBase()).setColor(10215459).setBiomeName("Seasonal Forest").setTemperature(0.99f).setHumidity(0.68f);
-	public static final BiomeGenBase forest = (new BiomeGenForest()).setColor(353825).setBiomeName("Forest").func_4124_a(5159473).setTemperature(0.87f).setHumidity(0.71f);
-	public static final BiomeGenBase savanna = (new BiomeGenDesert()).setColor(14278691).setBiomeName("Savanna").setTemperature(0.77f).setHumidity(0.11f);
-	public static final BiomeGenBase shrubland = (new BiomeGenBase()).setColor(10595616).setBiomeName("Shrubland").setTemperature(0.80f).setHumidity(0.37f);
-	public static final BiomeGenBase taiga = (new BiomeGenTaiga()).setColor(3060051).setBiomeName("Taiga").setEnableSnow().func_4124_a(8107825).setTemperature(0.41f).setHumidity(0.78f);
-	public static final BiomeGenBase desert = (new BiomeGenDesert()).setColor(16421912).setBiomeName("Desert").setDisableRain().setTemperature(0.98f).setHumidity(0.08f);
-	public static final BiomeGenBase plains = (new BiomeGenDesert()).setColor(16767248).setBiomeName("Plains").setTemperature(0.99f).setHumidity(0.34f);
-	public static final BiomeGenBase iceDesert = (new BiomeGenDesert()).setColor(16772499).setBiomeName("Ice Desert").setEnableSnow().setDisableRain().func_4124_a(12899129).setTemperature(0.40f).setHumidity(0.20f);
-	public static final BiomeGenBase tundra = (new BiomeGenBase()).setColor(5762041).setBiomeName("Tundra").setEnableSnow().func_4124_a(12899129).setTemperature(0.26f).setHumidity(0.37f);
-	public static final BiomeGenBase hell = (new BiomeGenHell()).setColor(16711680).setBiomeName("Hell").setDisableRain().setTemperature(2.f).setHumidity(0.f);
-	public static final BiomeGenBase sky = (new BiomeGenSky()).setColor(8421631).setBiomeName("Sky").setDisableRain().setTemperature(0.99f).setHumidity(0.34f);
+	public static final BiomeGenBase rainforest = (new BiomeGenRainforest())
+			.setColor(0x8fa36)
+			.setBiomeName("Rainforest")
+			.setOtherColor(0x1ff458)
+			.setTemperature(0.99f)
+			.setHumidity(0.98f)
+			.setTrees(true, 5)
+			.setShrubs(10);
+	public static final BiomeGenBase swampland = (new BiomeGenSwamp())
+			.setColor(0x7f9b2)
+			.setBiomeName("Swampland")
+			.setOtherColor(0x8baf48)
+			.setTemperature(0.64f)
+			.setHumidity(0.93f);
+	public static final BiomeGenBase seasonalForest = (new BiomeGenBase())
+			.setColor(0x9be023)
+			.setBiomeName("Seasonal Forest")
+			.setTemperature(0.99f)
+			.setHumidity(0.68f)
+			.setTrees(true, 2)
+			.setDandelions(4)
+			.setShrubs(2);
+	public static final BiomeGenBase forest = (new BiomeGenForest())
+			.setColor(0x56621)
+			.setBiomeName("Forest")
+			.setOtherColor(0x4eba31)
+			.setTemperature(0.87f)
+			.setHumidity(0.71f)
+			.setTrees(true, 5)
+			.setDandelions(2)
+			.setShrubs(2);
+	public static final BiomeGenBase savanna = (new BiomeGenDesert())
+			.setColor(0xd9e023)
+			.setBiomeName("Savanna")
+			.setTemperature(0.77f)
+			.setHumidity(0.11f);
+	public static final BiomeGenBase shrubland = (new BiomeGenBase())
+			.setColor(0xa1ad20)
+			.setBiomeName("Shrubland")
+			.setTemperature(0.80f)
+			.setHumidity(0.37f);
+	public static final BiomeGenBase taiga = (new BiomeGenTaiga())
+			.setColor(0x2eb153)
+			.setBiomeName("Taiga")
+			.setEnableSnow()
+			.setOtherColor(0x7bb731)
+			.setTemperature(0.41f)
+			.setHumidity(0.78f)
+			.setTrees(true, 5)
+			.setDandelions(2)
+			.setShrubs(1);
+	public static final BiomeGenBase desert = (new BiomeGenDesert())
+			.setColor(0xfa9418)
+			.setBiomeName("Desert")
+			.setDisableRain()
+			.setTemperature(0.98f)
+			.setHumidity(0.08f)
+			.setTrees(false, -20);
+	public static final BiomeGenBase plains = (new BiomeGenDesert())
+			.setColor(0xffd910)
+			.setBiomeName("Plains")
+			.setTemperature(0.99f)
+			.setHumidity(0.34f)
+			.setTrees(false, -20)
+			.setDandelions(3)
+			.setShrubs(10);
+	public static final BiomeGenBase iceDesert = (new BiomeGenDesert())
+			.setColor(0xffed93)
+			.setBiomeName("Ice Desert")
+			.setEnableSnow()
+			.setDisableRain()
+			.setOtherColor(0xc4d339)
+			.setTemperature(0.40f)
+			.setHumidity(0.20f);
+	public static final BiomeGenBase tundra = (new BiomeGenBase())
+			.setColor(0x57ebf9)
+			.setBiomeName("Tundra")
+			.setEnableSnow()
+			.setOtherColor(0xc4d339)
+			.setTemperature(0.26f)
+			.setHumidity(0.37f)
+			.setTrees(false, -20);
+	public static final BiomeGenBase hell = (new BiomeGenHell())
+			.setColor(0xff0000)
+			.setBiomeName("Hell")
+			.setDisableRain()
+			.setTemperature(1.f)
+			.setHumidity(0.f);
+	public static final BiomeGenBase sky = (new BiomeGenSky())
+			.setColor(0x8080ff)
+			.setBiomeName("Sky")
+			.setDisableRain()
+			.setTemperature(0.99f)
+			.setHumidity(0.34f);
+
 	public String biomeName;
 	public int color;
 	public BlockState topBlock = Blocks.GRASS_BLOCK.getDefaultState();
 	public BlockState fillerBlock = Blocks.DIRT.getDefaultState();
-	public int field_6502_q = 5169201;
+	public int otherColor = 0x4ee031;
 	private boolean enableSnow;
 	private boolean enableRain = true;
 	private static final BiomeGenBase[] biomeLookupTable = new BiomeGenBase[4096];
@@ -45,6 +120,10 @@ public class BiomeGenBase {
 	public static int biomeCount = 0;
 	private float temperature = 0.5f;
 	private float humidity = 0.5f;
+	public boolean addExtraTrees = false;
+	public int treeCount = 0;
+	public int dandelionCount = 0;
+	public int shrubCount = 0;
 	protected BiomeGenBase() {
 		id = biomeCount;
 		biomeCount++;
@@ -101,6 +180,22 @@ public class BiomeGenBase {
 		builder.spawn(SpawnGroup.WATER_CREATURE, new SpawnSettings.SpawnEntry(EntityType.SQUID, 1, 1, 4));
 	}
 
+	private BiomeGenBase setDandelions(int dandelionCount) {
+		this.dandelionCount = dandelionCount;
+		return this;
+	}
+
+	private BiomeGenBase setShrubs(int shrubCount) {
+		this.shrubCount = shrubCount;
+		return this;
+	}
+
+	private BiomeGenBase setTrees(boolean addExtra, int treeCount) {
+		this.addExtraTrees = addExtra;
+		this.treeCount = treeCount;
+		return this;
+	}
+
 	private BiomeGenBase setTemperature(float temp){
 		this.temperature = temp;
 		return this;
@@ -140,8 +235,8 @@ public class BiomeGenBase {
 		return this;
 	}
 
-	protected BiomeGenBase func_4124_a(int i1) {
-		this.field_6502_q = i1;
+	protected BiomeGenBase setOtherColor(int i1) {
+		this.otherColor = i1;
 		return this;
 	}
 

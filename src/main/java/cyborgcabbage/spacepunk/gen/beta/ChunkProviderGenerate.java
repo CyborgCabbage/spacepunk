@@ -15,8 +15,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.chunk.Chunk;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Random;
 
 public class ChunkProviderGenerate extends BetaChunkProvider{
     private final NoiseGeneratorOctaves noise16a;
@@ -329,298 +328,140 @@ public class ChunkProviderGenerate extends BetaChunkProvider{
         //BlockSand.fallInstantly = true;
         int i2 = chunk.getPos().x;
         int i3 = chunk.getPos().z;
-        int i4 = i2 * 16;
-        int i5 = i3 * 16;
-        BiomeGenBase biomeGenBase6 = terrainBiomes.getBiomeAtBlock(i4 + 16, i5 + 16);
+        int chunkX = i2 * 16;
+        int chunkZ = i3 * 16;
+        WorldGeneratorContext context = new WorldGeneratorContext(world, chunkX, chunkZ);
+        BiomeGenBase biome = terrainBiomes.getBiomeAtBlock(chunkX + 16, chunkZ + 16);
         this.rand.setSeed(worldSeed);
         long j7 = this.rand.nextLong() / 2L * 2L + 1L;
         long j9 = this.rand.nextLong() / 2L * 2L + 1L;
         this.rand.setSeed((long)i2 * j7 + (long)i3 * j9 ^ worldSeed);
-        double d11 = 0.25D;
-        int i13;
-        int i14;
-        int i15;
-        if(this.rand.nextInt(4) == 0) {
-            i13 = i4 + this.rand.nextInt(16) + 8;
-            i14 = this.rand.nextInt(128);
-            i15 = i5 + this.rand.nextInt(16) + 8;
-            (new WorldGenLakes(Blocks.WATER.getDefaultState())).generate(world, this.rand, i13, i14, i15);
-        }
-
+        generateFeatureRare(context, new WorldGenLakes(Blocks.WATER.getDefaultState()), 4);
         if(this.rand.nextInt(8) == 0) {
-            i13 = i4 + this.rand.nextInt(16) + 8;
-            i14 = this.rand.nextInt(this.rand.nextInt(120) + 8);
-            i15 = i5 + this.rand.nextInt(16) + 8;
+            int i13 = chunkX + this.rand.nextInt(16) + 8;
+            int i14 = this.rand.nextInt(this.rand.nextInt(120) + 8);
+            int i15 = chunkZ + this.rand.nextInt(16) + 8;
             if(i14 < 64 || this.rand.nextInt(10) == 0) {
                 (new WorldGenLakes(Blocks.LAVA.getDefaultState())).generate(world, this.rand, i13, i14, i15);
             }
         }
+        generateFeature(context, new WorldGenDungeons(), 8, true);
+        generateFeature(context, new WorldGenClay(32), 10, false);
+        generateMineable(context, Blocks.DIRT.getDefaultState(), 32, 128, 20);
+        generateMineable(context, Blocks.GRAVEL.getDefaultState(), 32, 128, 10);
+        generateMineable(context, Blocks.COAL_ORE.getDefaultState(), 16, 128, 20);
+        generateMineable(context, Blocks.IRON_ORE.getDefaultState(), 8, 64, 20);
+        generateMineable(context, Blocks.GOLD_ORE.getDefaultState(), 8, 32, 2);
+        generateMineable(context, Blocks.REDSTONE_ORE.getDefaultState(), 7, 16, 8);
+        generateMineable(context, Blocks.DIAMOND_ORE.getDefaultState(), 7, 16, 1);
+        generateMineableBinomial(context, Blocks.LAPIS_ORE.getDefaultState(), 6, 16, 1);
 
-        int i16;
-        for(i13 = 0; i13 < 8; ++i13) {
-            i14 = i4 + this.rand.nextInt(16) + 8;
-            i15 = this.rand.nextInt(128);
-            i16 = i5 + this.rand.nextInt(16) + 8;
-            (new WorldGenDungeons()).generate(world, this.rand, i14, i15, i16);
-        }
-
-        for(i13 = 0; i13 < 10; ++i13) {
-            i14 = i4 + this.rand.nextInt(16);
-            i15 = this.rand.nextInt(128);
-            i16 = i5 + this.rand.nextInt(16);
-            (new WorldGenClay(32)).generate(world, this.rand, i14, i15, i16);
-        }
-
-        for(i13 = 0; i13 < 20; ++i13) {
-            i14 = i4 + this.rand.nextInt(16);
-            i15 = this.rand.nextInt(128);
-            i16 = i5 + this.rand.nextInt(16);
-            (new WorldGenMinable(Blocks.DIRT.getDefaultState(), 32)).generate(world, this.rand, i14, i15, i16);
-        }
-
-        for(i13 = 0; i13 < 10; ++i13) {
-            i14 = i4 + this.rand.nextInt(16);
-            i15 = this.rand.nextInt(128);
-            i16 = i5 + this.rand.nextInt(16);
-            (new WorldGenMinable(Blocks.GRAVEL.getDefaultState(), 32)).generate(world, this.rand, i14, i15, i16);
-        }
-
-        for(i13 = 0; i13 < 20; ++i13) {
-            i14 = i4 + this.rand.nextInt(16);
-            i15 = this.rand.nextInt(128);
-            i16 = i5 + this.rand.nextInt(16);
-            (new WorldGenMinable(Blocks.COAL_ORE.getDefaultState(), 16)).generate(world, this.rand, i14, i15, i16);
-        }
-
-        for(i13 = 0; i13 < 20; ++i13) {
-            i14 = i4 + this.rand.nextInt(16);
-            i15 = this.rand.nextInt(64);
-            i16 = i5 + this.rand.nextInt(16);
-            (new WorldGenMinable(Blocks.IRON_ORE.getDefaultState(), 8)).generate(world, this.rand, i14, i15, i16);
-        }
-
-        for(i13 = 0; i13 < 2; ++i13) {
-            i14 = i4 + this.rand.nextInt(16);
-            i15 = this.rand.nextInt(32);
-            i16 = i5 + this.rand.nextInt(16);
-            (new WorldGenMinable(Blocks.GOLD_ORE.getDefaultState(), 8)).generate(world, this.rand, i14, i15, i16);
-        }
-
-        for(i13 = 0; i13 < 8; ++i13) {
-            i14 = i4 + this.rand.nextInt(16);
-            i15 = this.rand.nextInt(16);
-            i16 = i5 + this.rand.nextInt(16);
-            (new WorldGenMinable(Blocks.REDSTONE_ORE.getDefaultState(), 7)).generate(world, this.rand, i14, i15, i16);
-        }
-
-        for(i13 = 0; i13 < 1; ++i13) {
-            i14 = i4 + this.rand.nextInt(16);
-            i15 = this.rand.nextInt(16);
-            i16 = i5 + this.rand.nextInt(16);
-            (new WorldGenMinable(Blocks.DIAMOND_ORE.getDefaultState(), 7)).generate(world, this.rand, i14, i15, i16);
-        }
-
-        for(i13 = 0; i13 < 1; ++i13) {
-            i14 = i4 + this.rand.nextInt(16);
-            i15 = this.rand.nextInt(16) + this.rand.nextInt(16);
-            i16 = i5 + this.rand.nextInt(16);
-            (new WorldGenMinable(Blocks.LAPIS_ORE.getDefaultState(), 6)).generate(world, this.rand, i14, i15, i16);
-        }
-
-        d11 = 0.5D;
-        i13 = (int)((this.treeNoise.func_806_a((double)i4 * d11, (double)i5 * d11) / 8.0D + this.rand.nextDouble() * 4.0D + 4.0D) / 3.0D);
-        i14 = 0;
+        double d11 = 0.5D;
+        int extraTrees = (int)((this.treeNoise.func_806_a((double)chunkX * d11, (double)chunkZ * d11) / 8.0D + this.rand.nextDouble() * 4.0D + 4.0D) / 3.0D);
+        int treeCount = 0;
         if(this.rand.nextInt(10) == 0) {
-            ++i14;
+            ++treeCount;
         }
+        if(biome.addExtraTrees) treeCount += extraTrees;
+        treeCount += biome.treeCount;
 
-        if(biomeGenBase6 == BiomeGenBase.forest) {
-            i14 += i13 + 5;
+        for(int i = 0; i < treeCount; ++i) {
+            int x = chunkX + this.rand.nextInt(16) + 8;
+            int z = chunkZ + this.rand.nextInt(16) + 8;
+            WorldGenerator generator = biome.getRandomWorldGenForTrees(this.rand);
+            generator.func_517_a(1.0D, 1.0D, 1.0D);
+            generator.generate(world, this.rand, x, world.getTopY(Heightmap.Type.WORLD_SURFACE, x, z), z);
         }
+        generateFeature(context, new WorldGenFlowers(Blocks.DANDELION.getDefaultState()), biome.dandelionCount, true);
 
-        if(biomeGenBase6 == BiomeGenBase.rainforest) {
-            i14 += i13 + 5;
-        }
-
-        if(biomeGenBase6 == BiomeGenBase.seasonalForest) {
-            i14 += i13 + 2;
-        }
-
-        if(biomeGenBase6 == BiomeGenBase.taiga) {
-            i14 += i13 + 5;
-        }
-
-        if(biomeGenBase6 == BiomeGenBase.desert) {
-            i14 -= 20;
-        }
-
-        if(biomeGenBase6 == BiomeGenBase.tundra) {
-            i14 -= 20;
-        }
-
-        if(biomeGenBase6 == BiomeGenBase.plains) {
-            i14 -= 20;
-        }
-
-        int i17;
-        for(i15 = 0; i15 < i14; ++i15) {
-            i16 = i4 + this.rand.nextInt(16) + 8;
-            i17 = i5 + this.rand.nextInt(16) + 8;
-            WorldGenerator worldGenerator18 = biomeGenBase6.getRandomWorldGenForTrees(this.rand);
-            worldGenerator18.func_517_a(1.0D, 1.0D, 1.0D);
-            worldGenerator18.generate(world, this.rand, i16, world.getTopY(Heightmap.Type.WORLD_SURFACE, i16, i17), i17);
-        }
-
-        byte dandelionAmount = 0;
-        if(biomeGenBase6 == BiomeGenBase.forest) {
-            dandelionAmount = 2;
-        }
-
-        if(biomeGenBase6 == BiomeGenBase.seasonalForest) {
-            dandelionAmount = 4;
-        }
-
-        if(biomeGenBase6 == BiomeGenBase.taiga) {
-            dandelionAmount = 2;
-        }
-
-        if(biomeGenBase6 == BiomeGenBase.plains) {
-            dandelionAmount = 3;
-        }
-
-        int i19;
-        int i25;
-        for(i16 = 0; i16 < dandelionAmount; ++i16) {
-            i17 = i4 + this.rand.nextInt(16) + 8;
-            i25 = this.rand.nextInt(128);
-            i19 = i5 + this.rand.nextInt(16) + 8;
-            (new WorldGenFlowers(Blocks.DANDELION.getDefaultState())).generate(world, this.rand, i17, i25, i19);
-        }
-
-        byte b28 = 0;
-        if(biomeGenBase6 == BiomeGenBase.forest) {
-            b28 = 2;
-        }
-
-        if(biomeGenBase6 == BiomeGenBase.rainforest) {
-            b28 = 10;
-        }
-
-        if(biomeGenBase6 == BiomeGenBase.seasonalForest) {
-            b28 = 2;
-        }
-
-        if(biomeGenBase6 == BiomeGenBase.taiga) {
-            b28 = 1;
-        }
-
-        if(biomeGenBase6 == BiomeGenBase.plains) {
-            b28 = 10;
-        }
-
-        int i20;
-        int i21;
-        for(i17 = 0; i17 < b28; ++i17) {
+        for(int i17 = 0; i17 < biome.shrubCount; ++i17) {
             byte b26 = 1;
-            if(biomeGenBase6 == BiomeGenBase.rainforest && this.rand.nextInt(3) != 0) {
+            if(biome == BiomeGenBase.rainforest && this.rand.nextInt(3) != 0) {
                 b26 = 2;
             }
 
-            i19 = i4 + this.rand.nextInt(16) + 8;
-            i20 = this.rand.nextInt(128);
-            i21 = i5 + this.rand.nextInt(16) + 8;
+            int i19 = chunkX + this.rand.nextInt(16) + 8;
+            int i20 = this.rand.nextInt(128);
+            int i21 = chunkZ + this.rand.nextInt(16) + 8;
 
             (new WorldGenTallGrass(b26 == 1 ? Blocks.GRASS.getDefaultState() : Blocks.FERN.getDefaultState())).generate(world, this.rand, i19, i20, i21);
         }
 
-        b28 = 0;
-        if(biomeGenBase6 == BiomeGenBase.desert) {
-            b28 = 2;
+        if(biome == BiomeGenBase.desert) {
+            generateFeature(context, new WorldGenDeadBush(Blocks.DEAD_BUSH.getDefaultState()), 2, true);
         }
-
-        for(i17 = 0; i17 < b28; ++i17) {
-            i25 = i4 + this.rand.nextInt(16) + 8;
-            i19 = this.rand.nextInt(128);
-            i20 = i5 + this.rand.nextInt(16) + 8;
-            (new WorldGenDeadBush(Blocks.DEAD_BUSH.getDefaultState())).generate(world, this.rand, i25, i19, i20);
+        generateFeatureRare(context, new WorldGenFlowers(Blocks.POPPY.getDefaultState()), 2);
+        generateFeatureRare(context, new WorldGenFlowers(Blocks.BROWN_MUSHROOM.getDefaultState()), 4);
+        generateFeatureRare(context, new WorldGenFlowers(Blocks.RED_MUSHROOM.getDefaultState()), 8);
+        generateFeature(context, new WorldGenReed(), 10, true);
+        generateFeatureRare(context, new WorldGenPumpkin(), 32);
+        if(biome == BiomeGenBase.desert) {
+            generateFeature(context, new WorldGenCactus(), 10, true);
         }
+        generateFeature(context, new WorldGenLiquids(Blocks.WATER.getDefaultState()), 50, true, r -> r.nextInt(r.nextInt(120) + 8));
+        generateFeature(context, new WorldGenLiquids(Blocks.LAVA.getDefaultState()), 20, true, r -> r.nextInt(r.nextInt(r.nextInt(112) + 8) + 8));
 
-        if(this.rand.nextInt(2) == 0) {
-            i17 = i4 + this.rand.nextInt(16) + 8;
-            i25 = this.rand.nextInt(128);
-            i19 = i5 + this.rand.nextInt(16) + 8;
-            (new WorldGenFlowers(Blocks.POPPY.getDefaultState())).generate(world, this.rand, i17, i25, i19);
-        }
+        this.generatedTemperatures = terrainBiomes.getTemperatures(this.generatedTemperatures, chunkX + 8, chunkZ + 8, 16, 16);
 
-        if(this.rand.nextInt(4) == 0) {
-            i17 = i4 + this.rand.nextInt(16) + 8;
-            i25 = this.rand.nextInt(128);
-            i19 = i5 + this.rand.nextInt(16) + 8;
-            (new WorldGenFlowers(Blocks.BROWN_MUSHROOM.getDefaultState())).generate(world, this.rand, i17, i25, i19);
-        }
-
-        if(this.rand.nextInt(8) == 0) {
-            i17 = i4 + this.rand.nextInt(16) + 8;
-            i25 = this.rand.nextInt(128);
-            i19 = i5 + this.rand.nextInt(16) + 8;
-            (new WorldGenFlowers(Blocks.RED_MUSHROOM.getDefaultState())).generate(world, this.rand, i17, i25, i19);
-        }
-
-        for(i17 = 0; i17 < 10; ++i17) {
-            i25 = i4 + this.rand.nextInt(16) + 8;
-            i19 = this.rand.nextInt(128);
-            i20 = i5 + this.rand.nextInt(16) + 8;
-            (new WorldGenReed()).generate(world, this.rand, i25, i19, i20);
-        }
-
-        if(this.rand.nextInt(32) == 0) {
-            i17 = i4 + this.rand.nextInt(16) + 8;
-            i25 = this.rand.nextInt(128);
-            i19 = i5 + this.rand.nextInt(16) + 8;
-            (new WorldGenPumpkin()).generate(world, this.rand, i17, i25, i19);
-        }
-
-        i17 = 0;
-        if(biomeGenBase6 == BiomeGenBase.desert) {
-            i17 += 10;
-        }
-
-        for(i25 = 0; i25 < i17; ++i25) {
-            i19 = i4 + this.rand.nextInt(16) + 8;
-            i20 = this.rand.nextInt(128);
-            i21 = i5 + this.rand.nextInt(16) + 8;
-            (new WorldGenCactus()).generate(world, this.rand, i19, i20, i21);
-        }
-
-        for(i25 = 0; i25 < 50; ++i25) {
-            i19 = i4 + this.rand.nextInt(16) + 8;
-            i20 = this.rand.nextInt(this.rand.nextInt(120) + 8);
-            i21 = i5 + this.rand.nextInt(16) + 8;
-            (new WorldGenLiquids(Blocks.WATER.getDefaultState())).generate(world, this.rand, i19, i20, i21);
-        }
-
-        for(i25 = 0; i25 < 20; ++i25) {
-            i19 = i4 + this.rand.nextInt(16) + 8;
-            i20 = this.rand.nextInt(this.rand.nextInt(this.rand.nextInt(112) + 8) + 8);
-            i21 = i5 + this.rand.nextInt(16) + 8;
-            (new WorldGenLiquids(Blocks.LAVA.getDefaultState())).generate(world, this.rand, i19, i20, i21);
-        }
-
-        this.generatedTemperatures = terrainBiomes.getTemperatures(this.generatedTemperatures, i4 + 8, i5 + 8, 16, 16);
-
-        for(i25 = i4 + 8; i25 < i4 + 8 + 16; ++i25) {
-            for(i19 = i5 + 8; i19 < i5 + 8 + 16; ++i19) {
-                i20 = i25 - (i4 + 8);
-                i21 = i19 - (i5 + 8);
-                int i22 = world.getTopY(Heightmap.Type.MOTION_BLOCKING, i25, i19);
-                double d23 = this.generatedTemperatures[i20 * 16 + i21] - (double)(i22 - 64) / 64.0D * 0.3d;
-                if(d23 < 0.5D && i22 > 0 && i22 < 128 && world.isAir(new BlockPos(i25, i22, i19)) && world.getBlockState(new BlockPos(i25, i22 - 1, i19)).getMaterial().isSolid() && world.getBlockState(new BlockPos(i25, i22 - 1, i19)).getMaterial() != Material.ICE) {
-                    world.setBlockState(new BlockPos(i25, i22, i19), Blocks.SNOW.getDefaultState(), Block.NOTIFY_ALL);
+        for(int x = chunkX + 8; x < chunkX + 8 + 16; ++x) {
+            for(int z = chunkZ + 8; z < chunkZ + 8 + 16; ++z) {
+                int relX = x - (chunkX + 8);
+                int relZ = z - (chunkZ + 8);
+                int topY = world.getTopY(Heightmap.Type.MOTION_BLOCKING, x, z);
+                double d23 = this.generatedTemperatures[relX * 16 + relZ] - (double)(topY - 64) / 64.0D * 0.3d;
+                if(d23 < 0.5D && topY > 0 && topY < 128 && world.isAir(new BlockPos(x, topY, z)) && world.getBlockState(new BlockPos(x, topY - 1, z)).getMaterial().isSolid() && world.getBlockState(new BlockPos(x, topY - 1, z)).getMaterial() != Material.ICE) {
+                    world.setBlockState(new BlockPos(x, topY, z), Blocks.SNOW.getDefaultState(), Block.NOTIFY_ALL);
                 }
             }
         }
 
         //BlockSand.fallInstantly = false;
+    }
+
+    record WorldGeneratorContext(StructureWorldAccess world, int x, int z){}
+
+    private void generateFeature(WorldGeneratorContext context, WorldGenerator generator, int count, boolean offset) {
+        generateFeature(context, generator, count, offset, (r) -> r.nextInt(128));
+    }
+
+    private void generateFeature(WorldGeneratorContext context, WorldGenerator generator, int count, boolean offset, GenerateCoordinate generateCoordinate){
+        for(int r = 0; r < count; ++r) {
+            int x = context.x() + this.rand.nextInt(16) + (offset ? 8 : 0);
+            int y = generateCoordinate.gen(this.rand);
+            int z = context.z() + this.rand.nextInt(16) + (offset ? 8 : 0);
+            generator.generate(context.world(), this.rand, x, y, z);
+        }
+    }
+
+    interface GenerateCoordinate{
+        int gen(Random rand);
+    }
+
+    private void generateFeatureRare(WorldGeneratorContext context, WorldGenerator generator, int scarcity){
+        if(rand.nextInt(scarcity) == 0) {
+            int x = context.x() + this.rand.nextInt(16) + 8;
+            int y = this.rand.nextInt(128);
+            int z = context.z() + this.rand.nextInt(16) + 8;
+            generator.generate(context.world(), this.rand, x, y, z);
+        }
+    }
+
+    private void generateMineable(WorldGeneratorContext context, BlockState block, int veinSize, int bound, int count){
+        for(int r = 0; r < count; ++r) {
+            int x = context.x() + this.rand.nextInt(16);
+            int y = this.rand.nextInt(bound);
+            int z = context.z() + this.rand.nextInt(16);
+            (new WorldGenMinable(block, veinSize)).generate(context.world(), this.rand, x, y, z);
+        }
+    }
+
+    private void generateMineableBinomial(WorldGeneratorContext context, BlockState block, int veinSize, int bound, int count){
+        for(int r = 0; r < count; ++r) {
+            int x = context.x() + this.rand.nextInt(16);
+            int y = this.rand.nextInt(bound)+this.rand.nextInt(bound);
+            int z = context.z() + this.rand.nextInt(16);
+            (new WorldGenMinable(block, veinSize)).generate(context.world(), this.rand, x, y, z);
+        }
     }
 
     @Override
